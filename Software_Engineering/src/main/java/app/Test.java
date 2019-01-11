@@ -22,14 +22,12 @@ import database.TransactionsTable;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
-import factory.shared.Utils;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
 import factory.subsystems.agv.AgvTask;
-import factory.subsystems.monitoring.MonitoringSystem;
 import factory.subsystems.warehouse.WarehouseSystem;
 
 /*
@@ -38,6 +36,7 @@ import factory.subsystems.warehouse.WarehouseSystem;
 public class Test implements Monitorable {
 	
 	private static final Database db = Database.INSTANCE;
+	
 
 	public static void main(String[] args) {
 		System.out.println("------------------------------------- XML SETUP (no output) -------------------------------------");

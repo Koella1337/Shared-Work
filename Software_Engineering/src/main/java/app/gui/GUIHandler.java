@@ -1,7 +1,6 @@
 package app.gui;
 
 import factory.shared.AbstractSubsystem;
-import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
@@ -18,16 +17,18 @@ public class GUIHandler implements Stoppable{
 		this.ui = new UserInterface(FPS, this.monitor);
 	}
 
+	@Override
 	public void start() {
 		this.ui.start();
 	}
 
+	@Override
 	public void stop() {
 		this.ui.stop();
 	}
 	
-	public void addToFactoryPanel(Placeable placeable) {
-		this.ui.getFactoryPanel().getObjectsToDraw().add(placeable);
+	public void addToFactoryPanel(AbstractSubsystem subsystem) {
+		this.ui.getFactoryPanel().addSubsystemToPanel(subsystem);
 	}
 
 	public void setMenuPanel(MenuPanel menuPanel) {

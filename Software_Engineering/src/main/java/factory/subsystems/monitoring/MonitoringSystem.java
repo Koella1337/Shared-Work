@@ -1,6 +1,6 @@
 package factory.subsystems.monitoring;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,24 +11,25 @@ import factory.shared.enums.EventKind;
 import factory.shared.enums.EventKind.EventSeverity;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Monitorable;
+import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
+import factory.subsystems.warehouse.WarehouseSystem;
 
 public class MonitoringSystem implements MonitoringInterface {
 	private static final Logger LOGGER = Logger.getLogger(MonitoringSystem.class.getName());
 
-	private SubsystemStatus status;
+	private final GUIHandler handler;
+	private final ErrorEventHandler errorHandler;
 
-	private List<AbstractSubsystem> testList = new ArrayList<>(); // TODO replace by one list for each type of subsystem
-	private GUIHandler handler;
-	private ErrorEventHandler errorHandler;
-	
-	
+	private SubsystemStatus status;
+	private AgvCoordinator agvSystem;
+	private WarehouseSystem warehouseSystem;
 
 	public MonitoringSystem() {
 		this.handler = new GUIHandler(this);
 		this.errorHandler = new ErrorEventHandler(this);
 	}
-	
+
 	@Override
 	public synchronized void handleEvent(FactoryEvent event) {
 		try {
@@ -57,41 +58,29 @@ public class MonitoringSystem implements MonitoringInterface {
 			handleEventHandlingException(event, ex);
 		}
 	}
-	
-	@Override
-	public void addToSubsystemList(AbstractSubsystem subsystem) {
-		getTestSubSystemList().add(subsystem);
-		
-		//TODO: Alex hat des leida auskommentiern müssen :P
-		//this.handler.addToFactoryPanel(subsystem);
-	}
 
 	@Override
 	public void start() {
-		for (AbstractSubsystem subsystem : getTestSubSystemList()) {
-			LOGGER.log(Level.INFO, String.format("starting %s ...", subsystem.toString()));
-			subsystem.start();
-		}
+		Objects.requireNonNull(this.agvSystem);// TODO @thomas throw exception
+		Objects.requireNonNull(this.warehouseSystem);
+
+		this.agvSystem.start();
+		this.warehouseSystem.start();
+
 		this.handler.start();
 		this.setStatus(SubsystemStatus.RUNNING);
 	}
 
 	@Override
 	public void stop() {
-
-		for (AbstractSubsystem subsystem : getTestSubSystemList()) {
-			try {
-				LOGGER.log(Level.INFO, String.format("stopping %s ...", subsystem.toString()));
-				subsystem.stop();
-			} catch (Exception ex) {
-				// this should not happen but if the system fails to stop one subsystem, the
-				// others still should be stopped
-				LOGGER.log(Level.SEVERE, ex.toString(), ex);
-			}
+		try {
+			this.agvSystem.stop();
+			this.warehouseSystem.stop();
+		} catch (Exception ex) {
+			LOGGER.log(Level.SEVERE, ex.toString(), ex);
 		}
 		this.setStatus(SubsystemStatus.STOPPED);
 	}
-
 
 	/**
 	 * if the
@@ -109,19 +98,13 @@ public class MonitoringSystem implements MonitoringInterface {
 	}
 
 	@Override
-	public List<AbstractSubsystem> getTestSubSystemList() {
-		return testList;
-	}
-
-	@Override
 	public SubsystemStatus getStatus() {
 		return this.status;
 	}
 
-	
 	@Override
 	public void setStatus(SubsystemStatus status) {
-		LOGGER.log(Level.INFO, String.format("Status set to %s",status));
+		LOGGER.log(Level.INFO, String.format("Status set to %s", status));
 		this.status = status;
 	}
 
@@ -130,5 +113,26 @@ public class MonitoringSystem implements MonitoringInterface {
 		this.handler.setCurrentSubsystem(subsystem);
 	}
 
+	@Override
+	public AgvCoordinator getAgvSystem() {
+		return agvSystem;
+	}
+
+	@Override
+	public void setAgvSystem(AgvCoordinator agvSystem) {
+		this.handler.addToFactoryPanel(agvSystem);
+		this.agvSystem = agvSystem;
+	}
+
+	@Override
+	public WarehouseSystem getWarehouseSystem() {
+		return warehouseSystem;
+	}
+
+	@Override
+	public void setWarehouseSystem(WarehouseSystem warehouseSystem) {
+		this.handler.addToFactoryPanel(warehouseSystem);
+		this.warehouseSystem = warehouseSystem;
+	}
 
 }

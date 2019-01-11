@@ -1,11 +1,11 @@
 package factory.subsystems.agv;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import app.gui.SubsystemMenu;
 import factory.shared.AbstractSubsystem;
-import factory.shared.Position;
 import factory.shared.Task;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
@@ -47,8 +47,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 
 	@Override
 	public List<Placeable> getPlaceables() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>();
 	}
 
 	@Override

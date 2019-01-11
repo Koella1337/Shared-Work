@@ -1,18 +1,23 @@
 package factory.subsystems.warehouse;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.Objects;
 
 import org.w3c.dom.Element;
 
 import database.Database;
 import database.StorageSiteTable;
+import factory.shared.Position;
 import factory.shared.Utils;
+import factory.shared.interfaces.Placeable;
 
-public class StorageSite {
+public class StorageSite implements Placeable{//TODO @alex check
 	
 	private final WarehouseSystem warehouseSystem;
 	private final StorageSiteTable dbTable;
 	private final int id;
+	private Position pos;
 
 	public StorageSite(WarehouseSystem warehouseSystem, int id, Element xmlStorageSiteElem) {
 		Objects.requireNonNull(warehouseSystem);
@@ -24,7 +29,8 @@ public class StorageSite {
 		this.dbTable = new StorageSiteTable(id);
 		Database.INSTANCE.addTable(dbTable);
 		
-		System.out.println(Utils.getPositionFromXmlElement(xmlStorageSiteElem));;
+		this.pos = Utils.getPositionFromXmlElement(xmlStorageSiteElem); //TODO @alex
+		System.out.println(this.pos);
 	}
 
 	public int getId() {
@@ -50,6 +56,19 @@ public class StorageSite {
 	//TODO: testing method, remove later
 	public void simulateTaskDone() {
 		warehouseSystem.taskCompleted(this, new WarehouseTask());
+	}
+
+	@Override //TODO @alex check
+	public Position getPosition() {
+		return this.pos;
+	}
+
+	@Override  //TODO @alex check
+	public void draw(Graphics g) {
+		g.setColor(Color.DARK_GRAY);
+		g.drawRect(0, 0, this.pos.xSize,this.pos.ySize);
+		g.drawString("StorageSite id:"+id, 20, 20);
+		
 	}
 	
 }

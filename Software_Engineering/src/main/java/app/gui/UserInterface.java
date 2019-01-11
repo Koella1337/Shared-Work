@@ -31,10 +31,12 @@ class UserInterface implements Stoppable {
 		initUI();
 	}
 
+	@Override
 	public void start() {
 		this.frame.setVisible(true);
 	}
 
+	@Override
 	public void stop() {
 		// TODO Auto-generated method stub
 	}
@@ -45,7 +47,7 @@ class UserInterface implements Stoppable {
 		this.contentPane = (JPanel) frame.getContentPane();
 		this.contentPane.setBackground(Color.LIGHT_GRAY);
 		this.contentPane.setLayout(null);
-		this.frame.setSize(1200, 800);
+		this.frame.setSize(1400, 1050);
 
 		initMenuBar();
 		initFactoryPanel();
@@ -57,21 +59,21 @@ class UserInterface implements Stoppable {
 
 	private void initMenuBar() {
 		this.menuBar = new MenuBarPanel(this.fps, this.monitor);
-		this.menuBar.setBounds(0, 0, 800, 50);
+		this.menuBar.setBounds(0, 0, 1000, 50);
 		this.menuBar.setBackground(new Color(150,150,150));
 		this.contentPane.add(this.menuBar);
 	}
 	
 	private void initFactoryPanel() {
 		this.factoryPanel = new FactoryPanel(this.fps);
-		this.factoryPanel.setBounds(0, 50, 800, 750);
+		this.factoryPanel.setBounds(0, 50, 1000, 1000);
 		this.contentPane.add(this.factoryPanel);
 	}
 
 	private void initDefaultMenuPanel() {
 		this.menuPanel = new MenuPanel(this.fps, this.monitor);
 		this.menuPanel.setBackground(Color.LIGHT_GRAY);
-		this.menuPanel.setBounds(800, 0, 400, 800);
+		this.menuPanel.setBounds(1000, 0, 400, 1000);
 		this.contentPane.add(menuPanel);
 	}
 
