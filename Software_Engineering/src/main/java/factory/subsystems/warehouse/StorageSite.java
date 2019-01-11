@@ -6,6 +6,7 @@ import org.w3c.dom.Element;
 
 import database.Database;
 import database.StorageSiteTable;
+import factory.shared.Utils;
 
 public class StorageSite {
 	
@@ -13,15 +14,17 @@ public class StorageSite {
 	private final StorageSiteTable dbTable;
 	private final int id;
 
-	public StorageSite(WarehouseSystem warehouseSystem, int id, Element xmlWarehouseElem) {
+	public StorageSite(WarehouseSystem warehouseSystem, int id, Element xmlStorageSiteElem) {
 		Objects.requireNonNull(warehouseSystem);
-		Objects.requireNonNull(xmlWarehouseElem);
+		Objects.requireNonNull(xmlStorageSiteElem);
 		
 		this.warehouseSystem = warehouseSystem;
 		this.id = id;
 		
 		this.dbTable = new StorageSiteTable(id);
 		Database.INSTANCE.addTable(dbTable);
+		
+		System.out.println(Utils.getPositionFromXmlElement(xmlStorageSiteElem));;
 	}
 
 	public int getId() {

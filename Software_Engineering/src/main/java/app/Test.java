@@ -1,5 +1,6 @@
 package app;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -21,6 +22,7 @@ import database.TransactionsTable;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
+import factory.shared.Utils;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
@@ -45,7 +47,7 @@ public class Test implements Monitorable {
 			Element warehouseElem = (Element) layoutDoc.getElementsByTagName("warehouse").item(0);
 			
 			@SuppressWarnings("unused")
-			WarehouseSystem whs = new WarehouseSystem(new MonitoringSystem(), warehouseElem);
+			WarehouseSystem whs = new WarehouseSystem(null, warehouseElem);
 		} catch (SAXException | IOException | ParserConfigurationException e1) {
 			e1.printStackTrace();
 		}
