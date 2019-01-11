@@ -6,7 +6,7 @@ import app.gui.SubsystemMenu;
 import factory.shared.FactoryEvent;
 import factory.shared.enums.SubsystemStatus;
 
-public interface Monitorable extends Placeable, Stoppable{
+public interface Monitorable extends Stoppable {
 
 	String getName();
 	

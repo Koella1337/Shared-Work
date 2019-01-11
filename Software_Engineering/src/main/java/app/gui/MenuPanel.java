@@ -3,7 +3,7 @@ package app.gui;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import factory.subsystems.AbstractSubsystem;
+import factory.shared.AbstractSubsystem;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 class MenuPanel extends GUIPanel {

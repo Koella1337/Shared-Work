@@ -7,10 +7,8 @@ import java.util.Objects;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import app.gui.SubsystemMenu;
 import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
-import factory.shared.Position;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
@@ -88,18 +86,6 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 	@Override
 	public String getName() {
 		return "warehouse";
-	}
-
-	@Override
-	public SubsystemMenu getCurrentSubsystemMenu() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Position getPosition() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

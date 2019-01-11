@@ -7,6 +7,7 @@ import java.util.List;
 
 import factory.shared.interfaces.Placeable;
 
+@SuppressWarnings("serial")
 class FactoryPanel extends GUIPanel {
 
 	private List<Placeable> objectsToDraw;
@@ -31,7 +32,7 @@ class FactoryPanel extends GUIPanel {
 		int posY = placeable.getPosition().yPos;
 		
 		g.translate(posX, posY);
-		placeable.drawPlaceable().accept(g);
+		placeable.draw(g);
 		g.translate(-posX,-posY);
 	}
 

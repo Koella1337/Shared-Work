@@ -14,10 +14,10 @@ import org.mockito.Spy;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
 import factory.shared.enums.EventKind;
-import factory.subsystems.AbstractSubsystem;
-import factory.subsystems.agv.AGVSystem;
+import factory.subsystems.agv.AgvCoordinator;
 
 @Test(enabled = true, description = "basic test for the MonitoringSystem")
 public class MonitoringSystemTest {
@@ -36,7 +36,7 @@ public class MonitoringSystemTest {
 
 	@Test(description = "verifies if only the correct method of the error handler is called when a global error occurs")
 	public void handleGlobalError() {
-		AbstractSubsystem subsystem = mock(AGVSystem.class);
+		AbstractSubsystem subsystem = mock(AgvCoordinator.class);
 		this.monitor.addToSubsystemList(subsystem);
 		
 		FactoryEvent event = new FactoryEvent(subsystem, EventKind.MONITORING_HANDLE_EVENT_FAILED);
@@ -49,7 +49,7 @@ public class MonitoringSystemTest {
 
 	@Test(description = "verifies if only the correct method of the error handler is called when a error occurs")
 	public void handleError() {
-		AbstractSubsystem subsystem = mock(AGVSystem.class);
+		AbstractSubsystem subsystem = mock(AgvCoordinator.class);
 		EventKind agvForkliftDamaged = EventKind.AGV_FORKLIFT_DAMAGED;
 		FactoryEvent event = new FactoryEvent(subsystem, agvForkliftDamaged);
 
@@ -60,7 +60,7 @@ public class MonitoringSystemTest {
 
 	@Test(description = "verifies that the error handler is not used when the event is not of type error or global error")
 	public void handleEventCheckThatErrorEventHandlerIsNotUsed() {
-		AbstractSubsystem subsystem = mock(AGVSystem.class);
+		AbstractSubsystem subsystem = mock(AgvCoordinator.class);
 		FactoryEvent event = new FactoryEvent(subsystem, EventKind.CONVEYORS_LACK_OF_OIL);
 
 		this.monitor.handleEvent(event);

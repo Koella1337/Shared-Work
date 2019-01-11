@@ -64,12 +64,6 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	}
 
 	@Override
-	public Position getPosition() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void start() {
 		// TODO Auto-generated method stub
 		

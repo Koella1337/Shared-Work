@@ -3,7 +3,7 @@ package app;
 import factory.shared.FactoryApplication;
 import factory.shared.FactoryEvent;
 import factory.shared.enums.EventKind;
-import factory.subsystems.agv.AGVSystem;
+import factory.subsystems.agv.AgvCoordinator;
 
 /**
  * Simple entry point for the application -- starts GUI, monitoring system and with it the rest of the factory.
@@ -17,7 +17,7 @@ class Main {
 		try {
 			Thread.sleep(10000);
 			System.out.println("ERROR automatically created");
-			factory.getMonitor().handleEvent(new FactoryEvent(new AGVSystem(factory.getMonitor()), EventKind.MONITORING_HANDLE_EVENT_FAILED));
+			factory.getMonitor().handleEvent(new FactoryEvent(new AgvCoordinator(factory.getMonitor()), EventKind.MONITORING_HANDLE_EVENT_FAILED));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

@@ -2,10 +2,10 @@ package factory.subsystems.monitoring.interfaces;
 
 import java.util.List;
 
+import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Stoppable;
-import factory.subsystems.AbstractSubsystem;
 
 public interface MonitoringInterface extends Stoppable {
 

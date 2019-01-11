@@ -5,7 +5,7 @@ import factory.shared.FactoryEvent;
 import factory.shared.interfaces.Monitorable;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
-public abstract class AbstractSubsystem implements Monitorable{
+public abstract class AbstractSubsystem implements Monitorable {
 
 	private String name;
 	private MonitoringInterface monitor;
@@ -37,7 +37,7 @@ public abstract class AbstractSubsystem implements Monitorable{
 
 	@Override
 	public SubsystemMenu getCurrentSubsystemMenu() {
-		return new SubsystemMenu(30, "Subsystem: "+getName());
+		return new SubsystemMenu(30, "Subsystem: "+ getName());
 	}
 	
 }

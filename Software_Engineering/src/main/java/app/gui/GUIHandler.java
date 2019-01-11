@@ -1,8 +1,8 @@
 package app.gui;
 
+import factory.shared.AbstractSubsystem;
 import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
-import factory.subsystems.AbstractSubsystem;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 public class GUIHandler implements Stoppable{

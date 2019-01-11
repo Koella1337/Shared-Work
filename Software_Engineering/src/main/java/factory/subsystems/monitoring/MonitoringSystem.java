@@ -5,12 +5,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import app.gui.GUIHandler;
+import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.EventKind.EventSeverity;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Monitorable;
-import factory.subsystems.AbstractSubsystem;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 public class MonitoringSystem implements MonitoringInterface {
@@ -57,13 +57,13 @@ public class MonitoringSystem implements MonitoringInterface {
 			handleEventHandlingException(event, ex);
 		}
 	}
-
-
 	
 	@Override
 	public void addToSubsystemList(AbstractSubsystem subsystem) {
 		getTestSubSystemList().add(subsystem);
-		this.handler.addToFactoryPanel(subsystem);
+		
+		//TODO: Alex hat des leida auskommentiern müssen :P
+		//this.handler.addToFactoryPanel(subsystem);
 	}
 
 	@Override

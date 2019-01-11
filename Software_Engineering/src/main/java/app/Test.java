@@ -135,12 +135,6 @@ public class Test implements Monitorable {
 	}
 
 	@Override
-	public Position getPosition() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void start() {
 		// TODO Auto-generated method stub
 		
@@ -163,6 +157,5 @@ public class Test implements Monitorable {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }

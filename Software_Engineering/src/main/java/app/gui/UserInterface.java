@@ -6,8 +6,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import factory.shared.AbstractSubsystem;
 import factory.shared.interfaces.Stoppable;
-import factory.subsystems.AbstractSubsystem;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 class UserInterface implements Stoppable {
