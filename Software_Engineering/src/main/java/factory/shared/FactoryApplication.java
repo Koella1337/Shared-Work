@@ -33,7 +33,7 @@ public class FactoryApplication implements Stoppable {
 
 	private void initFactoryFromXML(Document layoutDoc) {
 		Element factory = (Element) layoutDoc.getElementsByTagName("factory").item(0);
-		
+
 		Element warehousesystem = (Element) (factory).getElementsByTagName("warehouse").item(0);
 		WarehouseSystem whs = new WarehouseSystem(getMonitor(), (Element) warehousesystem);
 		this.monitor.setWarehouseSystem(whs);
@@ -46,6 +46,21 @@ public class FactoryApplication implements Stoppable {
 		AgvCoordinator agvSystem = new AgvCoordinator(this.monitor); //TODO @thomas add xmlelement to constructor
 		this.monitor.setAgvSystem(agvSystem);
 		
+		
+		addShippingBoxToMonitoring(factory);
+//		OnlineShopUser user = new OnlineShopUser("thomas");
+//		Order order = new Order(user, 4);
+//		this.monitor.addOrder(order);
+	}
+	
+	private void addShippingBoxToMonitoring(Element factory) {
+		Element shippingBoxPositionElement = (Element) (factory).getElementsByTagName("shippingboxposition").item(0);
+		Position shippingBoxPosition = Utils.parsePosition(shippingBoxPositionElement.getTextContent(), null);
+		
+		ResourceBox shippingBox = new ResourceBox();
+		
+		this.monitor.setShippingBox(shippingBox);
+		this.monitor.setShippingBoxPosition(shippingBoxPosition);
 	}
 
 	

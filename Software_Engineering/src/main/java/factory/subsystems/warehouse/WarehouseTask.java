@@ -1,4 +1,4 @@
-package factory.subsystems.warehouse;
+ package factory.subsystems.warehouse;
 
 import factory.shared.Task;
 

@@ -9,7 +9,7 @@ public class AgvTask extends Task {
 	private final ResourceBox box;
 	private final Position pickup, dropoff;
 	
-	public AgvTask(int id, ResourceBox box, Position pickup, Position dropoff) {
+	public AgvTask(ResourceBox box, Position pickup, Position dropoff) {
 		super();
 		this.box = box;
 		this.pickup = pickup;
@@ -27,5 +27,12 @@ public class AgvTask extends Task {
 	public Position getDropoff() {
 		return dropoff;
 	}
+
+	@Override
+	public String toString() {
+		return "AgvTask [box=" + box + ", pickup=" + pickup + ", dropoff=" + dropoff + "]";
+	}
+	
+	
 	
 }

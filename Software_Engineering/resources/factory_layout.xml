@@ -1,9 +1,9 @@
-<factory> 
+<factory>
 	<name>Factory</name>
 	<size>1000,1000</size>
-	<shippingboxposition>400,900</shippingboxposition>
+	<shippingboxposition>900,500</shippingboxposition>
 	<staffquarterposition>600,900</staffquarterposition>
-	
+
 	<assemblylines>
 		<assemblyline>
 			<position>50,50</position>
@@ -42,9 +42,10 @@
 			<position>600,0</position>
 			<size>400,200</size>
 			<inputboxposition>960,0</inputboxposition>
-			<outputboxposition>600,160</outputboxposition></storagesite>
+			<outputboxposition>600,160</outputboxposition>
+		</storagesite>
 	</warehouse>
-	
+
 	<forklifts>
 		<forklift>
 			<position>400,700</position>
@@ -59,4 +60,4 @@
 			<position>460,700</position>
 		</forklift>
 	</forklifts>
-	</factory>
+</factory>

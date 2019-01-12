@@ -79,4 +79,8 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public void addTask(AgvTask agvTask) {
+		// TODO Auto-generated method stub
+	}
 }
