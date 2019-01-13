@@ -44,11 +44,14 @@ public class StorageSite implements Placeable {
 		this.inputbox = new ResourceBox(Utils.xmlGetPositionFromFirstChild(xmlStorageSiteElem, "inputbox"));
 		this.outputbox = new ResourceBox(Utils.xmlGetPositionFromFirstChild(xmlStorageSiteElem, "outputbox"));
 		
+		System.out.printf("%d-inbox : %s%n", id, inputbox.getPosition().toString());
+		System.out.printf("%d-outbox: %s%n", id, outputbox.getPosition().toString());
+		
 		//interior init
 		placeables = new ArrayList<>();
 		placeables.add(inputbox);
 		placeables.add(outputbox);
-		placeables.addAll(buildShelves());
+		//placeables.addAll(buildShelves());
 	}
 	
 	/** Creates as many shelves as possible to fit into this StorageSite's interior. */

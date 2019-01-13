@@ -2,8 +2,9 @@ package factory.subsystems.assemblyline.interfaces;
 
 import java.util.List;
 
-import factory.model.Container;
-import factory.model.Task;
+import factory.shared.Container;
+import factory.shared.Task;
+import factory.subsystems.assemblyline.RobotEvent;
 
 public interface RobotInterface{
 	

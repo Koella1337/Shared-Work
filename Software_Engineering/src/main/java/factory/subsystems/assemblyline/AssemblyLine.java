@@ -1,7 +1,10 @@
 package factory.subsystems.assemblyline;
+import java.awt.Graphics;
 import java.awt.List;
 
 import factory.shared.Container;
+import factory.shared.Position;
+import factory.shared.Task;
 import factory.shared.enums.Material;
 import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
@@ -59,6 +62,30 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable{
 		}
 		if(!conveyor.isReady()) ready = false;
 		return ready;
+	}
+
+	@Override
+	public Position getPosition() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void draw(Graphics g) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void start() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stop() {
+		// TODO Auto-generated method stub
+		
 	}
 
 
