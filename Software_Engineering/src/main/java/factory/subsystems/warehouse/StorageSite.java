@@ -29,7 +29,7 @@ public class StorageSite implements Placeable{//TODO @alex check
 		this.dbTable = new StorageSiteTable(id);
 		Database.INSTANCE.addTable(dbTable);
 		
-		this.pos = Utils.getPositionFromXmlElement(xmlStorageSiteElem); //TODO @alex
+		this.pos = Utils.getPositionFromXmlElement(xmlStorageSiteElem);
 		System.out.println(this.pos);
 	}
 
@@ -58,12 +58,12 @@ public class StorageSite implements Placeable{//TODO @alex check
 		warehouseSystem.taskCompleted(this, new WarehouseTask());
 	}
 
-	@Override //TODO @alex check
+	@Override //TODO
 	public Position getPosition() {
 		return this.pos;
 	}
 
-	@Override  //TODO @alex check
+	@Override  //TODO
 	public void draw(Graphics g) {
 		g.setColor(Color.DARK_GRAY);
 		g.drawRect(0, 0, this.pos.xSize,this.pos.ySize);

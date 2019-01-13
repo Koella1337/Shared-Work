@@ -79,7 +79,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 
 	@Override
 	public List<Placeable> getPlaceables() {
-		return new ArrayList<Placeable>(storageSites);//TODO @alex pfusch??
+		return new ArrayList<Placeable>(storageSites); //TODO
 	}
 
 	@Override

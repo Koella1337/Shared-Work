@@ -31,7 +31,7 @@ public class Position {
 	
 	@Override
 	public String toString() {
-		return String.format("(Pos: %d, %d | Size: %d %d)", xPos, yPos, xSize, ySize);
+		return String.format("(Pos: %3d, %3d | Size: %3d, %3d)", xPos, yPos, xSize, ySize);
 	}
 	
 	//----------------------------------------------------- STATIC METHODS -----------------------------------------------------

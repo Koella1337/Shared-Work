@@ -23,7 +23,7 @@ public class Utils {
 		Element positionElem = (Element) xmlElem.getElementsByTagName("position").item(0);
 		Element sizeElem = (Element) xmlElem.getElementsByTagName("size").item(0);
 		
-		return parsePosition(positionElem.getTextContent(), sizeElem.getTextContent());
+		return parsePosition(positionElem.getTextContent(), sizeElem == null ? null : sizeElem.getTextContent());
 	}
 	
 	/**

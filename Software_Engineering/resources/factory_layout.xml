@@ -1,7 +1,7 @@
 <factory>
 	<name>Factory</name>
 	<size>1000,1000</size>
-	<shippingboxposition>900,500</shippingboxposition>
+	<shippingboxposition>400,900</shippingboxposition>
 	<staffquarterposition>600,900</staffquarterposition>
 
 	<assemblylines>

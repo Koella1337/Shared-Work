@@ -4,7 +4,6 @@ import app.gui.SubsystemMenu;
 import factory.shared.interfaces.Monitorable;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
-//TODO @thomas maybe move to factory.subsystems ???
 public abstract class AbstractSubsystem implements Monitorable {
 
 	private String name;
