@@ -62,7 +62,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 	
 	/** Called from a StorageSite when it completed a task. */
 	public void taskCompleted(StorageSite source, WarehouseTask task) {
-		this.notify(new FactoryEvent(this, EventKind.WAREHOUSE_TASK_COMPLETED, task));
+		this.notify(new FactoryEvent(this, EventKind.WAREHOUSE_TASK_COMPLETED, task, source.getOutputbox()));
 	}
 	
 	@Override

@@ -8,6 +8,9 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import factory.shared.AbstractSubsystem;
+import factory.shared.FactoryEvent;
+import factory.shared.enums.EventKind;
+import factory.shared.enums.Material;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 import factory.subsystems.monitoring.onlineshop.OnlineShopUser;
@@ -80,6 +83,10 @@ class UserInterface implements Stoppable {
 		addOrderButton.addActionListener(a -> monitor.addOrder(new Order(new OnlineShopUser("thomas"), 3)));
 		this.menuPanel.add(addOrderButton);
 
+		JButton carFinishedButton = new JButton("car finished");
+		carFinishedButton.addActionListener(a -> monitor.handleEvent(new FactoryEvent(monitor.getAssemblyLine(), EventKind.CAR_FINISHED, Material.CAR)));
+		this.menuPanel.add(carFinishedButton);
+		
 		this.contentPane.add(menuPanel);
 	}
 

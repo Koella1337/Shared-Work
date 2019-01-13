@@ -60,7 +60,7 @@ public class StorageSite implements Placeable{//TODO @alex check
 	
 	//TODO: testing method, remove later
 	public void simulateTaskDone() {
-		warehouseSystem.taskCompleted(this, new WarehouseTask());
+		//warehouseSystem.taskCompleted(this, new WarehouseTask());
 	}
 
 	@Override //TODO

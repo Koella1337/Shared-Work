@@ -17,7 +17,7 @@ public class AgvTask extends Task {
 		this.dropoff = dropoff;
 		this.material = material;
 	}
-
+	
 	public ContainerSupplier getPickup() {
 		return pickup;
 	}

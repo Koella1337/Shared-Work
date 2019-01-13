@@ -4,9 +4,7 @@ import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -17,10 +15,13 @@ import factory.shared.Position;
 import factory.shared.ResourceBox;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.EventKind.EventSeverity;
+import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
+import factory.shared.interfaces.ContainerSupplier;
 import factory.shared.interfaces.Monitorable;
 import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.agv.AgvTask;
+import factory.subsystems.assemblyline.AssemblyLine;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 import factory.subsystems.monitoring.onlineshop.Order;
 import factory.subsystems.warehouse.StorageSite;
@@ -38,11 +39,10 @@ public class MonitoringSystem implements MonitoringInterface {
 	private SubsystemStatus status;
 	private AgvCoordinator agvSystem;
 	private WarehouseSystem warehouseSystem;
-	
-	private ResourceBox shippingBox;
-	private Position shippingBoxPosition;
-	
-	private Map<Long, TaskChain> taskFinishedListener = new HashMap<>();
+	private AssemblyLine assemblyLine;
+
+	private ResourceBox shippingBox = new ResourceBox(new Position(10, 10));
+
 
 	public MonitoringSystem() {
 		this.handler = new GUIHandler(this);
@@ -50,15 +50,6 @@ public class MonitoringSystem implements MonitoringInterface {
 		this.orderList = new ArrayList<>();
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	@Override
 	public synchronized void handleEvent(FactoryEvent event) {
 		try {
@@ -79,21 +70,34 @@ public class MonitoringSystem implements MonitoringInterface {
 			case INFO:
 				break;
 			case NORMAL:
-				//handleNormalEvent(event);
-				switch(event.getKind()) {
+				// handleNormalEvent(event);
+				switch (event.getKind()) {
 				case AGV_CONTAINER_DELIVERED:
-					//AgvTask task = (AgvTask) event.getAttachment(1);
+					System.out.println("AGV_CONTAINER_DELIVERED");
+					// AgvTask task = (AgvTask) event.getAttachment(1);
 					break;
-				case WAREHOUSE_TASK_COMPLETED:	
-				//	WarehouseTask task = (AgvTask) event.getAttachment(1);
+				case WAREHOUSE_TASK_COMPLETED:
+					System.out.println("WAREHOUSE_TASK_COMPLETED");
+					WarehouseTask task = (WarehouseTask) event.getAttachment(0);
+					Material mat = task.material;
+					ContainerSupplier box = (ContainerSupplier) event.getAttachment(1);
+
+					AgvTask agv = new AgvTask(mat, box, assemblyLine);
 					
 					
+					//AgvTask t = new AgvTask(mat, new ResourceBox(new Position(0,0)), new ResourceBox(new Position(1000,1000)));
+					
+					agvSystem.submitTask( agv);
 					break;
+				case CAR_FINISHED:
+					System.out.println("CAR_FINISHED");
+					Material material = (Material) event.getAttachment(0);
+					AgvTask agvtask = new AgvTask(material, assemblyLine.conveyor.getOutputbox(), shippingBox);
+					agvSystem.submitTask(agvtask);
 				default:
 					break;
 				}
-				
-				
+
 				break;
 			default:
 				break;
@@ -103,22 +107,6 @@ public class MonitoringSystem implements MonitoringInterface {
 		}
 	}
 
-	private void handleNormalEvent(FactoryEvent event) {
-		switch(event.getKind()) {
-		case AGV_CONTAINER_DELIVERED:
-			AgvTask task = (AgvTask) event.getAttachment(1);
-			//taskFinishedListener.get(task).handleTaskFinished(task);
-			break;
-		case WAREHOUSE_TASK_COMPLETED:	
-		
-//			this.taskFinishedListener.put(newAgvTask, CONTAINER_DELIVERED_TO_WAREHOUSE);
-//			this.agvSystem.submitTask(newAgvTask);
-			break;
-		default:
-			break;
-		}
-		
-	}
 
 	@Override
 	public void start() {
@@ -135,8 +123,10 @@ public class MonitoringSystem implements MonitoringInterface {
 	@Override
 	public void stop() {
 		try {
-			if(this.agvSystem != null) this.agvSystem.stop();
-			if(this.warehouseSystem != null) this.warehouseSystem.stop();
+			if (this.agvSystem != null)
+				this.agvSystem.stop();
+			if (this.warehouseSystem != null)
+				this.warehouseSystem.stop();
 		} catch (Exception ex) {
 			LOGGER.log(SEVERE, ex.toString(), ex);
 		}
@@ -145,22 +135,17 @@ public class MonitoringSystem implements MonitoringInterface {
 
 	@Override
 	public void addOrder(Order order) {
-		LOGGER.log(INFO, "order placed: "+order);
+		LOGGER.log(INFO, "order placed: " + order);
 		this.orderList.add(order);
 		handleNewOrder(order);
 	}
 
 	private void handleNewOrder(Order order) {
-		WarehouseTask wht = new WarehouseTask();
+		WarehouseTask wht = new WarehouseTask(Material.CAR_BODIES);
 		StorageSite taskHandlingStorageSite = warehouseSystem.receiveTask(wht);
-		System.out.println("added warehouse task "+wht);
-
-//		Position pickUpPosition = taskHandlingStorageSite.getPosition();
-//		Position dropOffPosition = new Position(100, 100);
-//		AgvTask agvTask = new AgvTask(new ResourceBox(), pickUpPosition, dropOffPosition);
-//		agvSystem.addTask(agvTask);
-//		System.out.println("added agv task "+agvTask);
-//		agvTaskList.add(agvTask);
+		System.out.println("added warehouse task " + wht);
+		
+	 warehouseSystem.taskCompleted(taskHandlingStorageSite, wht);//TODO remove
 	}
 
 	private void handleEventHandlingException(FactoryEvent event, Exception ex) {
@@ -169,7 +154,7 @@ public class MonitoringSystem implements MonitoringInterface {
 		this.setStatus(SubsystemStatus.BROKEN);
 	}
 
-	ErrorEventHandler getErrorHandler() { 
+	ErrorEventHandler getErrorHandler() {
 		return errorHandler;
 	}
 
@@ -221,6 +206,14 @@ public class MonitoringSystem implements MonitoringInterface {
 		this.shippingBox = shippingBox;
 	}
 
+	@Override
+	public AssemblyLine getAssemblyLine() {
+		return assemblyLine;
+	}
 
-	
+	@Override
+	public void setAssemblyLine(AssemblyLine assemblyLine) {
+		this.assemblyLine = assemblyLine;
+	}
+
 }

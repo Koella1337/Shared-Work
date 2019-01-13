@@ -1,9 +1,9 @@
 package factory.shared.enums;
 
-import factory.shared.Task;
+import factory.shared.interfaces.ContainerSupplier;
 import factory.subsystems.agv.AgvTask;
 import factory.subsystems.agv.Forklift;
-import factory.subsystems.warehouse.StorageSite;
+import factory.subsystems.warehouse.WarehouseTask;
 
 /**
  * The kind of a FactoryEvent.<br>
@@ -12,6 +12,8 @@ import factory.subsystems.warehouse.StorageSite;
 
 public enum EventKind {
 	//------------------------------- RobotArms Notifications -------------------------------
+	CAR_FINISHED (EventSeverity.NORMAL, Material.class),
+	
 	
 	//---------------------------------- RobotArms Errors -----------------------------------
 	
@@ -24,7 +26,7 @@ public enum EventKind {
 	
 	
 	//------------------------------- Warehouse Notifications -------------------------------
-	WAREHOUSE_TASK_COMPLETED		(EventSeverity.NORMAL,Task.class),
+	WAREHOUSE_TASK_COMPLETED		(EventSeverity.NORMAL,WarehouseTask.class,ContainerSupplier.class),
 	
 	//---------------------------------- Warehouse Errors -----------------------------------
 	

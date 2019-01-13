@@ -39,5 +39,10 @@ public abstract class AbstractSubsystem implements Monitorable {
 	public SubsystemMenu getCurrentSubsystemMenu() {
 		return new SubsystemMenu(30, "Subsystem: "+getName());
 	}
+
+	public MonitoringInterface getMonitor() {
+		return monitor;
+	}
+	
 	
 }

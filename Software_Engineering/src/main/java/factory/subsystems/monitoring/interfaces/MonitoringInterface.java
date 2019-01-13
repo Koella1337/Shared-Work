@@ -7,6 +7,7 @@ import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.agv.interfaces.AgvMonitorInterface;
+import factory.subsystems.assemblyline.AssemblyLine;
 import factory.subsystems.monitoring.onlineshop.Order;
 import factory.subsystems.warehouse.WarehouseSystem;
 import factory.subsystems.warehouse.interfaces.WarehouseMonitorInterface;
@@ -42,4 +43,8 @@ public interface MonitoringInterface extends Stoppable {
 	ResourceBox getShippingBox();
 
 	void setShippingBox(ResourceBox shippingBox);
+
+	AssemblyLine getAssemblyLine();
+
+	void setAssemblyLine(AssemblyLine assemblyLine);
 }
