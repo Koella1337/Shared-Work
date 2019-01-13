@@ -24,7 +24,6 @@ import factory.subsystems.agv.AgvTask;
 import factory.subsystems.assemblyline.AssemblyLine;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 import factory.subsystems.monitoring.onlineshop.Order;
-import factory.subsystems.warehouse.StorageSite;
 import factory.subsystems.warehouse.WarehouseSystem;
 import factory.subsystems.warehouse.WarehouseTask;
 
@@ -86,13 +85,12 @@ public class MonitoringSystem implements MonitoringInterface {
 					
 					
 					//AgvTask t = new AgvTask(mat, new ResourceBox(new Position(0,0)), new ResourceBox(new Position(1000,1000)));
-					
 					agvSystem.submitTask( agv);
 					break;
 				case CAR_FINISHED:
 					System.out.println("CAR_FINISHED");
 					Material material = (Material) event.getAttachment(0);
-					AgvTask agvtask = new AgvTask(material, assemblyLine.conveyor.getOutputbox(), shippingBox);
+					AgvTask agvtask = new AgvTask(material, this.assemblyLine.conveyor.getOutputbox(), shippingBox);
 					agvSystem.submitTask(agvtask);
 				default:
 					break;
@@ -141,11 +139,7 @@ public class MonitoringSystem implements MonitoringInterface {
 	}
 
 	private void handleNewOrder(Order order) {
-		WarehouseTask wht = new WarehouseTask(Material.CAR_BODIES);
-		StorageSite taskHandlingStorageSite = warehouseSystem.receiveTask(wht); //TODO @Omas: Alex changed "StorageSite" to "ContainerSupplier"
-		System.out.println("added warehouse task " + wht);
-		
-	 warehouseSystem.taskCompleted(taskHandlingStorageSite, wht);//TODO remove
+		this.orderList.add(order);
 	}
 
 	private void handleEventHandlingException(FactoryEvent event, Exception ex) {

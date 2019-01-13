@@ -14,6 +14,7 @@ import factory.shared.interfaces.Stoppable;
 import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.agv.Forklift;
 import factory.subsystems.assemblyline.AssemblyLine;
+import factory.subsystems.assemblyline.Conveyor;
 import factory.subsystems.monitoring.MonitoringSystem;
 import factory.subsystems.monitoring.TestAGVCoord;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
@@ -51,7 +52,7 @@ public class FactoryApplication implements Stoppable {
 		
 		agvSystem.addForklift(new Forklift(new Position(100,100)));
 		
-		AssemblyLine assemblyLine = new AssemblyLine(null,null);
+		AssemblyLine assemblyLine = new AssemblyLine(null,new Conveyor(1));
 		this.monitor.setAssemblyLine(assemblyLine);
 		
 		addShippingBoxToMonitoring(factory);

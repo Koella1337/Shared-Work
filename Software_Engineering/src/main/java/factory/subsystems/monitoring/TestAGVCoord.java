@@ -40,10 +40,10 @@ public class TestAGVCoord extends AgvCoordinator {
 		this.forklift.pos = start;
 		new Thread( () ->{ 
 		
-		while(Position.length(Position.subtractPosition(end, this.forklift.pos)) > 5) {
+		while(Position.length(Position.subtractPosition(end, this.forklift.pos)) > 10) {
 			 
 			
-			this.forklift.pos = Position.addPosition(this.forklift.pos, Position.divide(diff, 100));
+			this.forklift.pos = Position.addPosition(this.forklift.pos, Position.divide(diff, 30));
 			System.out.println(this.forklift.pos);
 			
 			
@@ -54,7 +54,6 @@ public class TestAGVCoord extends AgvCoordinator {
 			}
 		}
 		}).start();
-		
 		
 		task.getDropoff().receiveContainer(container);
 		this.notify(new FactoryEvent(this, EventKind.AGV_CONTAINER_DELIVERED, task));

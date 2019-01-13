@@ -1,11 +1,14 @@
 package factory.subsystems.assemblyline;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import app.gui.SubsystemMenu;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
+import factory.shared.ResourceBox;
 import factory.shared.Task;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
@@ -126,8 +129,7 @@ public class AssemblyLine implements Monitorable,RobotInterface, Stoppable, Plac
 
 	@Override
 	public List<Placeable> getPlaceables() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<Placeable>((Collection<? extends Placeable>) new ResourceBox(new Position(10,10)));
 	}
 
 	@Override
