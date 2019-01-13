@@ -20,7 +20,6 @@ public interface MonitoringInterface extends Stoppable {
 	 */
 	void handleEvent(FactoryEvent event);
 
-	
 	/**
 	 * @return the curent {@link SubsystemStatus} of the Subsystem
 	 */

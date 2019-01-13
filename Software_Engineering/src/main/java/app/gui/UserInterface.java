@@ -29,11 +29,13 @@ class UserInterface implements Stoppable {
 
 	private FactoryPanel factoryPanel;
 	private MenuPanel menuPanel;
+	private UIConfiguration config;
 
-	public UserInterface(int fps, MonitoringInterface monitor) {
+	public UserInterface(int fps, MonitoringInterface monitor, UIConfiguration config) {
 		super();
 		this.fps = fps;
 		this.monitor = monitor;
+		this.config = config;
 		initUI();
 	}
 
@@ -64,14 +66,14 @@ class UserInterface implements Stoppable {
 
 	private void initFactoryPanel() {
 		this.factoryPanel = new FactoryPanel(this.fps, this.monitor);
-		this.factoryPanel.setPreferredSize(new Dimension(Constants.UI_WIDTH_FACTORY, Constants.UI_HEIGHT));
+		this.factoryPanel.setPreferredSize(new Dimension(this.config.uiWidthFactory+1,this.config.uiHeight+1));
 		this.contentPane.add(this.factoryPanel, BorderLayout.CENTER);
 	}
 
 	private void initDefaultMenuPanel() {
 		this.menuPanel = new MenuPanel(this.fps, this.monitor);
 		this.menuPanel.setBackground(Color.LIGHT_GRAY);
-		this.menuPanel.setPreferredSize(new Dimension(Constants.UI_WIDTH_MENU, Constants.UI_HEIGHT));
+		this.menuPanel.setPreferredSize(new Dimension(new Dimension(Constants.UI_WIDTH_MENU, this.config.uiHeight+1)));
 		this.menuPanel.setLayout(null);
 
 		JButton addOrderButton = new JButton("place order");
@@ -110,5 +112,7 @@ class UserInterface implements Stoppable {
 	public void setCurrentSubsystem(AbstractSubsystem subsystem) {
 		this.menuPanel.setCurrentSubSystem(subsystem);
 	}
+
+
 
 }

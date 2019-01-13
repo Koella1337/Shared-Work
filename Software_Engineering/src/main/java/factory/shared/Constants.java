@@ -21,8 +21,6 @@ public class Constants {
 	/** How much offset does a StorageSite shelf have from walls and boxes (and horizontally from other shelves). */
 	public static final int SHELF_OFFSET = 12;
 	
-	public static final int UI_HEIGHT = 1001;
-	public static final int UI_WIDTH_FACTORY = 1001;
 	public static final int UI_WIDTH_MENU = 400;
 	
 }

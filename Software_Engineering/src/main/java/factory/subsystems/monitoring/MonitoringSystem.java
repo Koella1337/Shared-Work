@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 import app.gui.GUIHandler;
+import app.gui.UIConfiguration;
 import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
@@ -43,8 +44,8 @@ public class MonitoringSystem implements MonitoringInterface {
 	private ResourceBox shippingBox = new ResourceBox(new Position(10, 10));
 
 
-	public MonitoringSystem() {
-		this.handler = new GUIHandler(this);
+	public MonitoringSystem(UIConfiguration uiConfig) {
+		this.handler = new GUIHandler(this,uiConfig);
 		this.errorHandler = new ErrorEventHandler(this);
 		this.orderList = new ArrayList<>();
 	}
