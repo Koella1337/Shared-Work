@@ -1,6 +1,8 @@
 package app.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -8,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import factory.shared.AbstractSubsystem;
+import factory.shared.Constants;
 import factory.shared.FactoryEvent;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
@@ -36,6 +39,8 @@ class UserInterface implements Stoppable {
 
 	@Override
 	public void start() {
+		this.frame.pack();
+		this.frame.setLocationRelativeTo(null);
 		this.frame.setVisible(true);
 	}
 
@@ -45,30 +50,28 @@ class UserInterface implements Stoppable {
 	}
 
 	private void initUI() {
-		this.frame = new JFrame("Toy Car Factory)");
+		this.frame = new JFrame("Toy Car Factory");
 		this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		this.frame.setResizable(false);
+		
 		this.contentPane = (JPanel) frame.getContentPane();
 		this.contentPane.setBackground(Color.LIGHT_GRAY);
-		this.contentPane.setLayout(null);
-		this.frame.setSize(1400, 1000);
+		this.contentPane.setLayout(new BorderLayout());
 
 		initFactoryPanel();
 		initDefaultMenuPanel();
-
-		this.frame.setLocationRelativeTo(null);
-		this.frame.setResizable(false);
 	}
 
 	private void initFactoryPanel() {
 		this.factoryPanel = new FactoryPanel(this.fps, this.monitor);
-		this.factoryPanel.setBounds(0, 0, 1000, 1000);
-		this.contentPane.add(this.factoryPanel);
+		this.factoryPanel.setPreferredSize(new Dimension(Constants.UI_WIDTH_FACTORY, Constants.UI_HEIGHT));
+		this.contentPane.add(this.factoryPanel, BorderLayout.CENTER);
 	}
 
 	private void initDefaultMenuPanel() {
 		this.menuPanel = new MenuPanel(this.fps, this.monitor);
 		this.menuPanel.setBackground(Color.LIGHT_GRAY);
-		this.menuPanel.setBounds(1000, 0, 400, 1000);
+		this.menuPanel.setPreferredSize(new Dimension(Constants.UI_WIDTH_MENU, Constants.UI_HEIGHT));
 		this.menuPanel.setLayout(null);
 
 		JButton addOrderButton = new JButton("place order");
@@ -85,7 +88,7 @@ class UserInterface implements Stoppable {
 		legend.setBounds(20,180,360,100);
 		this.menuPanel.add(legend);
 		
-		this.contentPane.add(menuPanel);
+		this.contentPane.add(menuPanel, BorderLayout.LINE_END);
 	}
 
 	public FactoryPanel getFactoryPanel() {
