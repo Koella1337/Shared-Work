@@ -9,6 +9,7 @@ import org.w3c.dom.Element;
 import database.Database;
 import database.StorageSiteTable;
 import factory.shared.Position;
+import factory.shared.ResourceBox;
 import factory.shared.Utils;
 import factory.shared.interfaces.Placeable;
 
@@ -18,6 +19,10 @@ public class StorageSite implements Placeable{//TODO @alex check
 	private final StorageSiteTable dbTable;
 	private final int id;
 	private Position pos;
+	
+	private ResourceBox inputbox = new ResourceBox("inputbox",new Position(310,20));//TODO @alex set to correct value
+	private ResourceBox outputbox = new ResourceBox("outputbox",new Position(310,60)); //TODO @alex set to correct value
+	
 
 	public StorageSite(WarehouseSystem warehouseSystem, int id, Element xmlStorageSiteElem) {
 		Objects.requireNonNull(warehouseSystem);
@@ -69,6 +74,28 @@ public class StorageSite implements Placeable{//TODO @alex check
 		g.drawRect(0, 0, this.pos.xSize,this.pos.ySize);
 		g.drawString("StorageSite id:"+id, 20, 20);
 		
+		this.outputbox.draw(g);//TODO
+		this.inputbox.draw(g);//TODO
+		
 	}
+
+	public ResourceBox getOutputbox() {
+		return outputbox;
+	}
+
+	public void setOutputbox(ResourceBox outputbox) {
+		this.outputbox = outputbox;
+	}
+
+	public ResourceBox getInputbox() {
+		return inputbox;
+	}
+
+	public void setInputbox(ResourceBox inputbox) {
+		this.inputbox = inputbox;
+	}
+
+	
+	
 	
 }

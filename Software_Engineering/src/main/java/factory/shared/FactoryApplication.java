@@ -12,6 +12,7 @@ import org.xml.sax.SAXException;
 
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.agv.AgvCoordinator;
+import factory.subsystems.agv.Forklift;
 import factory.subsystems.monitoring.MonitoringSystem;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 import factory.subsystems.warehouse.WarehouseSystem;
@@ -46,6 +47,8 @@ public class FactoryApplication implements Stoppable {
 		AgvCoordinator agvSystem = new AgvCoordinator(this.monitor); //TODO @thomas add xmlelement to constructor
 		this.monitor.setAgvSystem(agvSystem);
 		
+		agvSystem.addForklift(new Forklift(new Position(100,100)));
+		
 		
 		addShippingBoxToMonitoring(factory);
 //		OnlineShopUser user = new OnlineShopUser("thomas");
@@ -57,10 +60,9 @@ public class FactoryApplication implements Stoppable {
 		Element shippingBoxPositionElement = (Element) (factory).getElementsByTagName("shippingboxposition").item(0);
 		Position shippingBoxPosition = Utils.parsePosition(shippingBoxPositionElement.getTextContent(), null);
 		
-		ResourceBox shippingBox = new ResourceBox();
+		ResourceBox shippingBox = new ResourceBox("",shippingBoxPosition);
 		
 		this.monitor.setShippingBox(shippingBox);
-		this.monitor.setShippingBoxPosition(shippingBoxPosition);
 	}
 
 	

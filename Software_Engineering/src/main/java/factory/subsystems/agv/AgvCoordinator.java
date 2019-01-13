@@ -47,7 +47,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 
 	@Override
 	public List<Placeable> getPlaceables() {
-		return new ArrayList<>();
+		return new ArrayList<>(forklifts);
 	}
 
 	@Override
@@ -78,9 +78,5 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	public Task getCurrentTask() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	public void addTask(AgvTask agvTask) {
-		// TODO Auto-generated method stub
 	}
 }

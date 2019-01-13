@@ -4,7 +4,9 @@ import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -32,8 +34,6 @@ public class MonitoringSystem implements MonitoringInterface {
 	private final ErrorEventHandler errorHandler;
 
 	private final List<Order> orderList;
-	private final List<WarehouseTask> warehouseTaskList;
-	private final List<AgvTask> agvTaskList;
 
 	private SubsystemStatus status;
 	private AgvCoordinator agvSystem;
@@ -41,15 +41,24 @@ public class MonitoringSystem implements MonitoringInterface {
 	
 	private ResourceBox shippingBox;
 	private Position shippingBoxPosition;
+	
+	private Map<Long, TaskChain> taskFinishedListener = new HashMap<>();
 
 	public MonitoringSystem() {
 		this.handler = new GUIHandler(this);
 		this.errorHandler = new ErrorEventHandler(this);
 		this.orderList = new ArrayList<>();
-		this.warehouseTaskList = new ArrayList<>();
-		this.agvTaskList = new ArrayList<>();
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	public synchronized void handleEvent(FactoryEvent event) {
 		try {
@@ -70,6 +79,21 @@ public class MonitoringSystem implements MonitoringInterface {
 			case INFO:
 				break;
 			case NORMAL:
+				//handleNormalEvent(event);
+				switch(event.getKind()) {
+				case AGV_CONTAINER_DELIVERED:
+					//AgvTask task = (AgvTask) event.getAttachment(1);
+					break;
+				case WAREHOUSE_TASK_COMPLETED:	
+				//	WarehouseTask task = (AgvTask) event.getAttachment(1);
+					
+					
+					break;
+				default:
+					break;
+				}
+				
+				
 				break;
 			default:
 				break;
@@ -77,6 +101,23 @@ public class MonitoringSystem implements MonitoringInterface {
 		} catch (Exception ex) {
 			handleEventHandlingException(event, ex);
 		}
+	}
+
+	private void handleNormalEvent(FactoryEvent event) {
+		switch(event.getKind()) {
+		case AGV_CONTAINER_DELIVERED:
+			AgvTask task = (AgvTask) event.getAttachment(1);
+			//taskFinishedListener.get(task).handleTaskFinished(task);
+			break;
+		case WAREHOUSE_TASK_COMPLETED:	
+		
+//			this.taskFinishedListener.put(newAgvTask, CONTAINER_DELIVERED_TO_WAREHOUSE);
+//			this.agvSystem.submitTask(newAgvTask);
+			break;
+		default:
+			break;
+		}
+		
 	}
 
 	@Override
@@ -94,8 +135,8 @@ public class MonitoringSystem implements MonitoringInterface {
 	@Override
 	public void stop() {
 		try {
-			this.agvSystem.stop();
-			this.warehouseSystem.stop();
+			if(this.agvSystem != null) this.agvSystem.stop();
+			if(this.warehouseSystem != null) this.warehouseSystem.stop();
 		} catch (Exception ex) {
 			LOGGER.log(SEVERE, ex.toString(), ex);
 		}
@@ -113,14 +154,13 @@ public class MonitoringSystem implements MonitoringInterface {
 		WarehouseTask wht = new WarehouseTask();
 		StorageSite taskHandlingStorageSite = warehouseSystem.receiveTask(wht);
 		System.out.println("added warehouse task "+wht);
-		warehouseTaskList.add(wht);
 
-		Position pickUpPosition = taskHandlingStorageSite.getPosition();
-		Position dropOffPosition = new Position(100, 100);
-		AgvTask agvTask = new AgvTask(new ResourceBox(), pickUpPosition, dropOffPosition);
-		agvSystem.addTask(agvTask);
-		System.out.println("added agv task "+agvTask);
-		agvTaskList.add(agvTask);
+//		Position pickUpPosition = taskHandlingStorageSite.getPosition();
+//		Position dropOffPosition = new Position(100, 100);
+//		AgvTask agvTask = new AgvTask(new ResourceBox(), pickUpPosition, dropOffPosition);
+//		agvSystem.addTask(agvTask);
+//		System.out.println("added agv task "+agvTask);
+//		agvTaskList.add(agvTask);
 	}
 
 	private void handleEventHandlingException(FactoryEvent event, Exception ex) {
@@ -129,7 +169,7 @@ public class MonitoringSystem implements MonitoringInterface {
 		this.setStatus(SubsystemStatus.BROKEN);
 	}
 
-	private ErrorEventHandler getErrorHandler() { 
+	ErrorEventHandler getErrorHandler() { 
 		return errorHandler;
 	}
 
@@ -172,16 +212,6 @@ public class MonitoringSystem implements MonitoringInterface {
 	}
 
 	@Override
-	public List<WarehouseTask> getWarehouseTaskList() {
-		return warehouseTaskList;
-	}
-
-	@Override
-	public List<AgvTask> getAgvTaskList() {
-		return agvTaskList;
-	}
-
-	@Override
 	public ResourceBox getShippingBox() {
 		return shippingBox;
 	}
@@ -191,16 +221,6 @@ public class MonitoringSystem implements MonitoringInterface {
 		this.shippingBox = shippingBox;
 	}
 
-	@Override
-	public Position getShippingBoxPosition() {
-		return shippingBoxPosition;
-	}
 
-	@Override
-	public void setShippingBoxPosition(Position shippingBoxPosition) {
-		this.shippingBoxPosition = shippingBoxPosition;
-	}
-
-	
 	
 }
