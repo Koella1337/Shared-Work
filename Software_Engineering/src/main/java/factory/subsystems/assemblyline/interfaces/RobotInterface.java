@@ -1,6 +1,10 @@
 package factory.subsystems.assemblyline.interfaces;
 
+import java.util.List;
+
 import factory.shared.Container;
+import factory.shared.Task;
+import factory.subsystems.assemblyline.RobotEvent;
 
 public interface RobotInterface{
 	
@@ -25,7 +29,7 @@ public interface RobotInterface{
 	 * @param task
 	 * @param event
 	 */
-	//void notifyMonitoringSystem(Task task, RobotEvent event);
+	void notifyMonitoringSystem(Task task, RobotEvent event);
 	
 	int getMaterials();
 	

@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import factory.shared.Container;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
+import factory.shared.Task;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
@@ -16,9 +17,9 @@ public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorM
 	public int lubricant;
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private long timestamp;
+	private ResourceBox inputbox;
+	private ResourceBox outputbox;
 
-	private ResourceBox inputbox = new ResourceBox("inputbox",new Position(10,20));//TODO @max set to correct value
-	private ResourceBox outputbox = new ResourceBox("outputbox",new Position(100,20)); //TODO @max set to correct value
 	
 	
 	/**
@@ -74,11 +75,6 @@ public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorM
 		return SubsystemStatus.RUNNING;
 	}
 	
-
-//	public void notifyMonitoringSystem(Task task, RobotEvent event) {
-//		//TODO
-//	}
-	
 	public int getMaterials() {
 		return lubricant;
 	}
@@ -98,8 +94,6 @@ public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorM
 		return null;
 	}
 
-
-
 	@Override
 	public void start() {
 		// TODO Auto-generated method stub
@@ -111,7 +105,6 @@ public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorM
 		// TODO Auto-generated method stub
 		
 	}
-
 
 	@Override
 	public void setSpeed(double speed) {
@@ -125,11 +118,16 @@ public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorM
 		
 	}
 
-
 	@Override
 	public boolean isReady() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void notifyMonitoringSystem(Task task, RobotEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 //
 //	@Override

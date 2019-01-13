@@ -4,14 +4,11 @@ public class Constants {
 	
 	public enum PlaceableSize {
 		SHELF				(  6, 40),
-		BOX					( 40, 40),
+		RESOURCE_BOX		( 40, 40),
 		
 		FORKLIFT			( 10, 10),
 		
-		ASSEMBLY_LINE		(350,100),
-		
-		SHIPPING_BOX		(100,100),
-		STAFF_QUARTERS		(400,100);
+		ASSEMBLY_LINE		(350,100);
 		
 		public final int x, y;
 		

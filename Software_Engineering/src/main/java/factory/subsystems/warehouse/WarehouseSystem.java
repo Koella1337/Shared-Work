@@ -26,7 +26,9 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 		
 		NodeList storageSiteNodes = xmlWarehouseElem.getElementsByTagName("storagesite");
 		for (int i = 0; i < storageSiteNodes.getLength(); i++) {
-			storageSites.add(new StorageSite(this, i, (Element) storageSiteNodes.item(i)));
+			StorageSite newSite = new StorageSite(this, i, (Element) storageSiteNodes.item(i));
+			
+			storageSites.add(newSite);
 		}
 	}
 

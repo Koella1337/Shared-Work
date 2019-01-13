@@ -1,8 +1,10 @@
 package factory.subsystems.assemblyline;
 import java.awt.Graphics;
+import java.util.List;
 
 import factory.shared.Container;
 import factory.shared.Position;
+import factory.shared.Task;
 import factory.shared.enums.Material;
 import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
@@ -49,17 +51,15 @@ public class Robot implements RobotInterface, Stoppable, Placeable{
 			} else return false;
 		}
 	}
+	
+	public int getMaterials() {
+		return materials;
+	}
 
 	@Override
 	public Position getPosition() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public void draw(Graphics g) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -75,11 +75,15 @@ public class Robot implements RobotInterface, Stoppable, Placeable{
 	}
 
 	@Override
-	public int getMaterials() {
+	public void draw(Graphics g) {
 		// TODO Auto-generated method stub
-		return 0;
+		
 	}
-	
 
+	@Override
+	public void notifyMonitoringSystem(Task task, RobotEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

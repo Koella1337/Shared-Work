@@ -142,7 +142,7 @@ public class MonitoringSystem implements MonitoringInterface {
 
 	private void handleNewOrder(Order order) {
 		WarehouseTask wht = new WarehouseTask(Material.CAR_BODIES);
-		StorageSite taskHandlingStorageSite = warehouseSystem.receiveTask(wht);
+		StorageSite taskHandlingStorageSite = warehouseSystem.receiveTask(wht); //TODO @Omas: Alex changed "StorageSite" to "ContainerSupplier"
 		System.out.println("added warehouse task " + wht);
 		
 	 warehouseSystem.taskCompleted(taskHandlingStorageSite, wht);//TODO remove

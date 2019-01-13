@@ -22,7 +22,6 @@ import database.TransactionsTable;
 import factory.shared.FactoryEvent;
 
 import factory.shared.Position;
-import factory.shared.ResourceBox;
 import factory.shared.Utils;
 
 import factory.shared.enums.EventKind;
@@ -48,7 +47,7 @@ public class Test implements Monitorable {
 			Element warehouseElem = (Element) layoutDoc.getElementsByTagName("warehouse").item(0);
 			
 			Element forkliftsElem = (Element) layoutDoc.getElementsByTagName("forklifts").item(0);
-			Position firstForkliftPos = Utils.getPositionFromXmlElement((Element) forkliftsElem.getElementsByTagName("forklift").item(0));
+			Position firstForkliftPos = Utils.xmlGetPositionFromElement((Element) forkliftsElem.getElementsByTagName("forklift").item(0));
 			System.out.println(firstForkliftPos);
 			
 			@SuppressWarnings("unused")
