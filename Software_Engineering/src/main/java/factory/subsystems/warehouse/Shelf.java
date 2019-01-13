@@ -7,10 +7,16 @@ import factory.shared.interfaces.Placeable;
 
 public class Shelf implements Placeable {
 
+	private final Position position;
+	
+	public Shelf(Position position) {
+		super();
+		this.position = position;
+	}
+
 	@Override
 	public Position getPosition() {
-		// TODO Auto-generated method stub
-		return null;
+		return position;
 	}
 
 	@Override

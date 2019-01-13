@@ -13,6 +13,7 @@ import database.StorageSiteTable;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
 import factory.shared.Utils;
+import factory.shared.enums.Material;
 import factory.shared.interfaces.Placeable;
 
 public class StorageSite implements Placeable {
@@ -63,6 +64,11 @@ public class StorageSite implements Placeable {
 
 	public int getId() {
 		return id;
+	}
+	
+	protected boolean hasMaterial(Material material) {
+		//TODO
+		return true;
 	}
 	
 	/**
