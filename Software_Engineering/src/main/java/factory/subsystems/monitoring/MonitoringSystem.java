@@ -207,6 +207,7 @@ public class MonitoringSystem implements MonitoringInterface {
 
 	@Override
 	public void setAssemblyLine(AssemblyLine assemblyLine) {
+		this.handler.addToFactoryPanel(assemblyLine);
 		this.assemblyLine = assemblyLine;
 	}
 
