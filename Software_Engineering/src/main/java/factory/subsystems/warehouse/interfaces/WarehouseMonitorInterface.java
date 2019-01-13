@@ -3,8 +3,8 @@ package factory.subsystems.warehouse.interfaces;
 import java.util.List;
 
 import factory.shared.enums.Material;
+import factory.shared.interfaces.ContainerSupplier;
 import factory.shared.interfaces.Monitorable;
-import factory.subsystems.warehouse.StorageSite;
 import factory.subsystems.warehouse.WarehouseTask;
 
 public interface WarehouseMonitorInterface extends Monitorable {
@@ -13,9 +13,9 @@ public interface WarehouseMonitorInterface extends Monitorable {
 	
 	/**
 	 * @param task
-	 * @return the StorageSite which will perform the Task
+	 * @return the ResourceBox from which the demanded resource can be fetched
 	 */
-	public StorageSite receiveTask(WarehouseTask task);
+	public ContainerSupplier receiveTask(WarehouseTask task);
 	
 	//TODO change type
 	public List<String> getTransactions();

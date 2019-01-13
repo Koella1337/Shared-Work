@@ -18,6 +18,7 @@ import factory.shared.ResourceBox;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.EventKind.EventSeverity;
 import factory.shared.enums.SubsystemStatus;
+import factory.shared.interfaces.ContainerSupplier;
 import factory.shared.interfaces.Monitorable;
 import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.agv.AgvTask;
@@ -152,7 +153,7 @@ public class MonitoringSystem implements MonitoringInterface {
 
 	private void handleNewOrder(Order order) {
 		WarehouseTask wht = new WarehouseTask();
-		StorageSite taskHandlingStorageSite = warehouseSystem.receiveTask(wht);
+		ContainerSupplier taskHandlingStorageSite = warehouseSystem.receiveTask(wht); //TODO @Omas: Alex changed "StorageSite" to "ContainerSupplier"
 		System.out.println("added warehouse task "+wht);
 
 //		Position pickUpPosition = taskHandlingStorageSite.getPosition();

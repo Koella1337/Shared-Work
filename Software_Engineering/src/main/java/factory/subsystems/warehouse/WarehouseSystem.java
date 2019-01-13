@@ -12,6 +12,7 @@ import factory.shared.FactoryEvent;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
+import factory.shared.interfaces.ContainerSupplier;
 import factory.shared.interfaces.Placeable;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 import factory.subsystems.warehouse.interfaces.WarehouseMonitorInterface;
@@ -26,7 +27,9 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 		
 		NodeList storageSiteNodes = xmlWarehouseElem.getElementsByTagName("storagesite");
 		for (int i = 0; i < storageSiteNodes.getLength(); i++) {
-			storageSites.add(new StorageSite(this, i, (Element) storageSiteNodes.item(i)));
+			StorageSite newSite = new StorageSite(this, i, (Element) storageSiteNodes.item(i));
+			
+			storageSites.add(newSite);
 		}
 	}
 
@@ -36,7 +39,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 	}
 
 	@Override
-	public StorageSite receiveTask(WarehouseTask task) {
+	public ContainerSupplier receiveTask(WarehouseTask task) {
 		StorageSite leastOverworkedSite = null;
 		int leastOverworkedSiteTaskCount = -1;
 		
@@ -46,7 +49,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 			
 			if (overworkedTaskCount == 0) {
 				s.receiveTask(task);
-				return s;
+				return s.getOutputbox();
 			}
 			else {
 				if (leastOverworkedSite == null || overworkedTaskCount < leastOverworkedSiteTaskCount) {
@@ -57,7 +60,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 		}
 		
 		leastOverworkedSite.receiveTask(task);
-		return leastOverworkedSite;
+		return leastOverworkedSite.getOutputbox();
 	}
 	
 	/** Called from a StorageSite when it completed a task. */
