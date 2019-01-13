@@ -22,15 +22,15 @@ public class AgvTestMain{
     private static Forklift f;
     
 	public static void main(String[] args) {
-		f = new Forklift(new Position(50.,50.));
+		f = new Forklift(new Position(50,50));
 		AgvCoordinator m = new AgvCoordinator(null); // we won't contact the monitor in this test
 		m.addForklift(f);
 		
 		List<Position> path = new LinkedList<>();
-		path.add(new Position(500.,50.));
-		path.add(new Position(50.,500.));
-		path.add(new Position(250.,250.));
-		path.add(new Position(500.,500.));
+		path.add(new Position(500,50));
+		path.add(new Position(50,500));
+		path.add(new Position(250,250));
+		path.add(new Position(500,500));
 		
 		f.setPath(path);
 		
@@ -72,9 +72,9 @@ public class AgvTestMain{
 		private void doDrawing(Graphics g)
 		{
 			Graphics2D g2 = (Graphics2D) g;
-			g2.translate( (int)Math.round(f.getPosition().getPositionX()), (int)Math.round(f.getPosition().getPositionY()));
+			g2.translate( (int)Math.round(f.getPosition().xPos), (int)Math.round(f.getPosition().yPos));
 			Position vec = f.getVec();
-			Double angle = Math.PI - Math.atan2(vec.getPositionX(), vec.getPositionY());
+			Double angle = Math.PI - Math.atan2(vec.xPos, vec.yPos);
 			System.out.println(angle);
 			g2.rotate(angle);
 			g.drawImage(forkliftImage, -60, -60, 120, 120, null);

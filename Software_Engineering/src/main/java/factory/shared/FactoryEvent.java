@@ -1,5 +1,7 @@
 package factory.shared;
 
+import java.util.Arrays;
+
 import factory.shared.enums.EventKind;
 import factory.shared.interfaces.Monitorable;
 
@@ -54,6 +56,12 @@ public class FactoryEvent {
 		}
 		
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "FactoryEvent [source=" + source + ", kind=" + kind + ", attachments=" + Arrays.toString(attachments)
+				+ "]";
 	}
 	
 }

@@ -15,5 +15,7 @@ public interface AgvMonitorInterface extends Monitorable{
 	 * @return forklifts
 	 */
 	List<Forklift> getForklifts();
+	
+	Task getCurrentTask();
 
 }

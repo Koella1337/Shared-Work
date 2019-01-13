@@ -1,4 +1,4 @@
-package factory.subsystems.conveyors;
+package factory.subsystems.assemblyline;
 
 public class ReplaceMe {
 

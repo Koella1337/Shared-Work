@@ -2,25 +2,47 @@ package app.gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
+import factory.shared.AbstractSubsystem;
+import factory.shared.interfaces.Placeable;
+import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
-public class FactoryPanel extends JPanel {
+class FactoryPanel extends GUIPanel {
 
-	public FactoryPanel() {
-		this.setBackground(Color.YELLOW);
-		this.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
+	private MonitoringInterface monitor;
+	private List<AbstractSubsystem> subsystems;
+
+	public FactoryPanel(int fps, MonitoringInterface monitor) {
+		super(fps);
+		this.subsystems = new ArrayList<>();
+		this.setBackground(Color.WHITE);
+		this.monitor = monitor;
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		g.drawRect(10, 10, 60, 50);
-		g.fillRect(100, 10, 60, 50);
-		g.drawRoundRect(190, 10, 60, 50, 15, 15);
-		g.fillRoundRect(70, 90, 140, 100, 30, 40);
+		this.subsystems.forEach(s -> {
+			s.getPlaceables().forEach(pl -> drawPlaceableOnGraphics(g, pl));
+		});
+	}
+
+	private void drawPlaceableOnGraphics(Graphics g, Placeable placeable) {
+		int posX = placeable.getPosition().xPos;
+		int posY = placeable.getPosition().yPos;
+		
+		g.drawString("shipping box", this.monitor.getShippingBox().getPosition().xPos,this.monitor.getShippingBox().getPosition().yPos);
+		
+		g.translate(posX, posY);
+		placeable.draw(g);
+		g.translate(-posX, -posY);
+	}
+
+	public void addSubsystemToPanel(AbstractSubsystem subsystem) {
+		this.subsystems.add(subsystem);
 	}
 
 }

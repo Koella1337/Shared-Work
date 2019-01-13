@@ -5,62 +5,59 @@ package factory.shared;
  */
 public class Position {
 
-	Double xPos, yPos;
+	public int xPos, yPos;
+	public int xSize, ySize;
 	
-	public Position(Double xPos, Double yPos)
-	{
+	public Position(int xPos, int yPos) {
+		this(xPos, yPos, 1, 1);
+	}
+	
+	public Position(int xPos, int yPos, int xSize, int ySize) {
 		this.xPos = xPos;
 		this.yPos = yPos;
+		this.xSize = xSize;
+		this.ySize = ySize;
 	}
 	
-	public void setPositionX(Double xPos) {
-		this.xPos = xPos;
+	@Override
+	public boolean equals(Object other) {
+		if (other == null || !(other instanceof Position)) {
+			return false;
+		}
+		Position pos2 = (Position) other;
+		
+		return xPos == pos2.xPos && yPos == pos2.yPos && xSize == pos2.xSize && ySize == pos2.ySize;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("(Pos: %3d, %3d | Size: %3d, %3d)", xPos, yPos, xSize, ySize);
+	}
+	
+	//----------------------------------------------------- STATIC METHODS -----------------------------------------------------
+	
+	public static Position addPosition(Position pos1, Position pos2) {
+		return new Position(pos1.xPos + pos2.xPos, pos1.yPos + pos2.yPos);
+	}
+	
+	public static Position subtractPosition(Position pos1, Position pos2) {
+		return new Position(pos1.xPos - pos2.xPos, pos1.yPos - pos2.yPos);
+	}
+	
+	public static Position multiply(Position pos, int factor) {
+		return new Position(pos.xPos * factor, pos.yPos * factor);
+	}
+	
+	public static Position divide(Position pos, int div) {
+		return new Position(pos.xPos / div, pos.yPos / div);
+	}
+	
+	/**
+	 * @return Euclidean distance of Position (xPos and yPos)
+	 */
+	public static double length(Position pos) {
+		return Math.sqrt(pos.xPos * pos.xPos + pos.yPos * pos.yPos);
+	}
+	
 
-	public void setPositionY(Double yPos) {
-		this.yPos = yPos;
-	}
-
-	public Double getPositionX() {
-		return xPos;
-	}
-
-	public Double getPositionY() {
-		return yPos;
-	}
-	
-	public Position add(Position pos2)
-	{
-		return new Position(xPos+pos2.getPositionX(), yPos+pos2.getPositionY());
-	}
-	
-	public Position subtract(Position pos2)
-	{
-		return new Position(xPos-pos2.getPositionX(), yPos-pos2.getPositionY());
-	}
-	
-	public Position multiply(Double mult)
-	{
-		return new Position(xPos*mult, yPos*mult);
-	}
-	
-	public Position divide(Double div)
-	{
-		return new Position(xPos/div, yPos/div);
-	}
-	
-	public double length()
-	{
-		return Math.sqrt(xPos*xPos+yPos*yPos);
-	}
-	
-	public boolean equals(Position pos2)
-	{
-		return xPos == pos2.getPositionX() && yPos == pos2.getPositionY();
-	}
-	
-	public String toString()
-	{
-		return xPos + ", " + yPos;
-	}
 }

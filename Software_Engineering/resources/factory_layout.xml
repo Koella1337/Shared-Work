@@ -1,34 +1,63 @@
-<factory> 
+<factory>
 	<name>Factory</name>
-	<size>x,y</size>
-	<shippingboxposition>x,y</shippingboxposition>
-	
+	<size>1000,1000</size>
+	<shippingboxposition>400,900</shippingboxposition>
+	<staffquarterposition>600,900</staffquarterposition>
+
 	<assemblylines>
 		<assemblyline>
-			<position>x,y</position>
+			<position>50,50</position>
 			<direction>+x</direction>
 		</assemblyline>
 		<assemblyline>
-			<position>x,y</position>
+			<position>50,250</position>
 			<direction>+x</direction>
+		</assemblyline>
+		<assemblyline>
+			<position>50,450</position>
+			<direction>+x</direction>
+		</assemblyline>
+		<assemblyline>
+			<position>600,300</position>
+			<direction>-x</direction>
+		</assemblyline>
+		<assemblyline>
+			<position>600,500</position>
+			<direction>-x</direction>
+		</assemblyline>
+		<assemblyline>
+			<position>600,700</position>
+			<direction>-x</direction>
 		</assemblyline>
 	</assemblylines>
 
 	<warehouse>
 		<storagesite>
-			<position>a,b</position>
-			<size>c,d</size>
-			<inputboxposition>e,f</inputboxposition>
-			<outputboxposition>g,h</outputboxposition>
+			<position>0,700</position>
+			<size>300,300</size>
+			<inputboxposition>0,960</inputboxposition>
+			<outputboxposition>260,700</outputboxposition>
+		</storagesite>
+		<storagesite>
+			<position>600,0</position>
+			<size>400,200</size>
+			<inputboxposition>960,0</inputboxposition>
+			<outputboxposition>600,160</outputboxposition>
 		</storagesite>
 	</warehouse>
-	
+
 	<forklifts>
 		<forklift>
-			<position>x,y</position>
+			<position>400,700</position>
 		</forklift>
 		<forklift>
-			<position>x,y</position>
+			<position>420,700</position>
+		</forklift>
+		<forklift>
+			<position>440,700</position>
+		</forklift>
+		<forklift>
+			<position>460,700</position>
 		</forklift>
 	</forklifts>
 </factory>
