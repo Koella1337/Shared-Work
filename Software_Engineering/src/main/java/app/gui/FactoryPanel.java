@@ -33,16 +33,9 @@ class FactoryPanel extends GUIPanel {
 	private void drawPlaceableOnGraphics(Graphics g, Placeable placeable) {
 		int posX = placeable.getPosition().xPos;
 		int posY = placeable.getPosition().yPos;
-
-		//TODO remove this, used for developments
-		this.monitor.getAgvTaskList().stream().forEach(task -> {
-			g.drawString("agvt "+task.getId() + " pickup", task.getPickup().xPos, task.getPickup().yPos);
-			g.drawString("agvt "+task.getId() + " dropoff", task.getDropoff().xPos, task.getDropoff().yPos);
-		});
 		
-		g.drawString("shipping box", this.monitor.getShippingBoxPosition().xPos, this.monitor.getShippingBoxPosition().yPos);
+		g.drawString("shipping box", this.monitor.getShippingBox().getPosition().xPos,this.monitor.getShippingBox().getPosition().yPos);
 		
-
 		g.translate(posX, posY);
 		placeable.draw(g);
 		g.translate(-posX, -posY);

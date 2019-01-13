@@ -5,8 +5,14 @@
     <classes>
       <class name="factory.subsystems.monitoring.MonitoringSystemTest">
         <methods>
-          <include name="handleGlobalError"/>
+          <include name="handleNewOrder"/>
+          <include name="start"/>
+          <include name="addOrder"/>
+          <include name="handleEventHandlingException"/>
+          <include name="handleEvent"/>
           <include name="beforeMethod"/>
+          <include name="stop"/>
+          <include name="handleNormalEvent"/>
         </methods>
       </class> <!-- factory.subsystems.monitoring.MonitoringSystemTest -->
     </classes>

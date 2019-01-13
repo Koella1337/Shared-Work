@@ -20,14 +20,11 @@ import database.DatabaseTable;
 import database.StorageSiteTable;
 import database.TransactionsTable;
 import factory.shared.FactoryEvent;
-import factory.shared.Position;
-import factory.shared.ResourceBox;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
-import factory.subsystems.agv.AgvTask;
 import factory.subsystems.warehouse.WarehouseSystem;
 
 /*
@@ -66,7 +63,7 @@ public class Test implements Monitorable {
 		System.out.println(EventKind.AGV_FORKLIFT_COLLISION);
 		
 		System.out.println("-- Valid Attachment --");
-		new FactoryEvent(thiz, EventKind.AGV_CONTAINER_DELIVERED, new AgvTask(new ResourceBox(), new Position(0,0), new Position(0,0)));
+//		new FactoryEvent(thiz, EventKind.AGV_CONTAINER_DELIVERED, new AgvTask(new Container(Material.CAR_BODIES), new Position(0,0), new Position(0,0)));
 		
 		System.out.println("-- Zero (correct) Attachments --");
 		new FactoryEvent(thiz, EventKind.CONVEYORS_LACK_OF_OIL);
@@ -78,12 +75,12 @@ public class Test implements Monitorable {
 			System.out.println("Exception caught.");
 		}
 		
-		try {
-			System.out.println("-- Too many Attachments --");
-			new FactoryEvent(thiz, EventKind.AGV_FORKLIFT_COLLISION, new AgvTask(new ResourceBox(), new Position(0,0), new Position(0,0)));
-		} catch (IllegalArgumentException e) {
-			System.out.println("Exception caught.");
-		}
+//		try {
+//			System.out.println("-- Too many Attachments --");
+//			new FactoryEvent(thiz, EventKind.AGV_FORKLIFT_COLLISION, new AgvTask(new Container(Material.CAR_BODIES),new Position(0,0), new Position(0,0)));
+//		} catch (IllegalArgumentException e) {
+//			System.out.println("Exception caught.");
+//		}
 		
 		
 	}

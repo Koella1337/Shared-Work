@@ -1,38 +1,35 @@
 package factory.subsystems.agv;
 
-import factory.shared.Position;
-import factory.shared.ResourceBox;
 import factory.shared.Task;
+import factory.shared.enums.Material;
+import factory.shared.interfaces.ContainerDemander;
+import factory.shared.interfaces.ContainerSupplier;
 
 public class AgvTask extends Task {
 
-	private final ResourceBox box;
-	private final Position pickup, dropoff;
-	
-	public AgvTask(ResourceBox box, Position pickup, Position dropoff) {
+	private final ContainerSupplier pickup;
+	private final ContainerDemander dropoff;
+	private final Material material;
+
+	public AgvTask( Material material,  ContainerSupplier pickup, ContainerDemander dropoff) {
 		super();
-		this.box = box;
 		this.pickup = pickup;
 		this.dropoff = dropoff;
+		this.material = material;
 	}
 
-	public ResourceBox getBox() {
-		return box;
-	}
-
-	public Position getPickup() {
+	public ContainerSupplier getPickup() {
 		return pickup;
 	}
 
-	public Position getDropoff() {
+	public ContainerDemander getDropoff() {
 		return dropoff;
 	}
 
-	@Override
-	public String toString() {
-		return "AgvTask [box=" + box + ", pickup=" + pickup + ", dropoff=" + dropoff + "]";
+	public Material getMaterial() {
+		return material;
 	}
+
 	
-	
-	
+
 }

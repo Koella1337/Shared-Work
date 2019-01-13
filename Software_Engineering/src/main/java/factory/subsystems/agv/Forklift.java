@@ -40,9 +40,6 @@ public class Forklift implements Placeable {
 		scheduler.scheduleAtFixedRate(move, 500l, 500l); // update every half-second
 	}
 
-	public Position getPos() {
-		return pos;
-	}
 
 	public AgvTask getCurrentTask() {
 		return currentTask;
@@ -128,7 +125,7 @@ public class Forklift implements Placeable {
 
 	@Override
 	public void draw(Graphics g) {
-		// TODO Auto-generated method stub
+		g.drawString("forklift", pos.xPos, pos.yPos);
 		
 	}
 }
