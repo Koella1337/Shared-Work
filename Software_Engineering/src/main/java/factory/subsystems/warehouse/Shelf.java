@@ -1,5 +1,6 @@
 package factory.subsystems.warehouse;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 import factory.shared.Position;
@@ -7,22 +8,22 @@ import factory.shared.interfaces.Placeable;
 
 public class Shelf implements Placeable {
 
-	private final Position position;
+	private final Position pos;
 	
 	public Shelf(Position position) {
 		super();
-		this.position = position;
+		this.pos = position;
 	}
 
 	@Override
 	public Position getPosition() {
-		return position;
+		return pos;
 	}
 
 	@Override
 	public void draw(Graphics g) {
-		// TODO Auto-generated method stub
-		
+		g.setColor(Color.DARK_GRAY);	//TODO
+		g.drawRect(0, 0, pos.xSize, pos.ySize);
 	}
 
 }

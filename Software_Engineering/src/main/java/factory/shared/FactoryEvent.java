@@ -60,8 +60,7 @@ public class FactoryEvent {
 
 	@Override
 	public String toString() {
-		return "FactoryEvent [source=" + source + ", kind=" + kind + ", attachments=" + Arrays.toString(attachments)
-				+ "]";
+		return "FactoryEvent [source=" + source + ", kind=" + kind + ", attachments=" + Arrays.toString(attachments)+ "]";
 	}
 	
 }

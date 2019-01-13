@@ -3,6 +3,7 @@ package factory.subsystems.warehouse;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,6 +11,8 @@ import org.w3c.dom.Element;
 
 import database.Database;
 import database.StorageSiteTable;
+import factory.shared.Constants;
+import factory.shared.Constants.PlaceableSize;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
 import factory.shared.Utils;
@@ -22,7 +25,7 @@ public class StorageSite implements Placeable {
 	private final StorageSiteTable dbTable;
 	
 	private final int id;
-	private Position pos;
+	private final Position pos;
 	
 	private final List<Placeable> placeables;
 	private final ResourceBox inputbox;
@@ -41,29 +44,66 @@ public class StorageSite implements Placeable {
 		Database.INSTANCE.addTable(dbTable);
 		
 		//xml init
+		final PlaceableSize boxSize = PlaceableSize.RESOURCE_BOX;
 		this.pos = Utils.xmlGetPositionFromElement(xmlStorageSiteElem);
-		this.inputbox = new ResourceBox(Utils.xmlGetPositionFromFirstChild(xmlStorageSiteElem, "inputbox"));
-		this.outputbox = new ResourceBox(Utils.xmlGetPositionFromFirstChild(xmlStorageSiteElem, "outputbox"));
+		this.inputbox = new ResourceBox(Utils.assignSize(Utils.xmlGetPositionFromFirstChild(xmlStorageSiteElem, "inputbox"), boxSize));
+		this.outputbox = new ResourceBox(Utils.assignSize(Utils.xmlGetPositionFromFirstChild(xmlStorageSiteElem, "outputbox"), boxSize));
 		
-		System.out.printf("%d-inbox : %s%n", id, inputbox.getPosition().toString());
+		System.out.printf("%d-inbox : %s%n", id, inputbox.getPosition().toString());	//TODO: remove
 		System.out.printf("%d-outbox: %s%n", id, outputbox.getPosition().toString());
 		
 		//interior init
 		placeables = new ArrayList<>();
 		placeables.add(inputbox);
 		placeables.add(outputbox);
-		//placeables.addAll(buildShelves());
+		
+		List<Shelf> x = buildShelves();
+		System.out.println("x size: " + x.size());
+		
+		placeables.addAll(x);
 	}
 	
 	/** Creates as many shelves as possible to fit into this StorageSite's interior. */
 	private List<Shelf> buildShelves() {
+		final List<Shelf> shelves = new ArrayList<>();
+		final PlaceableSize shelfSize = PlaceableSize.SHELF;
 		
+		final int shelfWidth = shelfSize.x;
+		final int shelfHeight = shelfSize.y;
+		final int shelfOffset = Constants.SHELF_OFFSET;
 		
-		return null;
+		final Position ibox = inputbox.getPosition().clone();
+		ibox.xPos -= shelfOffset/2; ibox.xSize += shelfOffset;
+		ibox.yPos -= shelfOffset/2; ibox.ySize += shelfOffset;
+		final Position obox = outputbox.getPosition().clone();
+		obox.xPos -= shelfOffset/2; obox.xSize += shelfOffset;
+		obox.yPos -= shelfOffset/2; obox.ySize += shelfOffset;
+		
+		Position nextShelfPos = Utils.assignSize(new Position(pos.xPos + shelfOffset, pos.yPos + shelfOffset), shelfSize);
+		
+		while ( (nextShelfPos.xPos + shelfWidth) < (pos.xPos + pos.xSize - shelfOffset) ) {
+			//build shelf column
+			while ( (nextShelfPos.yPos + shelfHeight) < (pos.yPos + pos.ySize - shelfOffset) ) {
+				//make sure no shelf overlaps with in-/output box
+				if ( !(Position.isOverlapping(nextShelfPos, ibox) || Position.isOverlapping(nextShelfPos, obox)) ) {
+					shelves.add(new Shelf(Utils.assignSize(nextShelfPos.clone(), shelfSize)));
+				}
+				nextShelfPos.yPos += shelfHeight;
+			}
+			//prepare for building next column
+			nextShelfPos.xPos += shelfWidth + shelfOffset;
+			nextShelfPos.yPos = pos.yPos + shelfOffset;
+		}
+		
+		return Collections.unmodifiableList(shelves);
 	}
 
 	public int getId() {
 		return id;
+	}
+	
+	public List<Placeable> getPlaceables() {
+		return placeables;
 	}
 	
 	protected boolean hasMaterial(Material material) {
@@ -89,7 +129,7 @@ public class StorageSite implements Placeable {
 	
 	//TODO: testing method, remove later
 	public void simulateTaskDone() {
-		//warehouseSystem.taskCompleted(this, new WarehouseTask());
+		warehouseSystem.taskCompleted(this, new WarehouseTask(Material.CAR_BODIES));
 	}
 
 	@Override //TODO
@@ -100,12 +140,8 @@ public class StorageSite implements Placeable {
 	@Override  //TODO
 	public void draw(Graphics g) {
 		g.setColor(Color.DARK_GRAY);
-		g.drawRect(0, 0, this.pos.xSize,this.pos.ySize);
-		g.drawString("StorageSite id:"+id, 20, 20);
-		
-		this.outputbox.draw(g);//TODO
-		this.inputbox.draw(g);//TODO
-		
+		g.drawRect(0, 0, this.pos.xSize, this.pos.ySize);
+		g.drawString("StorageSite id:"+id, 10, 10);			//TODO: remove
 	}
 
 	protected ResourceBox getOutputbox() {
