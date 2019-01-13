@@ -17,8 +17,8 @@ public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorM
 	public int lubricant;
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private long timestamp;
-	private ResourceBox inputbox;
-	private ResourceBox outputbox;
+	private ResourceBox inputbox = new ResourceBox(new Position(10,20));//TODO @max set to correct value
+	private ResourceBox outputbox = new ResourceBox(new Position(100,20)); //TODO @max set to correct value
 
 	
 	
