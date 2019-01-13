@@ -14,16 +14,32 @@ public class Utils {
 
 	/**
 	 * Reads the position and size sub-elements of the supplied xmlElem and returns them as a Position object.
+	 * 
 	 * @param xmlElem - an XML Element that contains at least a "position" and possibly a "size" sub-element
 	 * @return a Position object
 	 */
-	public static Position getPositionFromXmlElement(Element xmlElem) {
+	public static Position xmlGetPositionFromElement(Element xmlElem) {
 		Objects.requireNonNull(xmlElem);
 		
 		Element positionElem = (Element) xmlElem.getElementsByTagName("position").item(0);
 		Element sizeElem = (Element) xmlElem.getElementsByTagName("size").item(0);
 		
 		return parsePosition(positionElem.getTextContent(), sizeElem == null ? null : sizeElem.getTextContent());
+	}
+	
+	/** 
+	 * Shorthand for getting the Position of the first XML child element of the specified parent.
+	 * 
+	 * @param parent - the specified parent XML element
+	 * @param childElementName - the specified name of the child element.
+	 * @return the position of the first returned XML Child Element with the specified name.
+	 */
+	public static Position xmlGetPositionFromFirstChild(Element parent, String childElementName) {
+		Objects.requireNonNull(parent);
+		Objects.requireNonNull(childElementName);
+		
+		Element childElem = (Element) parent.getElementsByTagName(childElementName).item(0);
+		return xmlGetPositionFromElement(childElem);
 	}
 	
 	/**

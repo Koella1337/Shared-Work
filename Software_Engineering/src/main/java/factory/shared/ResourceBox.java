@@ -7,21 +7,13 @@ import java.util.Map;
 import factory.shared.enums.Material;
 import factory.shared.interfaces.ContainerDemander;
 import factory.shared.interfaces.ContainerSupplier;
-import factory.shared.interfaces.Placeable;
 
-public class ResourceBox implements Placeable, ContainerDemander, ContainerSupplier{
+public class ResourceBox implements ContainerDemander, ContainerSupplier {
 
-	private String name;
 	private final Position pos;
 	private final Map<Material, Integer> materialToAmountMap = new HashMap<>();
 	
 	public ResourceBox(Position pos) {
-		this("box",pos);
-	}
-	
-	public ResourceBox(String name,Position pos) {
-		super();
-		this.name = name;
 		this.pos = pos;
 	}
 
@@ -52,7 +44,7 @@ public class ResourceBox implements Placeable, ContainerDemander, ContainerSuppl
 
 	@Override
 	public void draw(Graphics g) {
-		g.drawString(""+this.name,this.pos.xPos+2, this.pos.yPos);
+		g.drawString("Res.Box", this.pos.xPos+2, this.pos.yPos);
 		g.drawRect(this.pos.xPos, this.pos.yPos, 20,20);
 	}
 
