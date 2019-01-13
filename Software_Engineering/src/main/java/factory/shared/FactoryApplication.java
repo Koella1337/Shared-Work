@@ -15,6 +15,7 @@ import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.agv.Forklift;
 import factory.subsystems.assemblyline.AssemblyLine;
 import factory.subsystems.assemblyline.Conveyor;
+import factory.subsystems.assemblyline.Robot;
 import factory.subsystems.monitoring.MonitoringSystem;
 import factory.subsystems.monitoring.TestAGVCoord;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
@@ -27,8 +28,7 @@ public class FactoryApplication implements Stoppable {
 	public FactoryApplication() throws SAXException, IOException, ParserConfigurationException {
 		this.monitor = new MonitoringSystem();
 
-	
-	//	this.monitor.setCurrentSubsystemToShow(testSubsystem1);
+		//	this.monitor.setCurrentSubsystemToShow(testSubsystem1);
 
 		Document layoutDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
 				.parse(new File("resources/factory_layout.xml"));
@@ -52,20 +52,19 @@ public class FactoryApplication implements Stoppable {
 		
 		agvSystem.addForklift(new Forklift(new Position(100,100)));
 		
-		AssemblyLine assemblyLine = new AssemblyLine(null,new Conveyor(1));
+		AssemblyLine assemblyLine = new AssemblyLine(this.monitor,new Position(50,50),new Robot[] {}, new Conveyor(new Position(200,100),1));
 		this.monitor.setAssemblyLine(assemblyLine);
 		
 		addShippingBoxToMonitoring(factory);
-//		OnlineShopUser user = new OnlineShopUser("thomas");
-//		Order order = new Order(user, 4);
-//		this.monitor.addOrder(order);
+		//		OnlineShopUser user = new OnlineShopUser("thomas");
+		//		Order order = new Order(user, 4);
+		//		this.monitor.addOrder(order);
 	}
 	
 	private void addShippingBoxToMonitoring(Element factory) {
 		Position shippingBoxPosition = Utils.xmlGetPositionFromFirstChild(factory, "shippingbox");
 		
 		ResourceBox shippingBox = new ResourceBox(shippingBoxPosition);
-		
 		this.monitor.setShippingBox(shippingBox);
 	}
 
