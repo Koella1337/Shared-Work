@@ -133,7 +133,7 @@ public class Forklift implements Placeable {
 						currentTask.getDropoff().receiveContainer(carriedBox);
 						carriedBox = null;
 						currentTask = null;
-						
+						coordinator.finishedTask();
 					}
 				}
 			}

@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -15,7 +18,6 @@ import org.xml.sax.SAXException;
 import app.gui.SubsystemMenu;
 import factory.shared.AbstractSubsystem;
 import factory.shared.Position;
-import factory.shared.ResourceBox;
 import factory.shared.Utils;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
@@ -29,6 +31,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	private boolean ready = false;
 	private List<AgvTask> tasks = new LinkedList<>();
 	private Pathfinder pathfinder;
+	private Queue<AgvTask> outstandingTasks = new ArrayBlockingQueue<AgvTask>(20);
 	
 	public AgvCoordinator(MonitoringInterface mon, Element factory)
 	{
@@ -55,7 +58,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			e.printStackTrace();
 		}
 		
-		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 20)), new ResourceBox(new Position(500, 500))));
+		// submitTask(new AgvTask(null, new ResourceBox(new Position(20, 20)), new ResourceBox(new Position(500, 500))));
 	}
 	
 	public void addForklift(Forklift forklift)
@@ -74,10 +77,17 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 				break;
 			}
 		}
-		// calculate the Path
-		free.setPath(pathfinder.getPath(free.getPosition(), task.getPickup().getPosition()));
-		free.path.addAll(pathfinder.getPath(task.getPickup().getPosition(), task.getDropoff().getPosition()));
-		free.assignTask(task);
+		if(free != null)
+		{
+			// calculate the Path
+			free.setPath(pathfinder.getPath(free.getPosition(), task.getPickup().getPosition()));
+			free.path.addAll(pathfinder.getPath(task.getPickup().getPosition(), task.getDropoff().getPosition()));
+			free.assignTask(task);
+		}
+		else
+		{
+			outstandingTasks.add(task);
+		}
 		
 	}
 
@@ -126,5 +136,14 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	@Override
 	public List<AgvTask> getCurrentTasks() {
 		return tasks;
+	}
+
+	public void finishedTask() 
+	{
+		if(!outstandingTasks.isEmpty())
+		{
+			
+		}
+		submitTask(outstandingTasks.poll());
 	}
 }
