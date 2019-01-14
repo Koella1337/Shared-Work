@@ -5,11 +5,15 @@ import factory.shared.enums.Material;
 
 public class WarehouseTask extends Task {
 
-	public Material material;
+	private Material material;
 	
-	public WarehouseTask(Material material) {
-		super();
+	public WarehouseTask(long timeframe, Material material) {
+		super(timeframe);
 		this.material = material;
+	}
+
+	public Material getMaterial() {
+		return material;
 	}
 
 	

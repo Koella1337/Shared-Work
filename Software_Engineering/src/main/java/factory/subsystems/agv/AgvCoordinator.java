@@ -1,18 +1,21 @@
 package factory.subsystems.agv;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import app.gui.SubsystemMenu;
 import factory.shared.AbstractSubsystem;
 import factory.shared.Position;
-import factory.shared.Task;
 import factory.shared.Utils;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
@@ -25,6 +28,8 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private boolean ready = false;
 	private List<AgvTask> tasks = new LinkedList<>();
+	private Pathfinder pathfinder;
+	private Queue<AgvTask> outstandingTasks = new PriorityQueue<AgvTask>();
 	
 	public AgvCoordinator(MonitoringInterface mon, Element factory)
 	{
@@ -43,6 +48,23 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			Forklift f = new Forklift(p, this);
 			addForklift(f);
 		}
+		try {
+			pathfinder = new Pathfinder(factory);
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			// BAD THINGS HAVE HAPPENED WHILE I READ THE XML FILE
+			System.out.println("AGV PATHFINDER DID BAD THINGS TO THE XML FILE");
+			e.printStackTrace();
+		}
+		
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 20)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 40)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 60)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 80)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 100)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 140)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 160)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 180)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 200)), new ResourceBox(new Position(500, 500))));
 	}
 	
 	public void addForklift(Forklift forklift)
@@ -52,8 +74,27 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 
 	@Override
 	public void submitTask(AgvTask task) {
-		System.out.println("SUBMIT AGV TASK");
-		// TODO: Choose closest free Forklift and call forklift.assignTask
+		Forklift free = null;
+		for(Forklift f : forklifts)
+		{
+			if(f.getCurrentTask() == null)
+			{
+				free = f;
+				break;
+			}
+		}
+		if(free != null)
+		{
+			// calculate the Path
+			free.setPath(pathfinder.getPath(free.getPosition(), task.getPickup().getPosition()));
+			free.path.addAll(pathfinder.getPath(task.getPickup().getPosition(), task.getDropoff().getPosition()));
+			free.assignTask(task);
+		}
+		else
+		{
+			outstandingTasks.add(task);
+		}
+		
 	}
 
 	@Override
@@ -86,7 +127,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	public void start() {
 		for(Forklift f : forklifts)
 		{
-			f.shutdown();
+			f.resume();
 		}
 	}
 
@@ -94,12 +135,20 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	public void stop() {
 		for(Forklift f : forklifts)
 		{
-			f.resume();
+			f.shutdown();
 		}
 	}
 
 	@Override
 	public List<AgvTask> getCurrentTasks() {
 		return tasks;
+	}
+
+	public void finishedTask() 
+	{
+		if(!outstandingTasks.isEmpty())
+		{
+			submitTask(outstandingTasks.poll());
+		}
 	}
 }

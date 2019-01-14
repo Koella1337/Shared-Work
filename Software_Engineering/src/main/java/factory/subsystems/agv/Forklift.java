@@ -21,10 +21,11 @@ public class Forklift implements Placeable {
 	private long lastTime; // last time the forklift's position was updated
 	private boolean shutdown;
 
-	private List<Position> path;
-	private Position vec = new Position(-1, 0); // this is for drawing, so it mustn't be null even at the start
+	public List<Position> path;
+	private Position vec = new Position(0, -1); // this is for drawing, so it mustn't be null even at the start
 
     private static Image forkliftImage;
+    private static Image forkliftImageLoaded;
     
     private AgvCoordinator coordinator;
 
@@ -46,9 +47,10 @@ public class Forklift implements Placeable {
 
 		lastTime = System.nanoTime();
 		Timer scheduler = new Timer();
-		scheduler.scheduleAtFixedRate(move, 500l, 500l); // update every half-second
+		scheduler.scheduleAtFixedRate(move, 50l, 50l); // update every half-second
 		
 		forkliftImage = new ImageIcon("resources/Forklift-v3.png").getImage();
+		forkliftImageLoaded = new ImageIcon("resources/Forklift-v3-loaded.png").getImage();
 	}
 
 
@@ -63,6 +65,7 @@ public class Forklift implements Placeable {
 			// so I just won't assign to busy forklifts, who cares
 			// the monitor doesn't have to know
 			currentTask = newTask;
+			resume();
 		}
 		else
 		{
@@ -111,10 +114,13 @@ public class Forklift implements Placeable {
 				Double moveLen = timeElapsed / SPEED;
 				// don't overshoot the target
 				moveLen = Math.min(moveLen, len);
-				// Normalise the vector and set it to the appropriate length
-				vec = Position.divide(Position.multiply(vec, (int)Math.round(moveLen)), (int)Math.round(len));
-				// add it to our position to obtain the new one
-				pos = Position.addPosition(pos,vec);
+				if(len > 0)
+				{
+					// Normalise the vector and set it to the appropriate length
+					vec = Position.divide(Position.multiply(vec, (int)Math.round(moveLen)), (int)Math.round(len));
+					// add it to our position to obtain the new one
+					pos = Position.addPosition(pos,vec);
+				}
 
 				// when we reach a target, remove it
 				// due to floating point numbers we use a small range
@@ -129,7 +135,7 @@ public class Forklift implements Placeable {
 						currentTask.getDropoff().receiveContainer(carriedBox);
 						carriedBox = null;
 						currentTask = null;
-						
+						coordinator.finishedTask();
 					}
 				}
 			}
@@ -145,7 +151,7 @@ public class Forklift implements Placeable {
 			g2.rotate(angle);
 			int sizeX = Constants.PlaceableSize.FORKLIFT.x;
 			int sizeY = Constants.PlaceableSize.FORKLIFT.y;
-			g.drawImage(forkliftImage, -sizeX/2, -sizeY/2, sizeX, sizeY, null);
+			g.drawImage(carriedBox==null?forkliftImage:forkliftImageLoaded, -sizeX/2, -sizeY/2, sizeX, sizeY, null);
 			g2.rotate(-angle);
 	}
 }
