@@ -23,4 +23,7 @@ public class Constants {
 	
 	public static final int UI_WIDTH_MENU = 400;
 	
+	public static final String testUserName = "test";
+	public static final String testPassword = "1234";
+	
 }

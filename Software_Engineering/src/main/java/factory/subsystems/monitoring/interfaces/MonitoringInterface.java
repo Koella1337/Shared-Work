@@ -1,5 +1,8 @@
 package factory.subsystems.monitoring.interfaces;
 
+import java.util.List;
+import java.util.Map;
+
 import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
 import factory.shared.ResourceBox;
@@ -8,6 +11,8 @@ import factory.shared.interfaces.Stoppable;
 import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.agv.interfaces.AgvMonitorInterface;
 import factory.subsystems.assemblyline.AssemblyLine;
+import factory.subsystems.monitoring.InvalidOrderException;
+import factory.subsystems.monitoring.onlineshop.OnlineShopUser;
 import factory.subsystems.monitoring.onlineshop.Order;
 import factory.subsystems.warehouse.WarehouseSystem;
 import factory.subsystems.warehouse.interfaces.WarehouseMonitorInterface;
@@ -37,7 +42,7 @@ public interface MonitoringInterface extends Stoppable {
 
 	WarehouseMonitorInterface getWarehouseSystem();
 
-	void addOrder(Order order);
+	void addOrder(Order order) throws InvalidOrderException;
 
 	ResourceBox getShippingBox();
 
@@ -46,4 +51,6 @@ public interface MonitoringInterface extends Stoppable {
 	AssemblyLine getAssemblyLine();
 
 	void setAssemblyLine(AssemblyLine assemblyLine);
+
+	Map<OnlineShopUser, List<Order>> getOrderMap();
 }

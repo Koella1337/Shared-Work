@@ -154,7 +154,6 @@ public class MonitoringSystemTest {
 		Mockito.doReturn(map).when(this.monitor).getWarehouseTaskDemanders();
 		
 		this.monitor.handleEvent(event);
-		
 
 		ArgumentCaptor<WarehouseTask> argument = ArgumentCaptor.forClass(WarehouseTask.class);
 		Mockito.verify(this.warehouseSystem, Mockito.times(1)).receiveTask(argument.capture());

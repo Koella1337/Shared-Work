@@ -4,6 +4,7 @@ import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +12,12 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 import app.gui.GUIHandler;
+import app.gui.OnlineShop;
 import app.gui.UIConfiguration;
 import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
-import factory.shared.Task;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.EventKind.EventSeverity;
 import factory.shared.enums.Material;
@@ -29,6 +30,7 @@ import factory.subsystems.agv.AgvTask;
 import factory.subsystems.assemblyline.AssemblyLine;
 import factory.subsystems.assemblyline.Robot;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
+import factory.subsystems.monitoring.onlineshop.OnlineShopUser;
 import factory.subsystems.monitoring.onlineshop.Order;
 import factory.subsystems.warehouse.WarehouseSystem;
 import factory.subsystems.warehouse.WarehouseTask;
@@ -36,22 +38,25 @@ import factory.subsystems.warehouse.WarehouseTask;
 public class MonitoringSystem implements MonitoringInterface {
 	private static final Logger LOGGER = Logger.getLogger(MonitoringSystem.class.getName());
 
+	private final UserHandler userHandler;
 	private final GUIHandler handler;
 	private final ErrorEventHandler errorHandler;
 
-	private final List<Order> orderList;
+	private final Map<OnlineShopUser, List<Order>> orderMap;
 
 	private SubsystemStatus status;
 	private AgvCoordinator agvSystem;
 	private WarehouseSystem warehouseSystem;
 	private AssemblyLine assemblyLine;
+	private OnlineShop onlineShop;
 
 	private ResourceBox shippingBox = new ResourceBox(new Position(10, 10));
-	
+
 	/**
-	 * this map stores the info to which ContainerDemander the prepared material should be transported
+	 * this map stores the info to which ContainerDemander the prepared material
+	 * should be transported
 	 */
-	private final Map<Task, ContainerDemander> warehouseTaskDemanders;
+	private final Map<WarehouseTask, ContainerDemander> warehouseTaskDemanders;
 
 	public MonitoringSystem() {
 		this(new UIConfiguration(1000, 1000));
@@ -60,8 +65,10 @@ public class MonitoringSystem implements MonitoringInterface {
 	public MonitoringSystem(UIConfiguration uiConfig) {
 		this.handler = new GUIHandler(this, uiConfig);
 		this.errorHandler = new ErrorEventHandler(this);
-		this.orderList = new ArrayList<>();
+		this.orderMap = new HashMap<>();
 		this.warehouseTaskDemanders = new HashMap<>();
+		this.onlineShop = new OnlineShop(this);
+		this.userHandler = new UserHandler();
 	}
 
 	@Override
@@ -90,7 +97,7 @@ public class MonitoringSystem implements MonitoringInterface {
 				switch (event.getKind()) {
 				case AGV_CONTAINER_DELIVERED:
 					System.out.println("AGV_CONTAINER_DELIVERED");
-					//do nothing
+					// do nothing
 					break;
 				case WAREHOUSE_TASK_COMPLETED:
 					System.out.println("WAREHOUSE_TASK_COMPLETED");
@@ -98,9 +105,9 @@ public class MonitoringSystem implements MonitoringInterface {
 					Material mat = task.getMaterial();
 					ContainerSupplier box = (ContainerSupplier) event.getAttachment(1);
 					ContainerDemander demander = getWarehouseTaskDemanders().get(task);
-					if(demander == null) {
+					if (demander == null) {
 						LOGGER.warning("no demander for the warehousetask found");
-					}else {
+					} else {
 						AgvTask agv = new AgvTask(mat, box, demander);
 						agvSystem.submitTask(agv);
 					}
@@ -111,11 +118,11 @@ public class MonitoringSystem implements MonitoringInterface {
 				case ROBOTARMS_LACK_OF_MATERIAL:
 					Material material = (Material) event.getAttachment(0);
 					Robot robot = (Robot) event.getAttachment(1);
-					
+
 					WarehouseTask wht = new WarehouseTask(material);
 					warehouseTaskDemanders.put(wht, robot);
 					this.warehouseSystem.receiveTask(wht);
-					
+
 					break;
 				default:
 					System.out.println("HANDLEEVENT " + event + "NOT IMPLEMENTED");
@@ -135,7 +142,7 @@ public class MonitoringSystem implements MonitoringInterface {
 	private void handleCarFinishedEvent(FactoryEvent event) {
 		System.out.println("CAR_FINISHED");
 		Material material = (Material) event.getAttachment(0);
-		AgvTask agvtask = new AgvTask(material, this.assemblyLine.getConveyor().getOutputbox(), shippingBox);
+		AgvTask agvtask = new AgvTask(material, new ResourceBox(new Position(800, 800)), shippingBox);
 		agvSystem.submitTask(agvtask);
 	}
 
@@ -158,6 +165,10 @@ public class MonitoringSystem implements MonitoringInterface {
 
 		this.handler.start();
 		this.setStatus(SubsystemStatus.RUNNING);
+
+		new Thread(() -> {
+			this.onlineShop.start();
+		}).start();
 	}
 
 	@Override
@@ -174,14 +185,19 @@ public class MonitoringSystem implements MonitoringInterface {
 	}
 
 	@Override
-	public void addOrder(Order order) {
+	public void addOrder(Order order) throws InvalidOrderException {
 		LOGGER.log(INFO, "order placed: " + order);
-		this.orderList.add(order);
-		handleNewOrder(order);
-	}
+		OnlineShopUser user = order.getUser();
+		
+		if(!userHandler.loginCorrect(user)) {
+			throw new InvalidOrderException("The password is incorrect or the values are invalid!");
+		}
 
-	private void handleNewOrder(Order order) {
-		this.orderList.add(order);
+		if (this.orderMap.get(user) == null) {
+			this.orderMap.put(user, new ArrayList<Order>(Arrays.asList(order)));
+		} else {
+			this.orderMap.get(user).add(order);
+		}
 	}
 
 	private void handleEventHandlingException(FactoryEvent event, Exception ex) {
@@ -253,9 +269,13 @@ public class MonitoringSystem implements MonitoringInterface {
 		this.assemblyLine = assemblyLine;
 	}
 
-	public Map<Task, ContainerDemander> getWarehouseTaskDemanders() {
-		return warehouseTaskDemanders;
+	@Override
+	public Map<OnlineShopUser, List<Order>> getOrderMap() {
+		return orderMap;
 	}
 
+	public Map<WarehouseTask, ContainerDemander> getWarehouseTaskDemanders() {
+		return warehouseTaskDemanders;
+	}
 
 }

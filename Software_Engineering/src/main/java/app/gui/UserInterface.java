@@ -12,12 +12,13 @@ import javax.swing.WindowConstants;
 import factory.shared.AbstractSubsystem;
 import factory.shared.Constants;
 import factory.shared.FactoryEvent;
+import factory.shared.Position;
+import factory.shared.ResourceBox;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.interfaces.Stoppable;
+import factory.subsystems.agv.AgvTask;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
-import factory.subsystems.monitoring.onlineshop.OnlineShopUser;
-import factory.subsystems.monitoring.onlineshop.Order;
 
 class UserInterface implements Stoppable {
 
@@ -48,7 +49,7 @@ class UserInterface implements Stoppable {
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
+		this.frame.dispose();
 	}
 
 	private void initUI() {
@@ -77,7 +78,10 @@ class UserInterface implements Stoppable {
 		this.menuPanel.setLayout(null);
 
 		JButton addOrderButton = new JButton("place order");
-		addOrderButton.addActionListener(a -> monitor.addOrder(new Order(new OnlineShopUser("thomas"), 3)));
+		addOrderButton.addActionListener(a -> {
+			AgvTask task = new AgvTask(Material.CAR, new ResourceBox(new Position(20, 20)), new ResourceBox(new Position(500, 500)));
+			this.monitor.getAgvSystem().submitTask(task);
+		});
 		addOrderButton.setBounds(20,100,160,20);
 		this.menuPanel.add(addOrderButton);
 
@@ -86,9 +90,14 @@ class UserInterface implements Stoppable {
 		carFinishedButton.setBounds(200,100,160,20);
 		this.menuPanel.add(carFinishedButton);
 		
-		Legend legend = new Legend(30);
+		Legend legend = new Legend(this.fps);
 		legend.setBounds(20,180,360,100);
 		this.menuPanel.add(legend);
+		
+		OrderListView orderListView = new OrderListView(this.fps, this.monitor);
+		orderListView.setBackground(Color.white);
+		orderListView.setBounds(20,320,360,300);
+		this.menuPanel.add(orderListView);
 		
 		this.contentPane.add(menuPanel, BorderLayout.LINE_END);
 	}

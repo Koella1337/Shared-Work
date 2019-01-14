@@ -14,8 +14,6 @@ public enum Material {
 	CAR (1);
 	
 	
-	
-	
 	/** Amount of the material that fits into a single container. */
 	public final int containerAmount;
 	
