@@ -122,6 +122,11 @@ public class MonitoringSystemTest {
 		Mockito.doReturn(pos).when(storageSite).getPosition();
 
 		WarehouseTask wht = new WarehouseTask(Material.CAR_BODIES);
+		Robot robot  = Mockito.mock(Robot.class);
+		HashMap<WarehouseTask, ContainerDemander> map = new HashMap<>(Collections.singletonMap(wht, robot));
+		map.put(wht, robot);
+		Mockito.doReturn(map).when(this.monitor).getWarehouseTaskDemanders();
+		
 		FactoryEvent event = new FactoryEvent(this.warehouseSystem, EventKind.WAREHOUSE_TASK_COMPLETED, wht,
 				storageSite);
 		this.monitor.handleEvent(event);
@@ -130,7 +135,7 @@ public class MonitoringSystemTest {
 		Mockito.verify(this.agvSystem, Mockito.times(1)).submitTask(argument.capture());
 
 		AgvTask param = argument.getValue();
-		assertEquals(param.getDropoff(), Mockito.any());
+		assertEquals(param.getDropoff(), robot);
 		assertEquals(param.getPickup(),storageSite);
 		assertEquals(param.getMaterial(),Material.CAR_BODIES);
 	}

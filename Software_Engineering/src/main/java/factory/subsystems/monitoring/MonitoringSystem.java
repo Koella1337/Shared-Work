@@ -90,14 +90,14 @@ public class MonitoringSystem implements MonitoringInterface {
 				switch (event.getKind()) {
 				case AGV_CONTAINER_DELIVERED:
 					System.out.println("AGV_CONTAINER_DELIVERED");
-					// AgvTask task = (AgvTask) event.getAttachment(1);
+					//do nothing
 					break;
 				case WAREHOUSE_TASK_COMPLETED:
 					System.out.println("WAREHOUSE_TASK_COMPLETED");
 					WarehouseTask task = (WarehouseTask) event.getAttachment(0);
 					Material mat = task.getMaterial();
 					ContainerSupplier box = (ContainerSupplier) event.getAttachment(1);
-					ContainerDemander demander = warehouseTaskDemanders.get(task);
+					ContainerDemander demander = getWarehouseTaskDemanders().get(task);
 					if(demander == null) {
 						LOGGER.warning("no demander for the warehousetask found");
 					}else {
