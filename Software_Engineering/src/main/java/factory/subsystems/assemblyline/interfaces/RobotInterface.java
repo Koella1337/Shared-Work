@@ -5,7 +5,6 @@ import java.util.List;
 import factory.shared.Container;
 import factory.shared.Task;
 import factory.shared.enums.SubsystemStatus;
-import factory.subsystems.assemblyline.RobotEvent;
 
 public interface RobotInterface{
 	
