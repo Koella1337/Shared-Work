@@ -4,7 +4,9 @@ import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -14,15 +16,18 @@ import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
+import factory.shared.Task;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.EventKind.EventSeverity;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
+import factory.shared.interfaces.ContainerDemander;
 import factory.shared.interfaces.ContainerSupplier;
 import factory.shared.interfaces.Monitorable;
 import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.agv.AgvTask;
 import factory.subsystems.assemblyline.AssemblyLine;
+import factory.subsystems.assemblyline.Robot;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 import factory.subsystems.monitoring.onlineshop.Order;
 import factory.subsystems.warehouse.WarehouseSystem;
@@ -42,18 +47,29 @@ public class MonitoringSystem implements MonitoringInterface {
 	private AssemblyLine assemblyLine;
 
 	private ResourceBox shippingBox = new ResourceBox(new Position(10, 10));
+	
+	/**
+	 * this map stores the info to which ContainerDemander the prepared material should be transported
+	 */
+	private final Map<Task, ContainerDemander> warehouseTaskDemanders;
 
+	public MonitoringSystem() {
+		this(new UIConfiguration(1000, 1000));
+	}
 
 	public MonitoringSystem(UIConfiguration uiConfig) {
-		this.handler = new GUIHandler(this,uiConfig);
+		this.handler = new GUIHandler(this, uiConfig);
 		this.errorHandler = new ErrorEventHandler(this);
 		this.orderList = new ArrayList<>();
+		this.warehouseTaskDemanders = new HashMap<>();
 	}
 
 	@Override
 	public synchronized void handleEvent(FactoryEvent event) {
 		try {
+			System.out.println("handling event: " + event);
 			LOGGER.log(INFO, String.format("handling event %s ...", event));
+
 			Monitorable source = event.getSource();
 			EventKind eventKind = event.getKind();
 			EventSeverity severity = eventKind.severity;
@@ -79,21 +95,30 @@ public class MonitoringSystem implements MonitoringInterface {
 				case WAREHOUSE_TASK_COMPLETED:
 					System.out.println("WAREHOUSE_TASK_COMPLETED");
 					WarehouseTask task = (WarehouseTask) event.getAttachment(0);
-					Material mat = task.material;
+					Material mat = task.getMaterial();
 					ContainerSupplier box = (ContainerSupplier) event.getAttachment(1);
-
-					AgvTask agv = new AgvTask(mat, box, assemblyLine);
-					
-					
-					//AgvTask t = new AgvTask(mat, new ResourceBox(new Position(0,0)), new ResourceBox(new Position(1000,1000)));
-					agvSystem.submitTask( agv);
+					ContainerDemander demander = warehouseTaskDemanders.get(task);
+					if(demander == null) {
+						LOGGER.warning("no demander for the warehousetask found");
+					}else {
+						AgvTask agv = new AgvTask(mat, box, demander);
+						agvSystem.submitTask(agv);
+					}
 					break;
 				case CAR_FINISHED:
-					System.out.println("CAR_FINISHED");
+					handleCarFinishedEvent(event);
+					break;
+				case ROBOTARMS_LACK_OF_MATERIAL:
 					Material material = (Material) event.getAttachment(0);
-					AgvTask agvtask = new AgvTask(material, this.assemblyLine.conveyor.getOutputbox(), shippingBox);
-					agvSystem.submitTask(agvtask);
+					Robot robot = (Robot) event.getAttachment(1);
+					
+					WarehouseTask wht = new WarehouseTask(material);
+					warehouseTaskDemanders.put(wht, robot);
+					this.warehouseSystem.receiveTask(wht);
+					
+					break;
 				default:
+					System.out.println("HANDLEEVENT " + event + "NOT IMPLEMENTED");
 					break;
 				}
 
@@ -102,18 +127,34 @@ public class MonitoringSystem implements MonitoringInterface {
 				break;
 			}
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			handleEventHandlingException(event, ex);
 		}
 	}
 
+	private void handleCarFinishedEvent(FactoryEvent event) {
+		System.out.println("CAR_FINISHED");
+		Material material = (Material) event.getAttachment(0);
+		AgvTask agvtask = new AgvTask(material, this.assemblyLine.getConveyor().getOutputbox(), shippingBox);
+		agvSystem.submitTask(agvtask);
+	}
 
 	@Override
 	public void start() {
 		Objects.requireNonNull(this.agvSystem);// TODO @thomas throw exception
 		Objects.requireNonNull(this.warehouseSystem);
 
-		this.agvSystem.start();
-		this.warehouseSystem.start();
+		new Thread(() -> {
+			this.agvSystem.start();
+		}).start();
+
+		new Thread(() -> {
+			this.warehouseSystem.start();
+		}).start();
+
+		new Thread(() -> {
+			this.assemblyLine.start(500);
+		}).start();
 
 		this.handler.start();
 		this.setStatus(SubsystemStatus.RUNNING);
@@ -208,8 +249,13 @@ public class MonitoringSystem implements MonitoringInterface {
 
 	@Override
 	public void setAssemblyLine(AssemblyLine assemblyLine) {
-		this.handler.addToFactoryPanel(assemblyLine);
+		this.handler.addToFactoryPanel(assemblyLine.getALSys());
 		this.assemblyLine = assemblyLine;
 	}
+
+	public Map<Task, ContainerDemander> getWarehouseTaskDemanders() {
+		return warehouseTaskDemanders;
+	}
+
 
 }

@@ -1,36 +1,33 @@
 package factory.subsystems.assemblyline;
 import java.awt.Graphics;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import factory.shared.AbstractSubsystem;
+import factory.shared.Container;
 import factory.shared.Position;
-import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
-import factory.shared.*;
 import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
-import factory.subsystems.assemblyline.interfaces.RobotInterface;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import javax.lang.model.element.Element;
-import javax.xml.parsers.DocumentBuilder;
-
 public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stoppable{
-	private AssemblyLine[] al = new AssemblyLine[6];
+	public AssemblyLine[] al = new AssemblyLine[6];
 	private int[] task = new int[6]; 
 
 	public AL_Subsystem(MonitoringInterface monitor) {
 		super(monitor);
+		
+		for(int i=0;i<al.length;i++) {
+			Position pos = new Position(new Random().nextInt(1000),new Random().nextInt(1000));
+			al[i] = new AssemblyLine(pos, this);
+		}
+		
+		
+		
 //		try {
 //			Document layoutDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File("resources/factory_layout.xml"));
 //			
@@ -175,7 +172,10 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 	public List<Placeable> getPlaceables() {
 		List<Placeable> plc = new ArrayList<Placeable>();
 		for(AssemblyLine a: al) {
-			plc.addAll(a.getPlaceables());
+			if(a != null) {
+				plc.addAll(a.getPlaceables());
+			}
+			
 		}
 		return plc;
 	}

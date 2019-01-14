@@ -14,10 +14,8 @@ import org.xml.sax.SAXException;
 import app.gui.UIConfiguration;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.agv.AgvCoordinator;
-import factory.subsystems.agv.Forklift;
+import factory.subsystems.assemblyline.AL_Subsystem;
 import factory.subsystems.assemblyline.AssemblyLine;
-import factory.subsystems.assemblyline.Conveyor;
-import factory.subsystems.assemblyline.Robot;
 import factory.subsystems.monitoring.MonitoringSystem;
 import factory.subsystems.monitoring.TestAGVCoord;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
@@ -53,10 +51,11 @@ public class FactoryApplication implements Stoppable {
 		//this.monitor.addToSubsystemList(assemblyLine);
 		
 		//Element forklists = (Element) (factory).getElementsByTagName("forklifts").item(0);
-		AgvCoordinator agvSystem = new AgvCoordinator(this.monitor, factory);
+		AgvCoordinator agvSystem = new TestAGVCoord(this.monitor);
+	
 		this.monitor.setAgvSystem(agvSystem);
 
-		AssemblyLine assemblyLine = new AssemblyLine(this.monitor,new Position(50,50),new Robot[] {}, new Conveyor(new Position(200,100),1));
+		AssemblyLine assemblyLine = new AssemblyLine(new Position(50,50),new AL_Subsystem(this.monitor));
 		this.monitor.setAssemblyLine(assemblyLine);
 		
 		addShippingBoxToMonitoring(factory);

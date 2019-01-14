@@ -5,15 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import app.gui.SubsystemMenu;
 import factory.shared.AbstractSubsystem;
-import factory.shared.Position;
-import factory.shared.Task;
-import factory.shared.Utils;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
 import factory.subsystems.agv.interfaces.AgvMonitorInterface;
@@ -32,17 +26,17 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 		status = SubsystemStatus.RUNNING;
 		ready = true;
 		
-		// TODO: Read map and construct factory
-		Element forks = (Element) factory.getElementsByTagName("forklifts").item(0);
-		NodeList forkliftElements = forks.getElementsByTagName("forklift");
-		for(int i = 0; i < forkliftElements.getLength(); i++)
-		{
-			Node a = ((Element)forkliftElements.item(i)).getElementsByTagName("position").item(0);
-			String s = a.getFirstChild().getNodeValue();
-			Position p = Utils.parsePosition(s, null);
-			Forklift f = new Forklift(p, this);
-			addForklift(f);
-		}
+//		// TODO: Read map and construct factory
+//		Element forks = (Element) factory.getElementsByTagName("forklifts").item(0);
+//		NodeList forkliftElements = forks.getElementsByTagName("forklift");
+//		for(int i = 0; i < forkliftElements.getLength(); i++)
+//		{
+//			Node a = ((Element)forkliftElements.item(i)).getElementsByTagName("position").item(0);
+//			String s = a.getFirstChild().getNodeValue();
+//			Position p = Utils.parsePosition(s, null);
+//			Forklift f = new Forklift(p, this);
+//			addForklift(f);
+//		}
 	}
 	
 	public void addForklift(Forklift forklift)

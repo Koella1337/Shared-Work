@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.gui.SubsystemMenu;
-import factory.shared.AbstractSubsystem;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
-import factory.shared.Task;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
@@ -18,11 +16,10 @@ import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
-import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Placeable, ContainerDemander, ContainerSupplier {
 	public Robot[] robots = new Robot[4];
-	public Conveyor conveyor;
+	private Conveyor conveyor;
 	public Position position;
 	private AL_Subsystem alsys;
 	private int finished;
@@ -31,6 +28,7 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 	public AssemblyLine(Position pos, AL_Subsystem al) {
 		position = pos;
 		this.alsys = al;
+		this.alsys.al[0] = this;
 		Position rpos = position;
 		robots[0] = new Robot(RobotTypes.GRABBER, 0, rpos, this);
 		rpos.xPos += 10;
@@ -209,6 +207,14 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 			r.fixBroken();
 		}
 		conveyor.fixBroken();
+	}
+
+	public Conveyor getConveyor() {
+		return conveyor;
+	}
+
+	public void setConveyor(Conveyor conveyor) {
+		this.conveyor = conveyor;
 	}
 
 

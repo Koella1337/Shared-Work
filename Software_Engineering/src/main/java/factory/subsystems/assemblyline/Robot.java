@@ -2,23 +2,19 @@ package factory.subsystems.assemblyline;
 import java.awt.Graphics;
 import java.util.List;
 
-import org.apache.derby.iapi.db.Factory;
-
 import app.gui.SubsystemMenu;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
-import factory.shared.Task;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.ContainerDemander;
 import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
-import factory.shared.interfaces.Stoppable;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
-public class Robot implements Monitorable, RobotInterface, Stoppable, Placeable, ContainerDemander{
+public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	public RobotTypes robot;
 	public Material material;
 	public int materials;
@@ -45,8 +41,8 @@ public class Robot implements Monitorable, RobotInterface, Stoppable, Placeable,
 
 	
 	public SubsystemStatus status() {
-		if (status() == SubsystemStatus.STOPPED || status() == SubsystemStatus.BROKEN) {
-			if(status() == SubsystemStatus.BROKEN) {
+		if (status == SubsystemStatus.STOPPED || status == SubsystemStatus.BROKEN) {
+			if(status== SubsystemStatus.BROKEN) {
 				FactoryEvent broken = new FactoryEvent(al.getALSys(), EventKind.ROBOTARMS_BROKEN, this);
 				this.notify(broken);
 			}
@@ -83,7 +79,7 @@ public class Robot implements Monitorable, RobotInterface, Stoppable, Placeable,
 				}	
 			} else if(robot == RobotTypes.INSPECTOR) {
 				if(Math.random() < 0.95) {
-					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED, this);
+					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED,Material.CAR, this);
 					this.notify(done);
 				}
 			}

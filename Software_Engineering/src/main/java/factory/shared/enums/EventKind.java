@@ -3,6 +3,8 @@ package factory.shared.enums;
 import factory.shared.interfaces.ContainerSupplier;
 import factory.subsystems.agv.AgvTask;
 import factory.subsystems.agv.Forklift;
+import factory.subsystems.assemblyline.Conveyor;
+import factory.subsystems.assemblyline.Robot;
 import factory.subsystems.warehouse.WarehouseTask;
 
 /**
@@ -12,19 +14,19 @@ import factory.subsystems.warehouse.WarehouseTask;
 
 public enum EventKind {
 	//------------------------------- RobotArms Notifications -------------------------------
-	CAR_FINISHED (EventSeverity.NORMAL, Material.class),
+	CAR_FINISHED (EventSeverity.NORMAL, Material.class, Robot.class),
 	TASK_FINISHED 					(EventSeverity.NORMAL),
-	ROBOTARMS_LACK_OF_MATERIAL 		(EventSeverity.NORMAL),
+	ROBOTARMS_LACK_OF_MATERIAL 		(EventSeverity.NORMAL, Material.class, Robot.class),
 	
 	
 	//---------------------------------- RobotArms Errors -----------------------------------
-	ROBOTARMS_BROKEN				(EventSeverity.IMPORTANT),
+	ROBOTARMS_BROKEN				(EventSeverity.IMPORTANT, Robot.class),
 	
 	//------------------------------- Conveyors Notifications -------------------------------
-	CONVEYORS_LACK_OF_OIL			(EventSeverity.IMPORTANT),
+	CONVEYORS_LACK_OF_OIL			(EventSeverity.IMPORTANT, Conveyor.class),
 	
 	//---------------------------------- Conveyors Errors -----------------------------------
-	CONVEYORS_BROKEN				(EventSeverity.IMPORTANT),
+	CONVEYORS_BROKEN				(EventSeverity.IMPORTANT, Conveyor.class),
 	
 	
 	//------------------------------- Warehouse Notifications -------------------------------
