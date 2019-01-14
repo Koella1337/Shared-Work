@@ -13,16 +13,18 @@ import factory.subsystems.warehouse.WarehouseTask;
 public enum EventKind {
 	//------------------------------- RobotArms Notifications -------------------------------
 	CAR_FINISHED (EventSeverity.NORMAL, Material.class),
+	TASK_FINISHED 					(EventSeverity.NORMAL),
+	ROBOTARMS_LACK_OF_MATERIAL 		(EventSeverity.NORMAL),
 	
 	
 	//---------------------------------- RobotArms Errors -----------------------------------
-	
+	ROBOTARMS_BROKEN				(EventSeverity.IMPORTANT),
 	
 	//------------------------------- Conveyors Notifications -------------------------------
 	CONVEYORS_LACK_OF_OIL			(EventSeverity.IMPORTANT),
 	
 	//---------------------------------- Conveyors Errors -----------------------------------
-	
+	CONVEYORS_BROKEN				(EventSeverity.IMPORTANT),
 	
 	
 	//------------------------------- Warehouse Notifications -------------------------------

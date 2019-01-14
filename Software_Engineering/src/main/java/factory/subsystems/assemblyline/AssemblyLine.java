@@ -1,5 +1,6 @@
 package factory.subsystems.assemblyline;
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.List;
 
 import app.gui.SubsystemMenu;
@@ -20,15 +21,27 @@ import factory.subsystems.assemblyline.interfaces.RobotInterface;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Placeable, ContainerDemander, ContainerSupplier {
-	public Robot[] robots;
+	public Robot[] robots = new Robot[4];
 	public Conveyor conveyor;
 	public Position position;
+	private AL_Subsystem alsys;
+	private int finished;
 	
 	
-	public AssemblyLine(MonitoringInterface monitor, Position pos) {
-		super();
+	public AssemblyLine(Position pos, AL_Subsystem al) {
 		position = pos;
-		//TODO create robots & conveyor
+		this.alsys = al;
+		Position rpos = position;
+		robots[0] = new Robot(RobotTypes.GRABBER, 0, rpos, this);
+		rpos.xPos += 10;
+		robots[1] = new Robot(RobotTypes.SCREWDRIVER, 100, rpos, this);
+		rpos.xPos += 10;
+		robots[2] = new Robot(RobotTypes.PAINTER, 100, rpos, this);
+		rpos.xPos += 10;
+		robots[3] = new Robot(RobotTypes.INSPECTOR, 0, rpos, this);
+		rpos = position;
+		rpos.yPos -= 10;
+		conveyor = new Conveyor(this, rpos, 20, 100);
 	}
 	
 	public void addBox(Container box) { //Adds the box to the matching robot/conveyor
@@ -76,7 +89,10 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 	}
 
 	public void start(int q) {
-		int finished = 0;
+		finished = -4;
+		double speed = q/10; //Adaptive speed
+		if(speed > 30) speed = 30; else if(speed < 10) speed = 10; //Boundaries for the speed
+		conveyor.setSpeed(speed);
 		while (finished < q) {
 			for(Robot r: robots) {
 				r.start();
@@ -88,9 +104,6 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 			while(conveyor.status() != SubsystemStatus.WAITING) { //Waiting for the conveyor
 				
 			}
-			finished++;
-			FactoryEvent done = new FactoryEvent(this, EventKind.CAR_FINISHED);
-			this.notify(done);
 		}
 		FactoryEvent taskDone = new FactoryEvent(this, EventKind.TASK_FINISHED);
 		this.notify(taskDone);
@@ -137,13 +150,21 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 
 	@Override
 	public List<Placeable> getPlaceables() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Placeable> plc = new ArrayList<Placeable>();
+		for(Robot r: robots) {
+			plc.add(r);
+		}
+		plc.add(conveyor);
+		return plc;
 	}
 
 	@Override
 	public SubsystemMenu getCurrentSubsystemMenu() {
 		return null;
+	}
+	
+	public void stoppedSys(Object source, FactoryEvent event) {
+		this.notify(new FactoryEvent(this, EventKind.CAR_FINISHED));
 	}
 
 
@@ -173,7 +194,21 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 
 	@Override
 	public void notify(FactoryEvent event) {
-		AL_Subsystem.n
+		if(event.getKind() == EventKind.CAR_FINISHED) {
+			finished++;
+		}
+		alsys.notify(event);
+	}
+	
+	public AL_Subsystem getALSys() {
+		return alsys;
+	}
+	
+	public void fixBroken() {
+		for(Robot r: robots) {
+			r.fixBroken();
+		}
+		conveyor.fixBroken();
 	}
 
 

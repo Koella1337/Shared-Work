@@ -2,9 +2,11 @@ package factory.subsystems.assemblyline;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import factory.shared.Position;
+import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.*;
@@ -24,8 +26,8 @@ import javax.lang.model.element.Element;
 import javax.xml.parsers.DocumentBuilder;
 
 public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stoppable{
-	public AssemblyLine[] al = new AssemblyLine[6];
-	public int[] task = new int[6]; 
+	private AssemblyLine[] al = new AssemblyLine[6];
+	private int[] task = new int[6]; 
 
 	public AL_Subsystem(MonitoringInterface monitor) {
 		super(monitor);
@@ -97,6 +99,7 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 		}
 	}
 	
+	
 	public void stopProduction(Material color) {
 		switch (color) {
 		case CAR:
@@ -145,13 +148,12 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 		// TODO Auto-generated method stub
 		
 	}
-
-
-//	@Override
-//	public void notifyMonitoringSystem(Task task, RobotEvent event) {
-//		// TODO Auto-generated method stub
-//		
-//	}
+	
+	public void fixBroken() { //Everything just got fixed... magically
+		for(AssemblyLine a: al) {
+			a.fixBroken();
+		}
+	}
 
 
 
@@ -167,17 +169,15 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 		return status;
 	}
 
-	
-	public void notify(FactoryEvent event) {
-		super(event);
-	}
-
 
 
 	@Override
 	public List<Placeable> getPlaceables() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Placeable> plc = new ArrayList<Placeable>();
+		for(AssemblyLine a: al) {
+			plc.addAll(a.getPlaceables());
+		}
+		return plc;
 	}
 
 }

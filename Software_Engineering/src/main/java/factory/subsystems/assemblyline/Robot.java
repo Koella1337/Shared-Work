@@ -25,12 +25,16 @@ public class Robot implements Monitorable, RobotInterface, Stoppable, Placeable,
 	public Position position;
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private int timestamp = 0;
+	private AssemblyLine al;
 	
 	
-	public Robot(RobotTypes r, int mats, Position pos) {
+	public Robot(RobotTypes r, int mats, Position pos, AssemblyLine al) {
 		robot = r;
 		materials = mats;
 		position = pos;
+		this.al = al;
+		position.xSize = 10;
+		position.ySize = 10;
 	}
 	
 	public void addBox(Container container) {
@@ -41,9 +45,9 @@ public class Robot implements Monitorable, RobotInterface, Stoppable, Placeable,
 
 	
 	public SubsystemStatus status() {
-		if (status == SubsystemStatus.STOPPED || status == SubsystemStatus.BROKEN) {
-			if(status == SubsystemStatus.BROKEN) {
-				FactoryEvent broken = new FactoryEvent(this, EventKind.ROBOTARMS_BROKEN);
+		if (status() == SubsystemStatus.STOPPED || status() == SubsystemStatus.BROKEN) {
+			if(status() == SubsystemStatus.BROKEN) {
+				FactoryEvent broken = new FactoryEvent(al.getALSys(), EventKind.ROBOTARMS_BROKEN, this);
 				this.notify(broken);
 			}
 			return status;
@@ -70,11 +74,20 @@ public class Robot implements Monitorable, RobotInterface, Stoppable, Placeable,
 	@Override
 	public void start() {
 		if(status == SubsystemStatus.WAITING) {
-			materials--;
-			if(materials < 10) {
-				FactoryEvent lowmat = new FactoryEvent(this, EventKind.ROBOTARMS_LACK_OF_MATERIAL);
-				this.notify(lowmat);
+			
+			if(robot == RobotTypes.SCREWDRIVER || robot ==  RobotTypes.PAINTER) {
+				materials--;
+				if(materials < 10) {
+					FactoryEvent lowmat = new FactoryEvent(al.getALSys(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, this);
+					this.notify(lowmat);
+				}	
+			} else if(robot == RobotTypes.INSPECTOR) {
+				if(Math.random() < 0.95) {
+					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED, this);
+					this.notify(done);
+				}
 			}
+			
 			timestamp = (int) System.currentTimeMillis(); //The Robot takes 5 seconds to perform it's task
 		}
 		
@@ -106,8 +119,7 @@ public class Robot implements Monitorable, RobotInterface, Stoppable, Placeable,
 
 	@Override
 	public void notify(FactoryEvent event) {
-		// TODO Auto-generated method stub
-		
+		al.notify(event);
 	}
 
 	@Override
@@ -125,6 +137,12 @@ public class Robot implements Monitorable, RobotInterface, Stoppable, Placeable,
 	public SubsystemMenu getCurrentSubsystemMenu() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public void fixBroken() {
+		if(status() == SubsystemStatus.BROKEN) {
+			status = SubsystemStatus.WAITING;
+		}
 	}
 
 
