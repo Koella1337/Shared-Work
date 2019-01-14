@@ -103,8 +103,8 @@ public class Test implements Monitorable {
 				switch(dbTable.getClass().getSimpleName()) {
 					case "StorageSiteTable":
 						StorageSiteTable storTable = (StorageSiteTable) dbTable;
-						storTable.insertMaterial(materials[rng.nextInt(materials.length)], rng.nextInt(50));
-						storTable.insertMaterial(materials[rng.nextInt(materials.length)], rng.nextInt(50));
+						storTable.addMaterial(materials[rng.nextInt(materials.length)], rng.nextInt(50));
+						storTable.addMaterial(materials[rng.nextInt(materials.length)], rng.nextInt(50));
 						break;
 					case "TransactionsTable":
 						TransactionsTable transTable = (TransactionsTable) dbTable;

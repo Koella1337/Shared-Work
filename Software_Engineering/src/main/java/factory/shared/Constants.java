@@ -1,5 +1,7 @@
 package factory.shared;
 
+import java.awt.Color;
+
 public class Constants {
 	
 	public enum PlaceableSize {
@@ -18,12 +20,15 @@ public class Constants {
 		}
 	}
 	
+	public static final int RESOURCE_BOX_MAX_CONTAINERS = 50;
+	
 	/** How much offset does a StorageSite shelf have from walls and boxes (and horizontally from other shelves). */
 	public static final int SHELF_OFFSET = 12;
 	
-	public static final int SHELF_SLOT_AMOUNT = 4;
+	public static final int SHELF_SLOT_AMOUNT = 3;
 	public static final int SHELF_SLOT_CAPACITY = 5;
 	
 	public static final int UI_WIDTH_MENU = 400;
+	public static final Color UI_BORDER_COLOR = Color.DARK_GRAY;
 	
 }

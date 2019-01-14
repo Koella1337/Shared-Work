@@ -42,11 +42,13 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 	@Override
 	public StorageSite receiveTask(WarehouseTask task) {
 		StorageSite leastOverworkedSite = null;
-		int leastOverworkedSiteTaskCount = -1;
+		int leastOverworkedSiteTaskCount = Integer.MAX_VALUE;
 		
 		//choose Site that either accepts the Task or is the least overworked
 		for (StorageSite s : storageSites) {
 			int overworkedTaskCount = s.canAcceptTask(task);
+			if (overworkedTaskCount == -1)
+				continue;
 			
 			if (overworkedTaskCount == 0) {
 				s.receiveTask(task);
@@ -60,6 +62,9 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 			}
 		}
 		
+		if (leastOverworkedSite == null)
+			throw new IllegalArgumentException("The task \"" + task + "\" can not be accepted by any StorageSite.");
+		
 		leastOverworkedSite.receiveTask(task);
 		return leastOverworkedSite;
 	}
@@ -71,8 +76,11 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 	
 	@Override
 	public int getContainerAmount(Material material) {
-		// TODO Auto-generated method stub
-		return 0;
+		int containerAmount = 0;
+		for (StorageSite s : storageSites) {
+			containerAmount += s.getContainerAmount(material);
+		}
+		return containerAmount;
 	}
 
 	@Override
