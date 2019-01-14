@@ -7,8 +7,8 @@ public class WarehouseTask extends Task {
 
 	private Material material;
 	
-	public WarehouseTask(Material material) {
-		super();
+	public WarehouseTask(long timeframe, Material material) {
+		super(timeframe);
 		this.material = material;
 	}
 

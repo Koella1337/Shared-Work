@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.TimerTask;
-import java.util.concurrent.ArrayBlockingQueue;
-
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Element;
@@ -31,7 +29,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	private boolean ready = false;
 	private List<AgvTask> tasks = new LinkedList<>();
 	private Pathfinder pathfinder;
-	private Queue<AgvTask> outstandingTasks = new ArrayBlockingQueue<AgvTask>(20);
+	private Queue<AgvTask> outstandingTasks = new PriorityQueue<AgvTask>();
 	
 	public AgvCoordinator(MonitoringInterface mon, Element factory)
 	{
@@ -58,7 +56,15 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			e.printStackTrace();
 		}
 		
-		// submitTask(new AgvTask(null, new ResourceBox(new Position(20, 20)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 20)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 40)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 60)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 80)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 100)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 140)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 160)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 180)), new ResourceBox(new Position(500, 500))));
+//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 200)), new ResourceBox(new Position(500, 500))));
 	}
 	
 	public void addForklift(Forklift forklift)
@@ -142,8 +148,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	{
 		if(!outstandingTasks.isEmpty())
 		{
-			
+			submitTask(outstandingTasks.poll());
 		}
-		submitTask(outstandingTasks.poll());
 	}
 }

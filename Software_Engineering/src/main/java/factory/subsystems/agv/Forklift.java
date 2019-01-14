@@ -25,6 +25,7 @@ public class Forklift implements Placeable {
 	private Position vec = new Position(0, -1); // this is for drawing, so it mustn't be null even at the start
 
     private static Image forkliftImage;
+    private static Image forkliftImageLoaded;
     
     private AgvCoordinator coordinator;
 
@@ -49,6 +50,7 @@ public class Forklift implements Placeable {
 		scheduler.scheduleAtFixedRate(move, 50l, 50l); // update every half-second
 		
 		forkliftImage = new ImageIcon("resources/Forklift-v3.png").getImage();
+		forkliftImageLoaded = new ImageIcon("resources/Forklift-v3-loaded.png").getImage();
 	}
 
 
@@ -149,7 +151,7 @@ public class Forklift implements Placeable {
 			g2.rotate(angle);
 			int sizeX = Constants.PlaceableSize.FORKLIFT.x;
 			int sizeY = Constants.PlaceableSize.FORKLIFT.y;
-			g.drawImage(forkliftImage, -sizeX/2, -sizeY/2, sizeX, sizeY, null);
+			g.drawImage(carriedBox==null?forkliftImage:forkliftImageLoaded, -sizeX/2, -sizeY/2, sizeX, sizeY, null);
 			g2.rotate(-angle);
 	}
 }
