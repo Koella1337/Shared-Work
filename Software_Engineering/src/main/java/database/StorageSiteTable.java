@@ -10,7 +10,9 @@ import factory.shared.enums.Material;
 
 public class StorageSiteTable extends DatabaseTable {
 	
-	private PreparedStatement selectMaterial, insertMaterial;
+	private PreparedStatement selectMaterial;
+	private PreparedStatement insertMaterial;
+	private PreparedStatement updateMaterial;
 	
 	private final String tableName;
 	
@@ -34,30 +36,49 @@ public class StorageSiteTable extends DatabaseTable {
 	public void prepareStatements(Connection databaseConnection) {
 		super.prepareStatements(databaseConnection);
 		try {
-			selectEverything = databaseConnection.prepareStatement("SELECT * FROM " + tableName);
 			selectMaterial = databaseConnection.prepareStatement("SELECT * FROM " + tableName + " WHERE Material = ?");
+			
 			insertMaterial = databaseConnection.prepareStatement("INSERT INTO " + tableName + " VALUES (?, ?)");
+			
+			updateMaterial = databaseConnection.prepareStatement("UPDATE " + tableName + " SET ContainersStored = ? WHERE Material = ?");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void insertMaterial(Material material, int containerAmount) throws SQLException {
-		insertMaterial.setString(1, material.toString());
-		insertMaterial.setInt(2, containerAmount);
-		insertMaterial.execute();
+	public void addMaterial(Material material, int containerAmount) throws SQLException {
+		int containersStored = getContainerAmount(material);
+		
+		if (containersStored > 0) {
+			updateMaterial.setInt(1, containersStored + containerAmount);
+			updateMaterial.setString(2, material.toString());
+			updateMaterial.execute();
+		} else {
+			insertMaterial.setString(1, material.toString());
+			insertMaterial.setInt(2, containerAmount);
+			insertMaterial.execute();
+		}
+	}
+	
+	public void removeMaterial(Material material, int containerAmount) throws SQLException {
+		int containersStored = getContainerAmount(material);
+		
+		if (containersStored > 0) {
+			updateMaterial.setInt(1, Math.max(0, containersStored - containerAmount));
+			updateMaterial.setString(2, material.toString());
+			updateMaterial.execute();
+		}
 	}
 	
 	/** Retrieves the amount of containers in this StorageSite of a specific material. */
 	public int getContainerAmount(Material material) throws SQLException {
 		selectMaterial.setString(1, material.toString());
 		ResultSet result = selectMaterial.executeQuery();
-		if (result.next()) {
+		
+		if (result.next())
 			return result.getInt(2);
-		}
-		else {
-			throw new SQLException(String.format("Material \"%s\" not present in Table \"%s\"!", material.toString(), tableName));
-		}
+		else
+			return 0;
 	}
 
 	/**

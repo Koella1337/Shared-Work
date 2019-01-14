@@ -1,7 +1,7 @@
 package factory.subsystems.warehouse;
 
-import java.awt.Color;
 import java.awt.Graphics;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +15,7 @@ import factory.shared.Constants;
 import factory.shared.Constants.PlaceableSize;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
+import factory.shared.Task;
 import factory.shared.Utils;
 import factory.shared.enums.Material;
 import factory.shared.interfaces.Placeable;
@@ -23,25 +24,20 @@ public class StorageSite implements Placeable {
 	
 	private final WarehouseSystem warehouseSystem;
 	private final StorageSiteTable dbTable;
+	private final WarehouseForklift forklift;
 	
 	private final int id;
 	private final Position pos;
 	
 	private final List<Placeable> placeables;
+	private final List<Shelf> shelves;
+	private final List<Task> tasks;		//TODO: PriorityQueue ?
+	
 	private final ResourceBox inputbox;
 	private final ResourceBox outputbox;
 	
 	public StorageSite(WarehouseSystem warehouseSystem, int id, Element xmlStorageSiteElem) {
-		Objects.requireNonNull(warehouseSystem);
 		Objects.requireNonNull(xmlStorageSiteElem);
-		
-		//general init
-		this.warehouseSystem = warehouseSystem;
-		this.id = id;
-		
-		//database init
-		this.dbTable = new StorageSiteTable(id);
-		Database.INSTANCE.addTable(dbTable);
 		
 		//xml init
 		final PlaceableSize boxSize = PlaceableSize.RESOURCE_BOX;
@@ -52,15 +48,22 @@ public class StorageSite implements Placeable {
 		System.out.printf("%d-inbox : %s%n", id, inputbox.getPosition().toString());	//TODO: remove
 		System.out.printf("%d-outbox: %s%n", id, outputbox.getPosition().toString());
 		
+		//general init
+		this.warehouseSystem = Objects.requireNonNull(warehouseSystem);
+		this.forklift = new WarehouseForklift(new Position(pos.xPos, pos.yPos));
+		this.id = id;
+		this.tasks = new ArrayList<>();
+		
 		//interior init
-		placeables = new ArrayList<>();
+		this.placeables = new ArrayList<>();
 		placeables.add(inputbox);
 		placeables.add(outputbox);
+		this.shelves = buildShelves();
+		placeables.addAll(shelves);
 		
-		List<Shelf> x = buildShelves();
-		System.out.println("x size: " + x.size());
-		
-		placeables.addAll(x);
+		//database init
+		this.dbTable = new StorageSiteTable(id);
+		Database.INSTANCE.addTable(dbTable);
 	}
 	
 	/** Creates as many shelves as possible to fit into this StorageSite's interior. */
@@ -106,25 +109,34 @@ public class StorageSite implements Placeable {
 		return placeables;
 	}
 	
-	protected boolean hasMaterial(Material material) {
-		//TODO
-		return true;
+	protected int getContainerAmount(Material material) {
+		try {
+			return dbTable.getContainerAmount(material);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
 	}
 	
 	/**
 	 * Accepts or rejects a task depending on whether the StorageSite is capable of<br>
 	 * doing it within the deadline while also taking care of boxes and shelves.
 	 * @return 
-	 * 		the amount of tasks this warehouse needs to complete before being<br>
-	 * 		able to accept another task. (0 = task accepted, >0 = rejected)
+	 * 		"-1" ... required material not stored<br>
+	 * 		" 0" ... task accepted <br>
+	 * 		">0" ... rejected (overworked task count)
 	 */
 	protected int canAcceptTask(WarehouseTask task) {
-		return 0;	//TODO
+		int containerAmount = getContainerAmount(task.material);
+		if (containerAmount > 0)
+			return tasks.size();
+		else
+			return -1;
 	}
 	
 	/** Receive a Task from the WarehouseSystem. */
 	protected void receiveTask(WarehouseTask task) {
-		
+		tasks.add(task);	//TODO
 	}
 	
 	//TODO: testing method, remove later
@@ -137,11 +149,11 @@ public class StorageSite implements Placeable {
 		return this.pos;
 	}
 
-	@Override  //TODO
+	@Override
 	public void draw(Graphics g) {
-		g.setColor(Color.DARK_GRAY);
+		g.setColor(Constants.UI_BORDER_COLOR);
 		g.drawRect(0, 0, this.pos.xSize, this.pos.ySize);
-		g.drawString("StorageSite id:"+id, 10, 10);			//TODO: remove
+		g.drawString("StorageSite "+id, 10, 10);			//TODO: remove?
 	}
 
 	protected ResourceBox getOutputbox() {

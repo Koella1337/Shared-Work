@@ -1,41 +1,47 @@
 package factory.shared;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.util.HashMap;
-import java.util.Map;
 
 import factory.shared.enums.Material;
+import factory.shared.enums.MaterialStatus;
 import factory.shared.interfaces.ContainerDemander;
 import factory.shared.interfaces.ContainerSupplier;
 
 public class ResourceBox implements ContainerDemander, ContainerSupplier {
 
 	private final Position pos;
-	private final Map<Material, Integer> materialToAmountMap = new HashMap<>();
+	private final MaterialStorageMap content = new MaterialStorageMap();
 	
 	public ResourceBox(Position pos) {
 		this.pos = pos;
+		for (int i = 0; i < 10; i++)
+			content.add(Material.CAR_BODIES);
 	}
-
-//	@Override
-//	public void deliverContainer(Container container) {
-//		Material material = container.getMaterial();
-//		int currentAmount = materialToAmountMap.get(material);
-//		int newAmount = currentAmount - container.getAmount();
-//		materialToAmountMap.put(material, newAmount);
-//	}
-
-//	@Override
-//	public void receiveContainer(Container container) {
-//		Material material = container.getMaterial();
-//		int currentAmount = materialToAmountMap.get(material);
-//		int newAmount = currentAmount + container.getAmount();
-//		materialToAmountMap.put(material, newAmount);
-//	}
-
-	public Map<Material, Integer> getMaterialToAmountMap() {
-		return materialToAmountMap;
+	
+	/** @return the amount of stored containers in this ResourceBox <br> (across all Materials) */
+	public int getStoredContainerAmount() {
+		int amount = 0;
+		for (Material mat : content.getMap().keySet()) {
+			amount += content.get(mat);
+		}
+		return amount;
+	}
+	
+	public MaterialStatus getFullness() {
+		int percent = (int) (((float) getStoredContainerAmount() / (float) Constants.RESOURCE_BOX_MAX_CONTAINERS) * 100);
+		
+		if (percent == 0)
+			return MaterialStatus.EMPTY;
+		else if (percent < 10)
+			return MaterialStatus.PERFECT;
+		else if (percent < 25)
+			return MaterialStatus.WELL;
+		else if (percent < 50)
+			return MaterialStatus.AVERAGE;
+		else if (percent < 90)
+			return MaterialStatus.BAD;
+		else
+			return MaterialStatus.TERRIBLE;
 	}
 
 	@Override
@@ -45,22 +51,23 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 
 	@Override
 	public void draw(Graphics g) {
-		//TODO
-		g.setColor(Color.DARK_GRAY);	
-		g.drawRect(0, 0, this.pos.xSize, this.pos.ySize);
-		g.drawString("RES", 0, 15);	//TODO remove
+		g.setColor(getFullness().uiColor);
+		g.fillRect(1, 1, pos.xSize - 1, pos.ySize - 1);
+		g.setColor(Constants.UI_BORDER_COLOR);	
+		g.drawRect(0, 0, pos.xSize, pos.ySize);
+		g.drawString(""+getStoredContainerAmount(), pos.xSize/3, pos.ySize/2);
 	}
 
 	@Override
 	public Container deliverContainer(Material material) {
-		// TODO Auto-generated method stub
-		return null;
+		if (content.get(material) == null)
+			throw new IllegalArgumentException("Could not deliver \"" + material + "\" since it isn't stored in this ResourceBox.");
+		return new Container(content.remove(material));
 	}
 
 	@Override
 	public void receiveContainer(Container container) {
-		// TODO Auto-generated method stub
-		
+		content.add(container);
 	}
 	
 }
