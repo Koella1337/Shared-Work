@@ -15,8 +15,11 @@ import org.xml.sax.SAXException;
 
 import app.gui.SubsystemMenu;
 import factory.shared.AbstractSubsystem;
+import factory.shared.FactoryEvent;
 import factory.shared.Position;
+import factory.shared.ResourceBox;
 import factory.shared.Utils;
+import factory.shared.enums.EventKind;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
 import factory.subsystems.agv.interfaces.AgvMonitorInterface;
@@ -56,15 +59,12 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			e.printStackTrace();
 		}
 		
-//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 20)), new ResourceBox(new Position(500, 500))));
-//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 40)), new ResourceBox(new Position(500, 500))));
-//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 60)), new ResourceBox(new Position(500, 500))));
-//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 80)), new ResourceBox(new Position(500, 500))));
-//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 100)), new ResourceBox(new Position(500, 500))));
-//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 140)), new ResourceBox(new Position(500, 500))));
-//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 160)), new ResourceBox(new Position(500, 500))));
-//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 180)), new ResourceBox(new Position(500, 500))));
-//		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 200)), new ResourceBox(new Position(500, 500))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 20)), new ResourceBox(new Position(500, 500))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 40)), new ResourceBox(new Position(500, 400))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 60)), new ResourceBox(new Position(400, 500))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 80)), new ResourceBox(new Position(400, 400))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 100)), new ResourceBox(new Position(300, 500))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 100)), new ResourceBox(new Position(500, 300))));
 	}
 	
 	public void addForklift(Forklift forklift)
@@ -144,8 +144,11 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 		return tasks;
 	}
 
-	public void finishedTask() 
+	public void finishedTask(AgvTask task) 
 	{
+		this.notify(new FactoryEvent(this, EventKind.AGV_CONTAINER_DELIVERED, task));
+//		System.out.println("CONTAINER HAS BEEN DELIVERED");
+		
 		if(!outstandingTasks.isEmpty())
 		{
 			submitTask(outstandingTasks.poll());

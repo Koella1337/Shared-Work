@@ -101,7 +101,7 @@ public class MonitoringSystem implements MonitoringInterface {
 					if(demander == null) {
 						LOGGER.warning("no demander for the warehousetask found");
 					}else {
-						AgvTask agv = new AgvTask(mat, box, demander);
+						AgvTask agv = new AgvTask(600000, mat, box, demander);
 						agvSystem.submitTask(agv);
 					}
 					break;
@@ -112,7 +112,7 @@ public class MonitoringSystem implements MonitoringInterface {
 					Material material = (Material) event.getAttachment(0);
 					Robot robot = (Robot) event.getAttachment(1);
 					
-					WarehouseTask wht = new WarehouseTask(material);
+					WarehouseTask wht = new WarehouseTask(600000, material);
 					warehouseTaskDemanders.put(wht, robot);
 					this.warehouseSystem.receiveTask(wht);
 					
@@ -135,7 +135,7 @@ public class MonitoringSystem implements MonitoringInterface {
 	private void handleCarFinishedEvent(FactoryEvent event) {
 		System.out.println("CAR_FINISHED");
 		Material material = (Material) event.getAttachment(0);
-		AgvTask agvtask = new AgvTask(material, this.assemblyLine.getConveyor().getOutputbox(), shippingBox);
+		AgvTask agvtask = new AgvTask(600000, material, this.assemblyLine.getConveyor().getOutputbox(), shippingBox);
 		agvSystem.submitTask(agvtask);
 	}
 
