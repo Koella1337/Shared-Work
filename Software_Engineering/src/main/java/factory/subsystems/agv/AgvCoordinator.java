@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
+import java.util.PriorityQueue;
+import java.util.Queue;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Element;
@@ -14,9 +15,11 @@ import org.xml.sax.SAXException;
 
 import app.gui.SubsystemMenu;
 import factory.shared.AbstractSubsystem;
+import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
 import factory.shared.Utils;
+import factory.shared.enums.EventKind;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
 import factory.subsystems.agv.interfaces.AgvMonitorInterface;
@@ -29,6 +32,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	private boolean ready = false;
 	private List<AgvTask> tasks = new LinkedList<>();
 	private Pathfinder pathfinder;
+	private Queue<AgvTask> outstandingTasks = new PriorityQueue<AgvTask>();
 	
 	public AgvCoordinator(MonitoringInterface mon, Element factory)
 	{
@@ -55,7 +59,12 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			e.printStackTrace();
 		}
 		
-		submitTask(new AgvTask(null, new ResourceBox(new Position(20, 20)), new ResourceBox(new Position(500, 500))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 20)), new ResourceBox(new Position(500, 500))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 40)), new ResourceBox(new Position(500, 400))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 60)), new ResourceBox(new Position(400, 500))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 80)), new ResourceBox(new Position(400, 400))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 100)), new ResourceBox(new Position(300, 500))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 100)), new ResourceBox(new Position(500, 300))));
 	}
 	
 	public void addForklift(Forklift forklift)
@@ -74,10 +83,17 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 				break;
 			}
 		}
-		// calculate the Path
-		free.setPath(pathfinder.getPath(free.getPosition(), task.getPickup().getPosition()));
-		free.path.addAll(pathfinder.getPath(task.getPickup().getPosition(), task.getDropoff().getPosition()));
-		free.assignTask(task);
+		if(free != null)
+		{
+			// calculate the Path
+			free.setPath(pathfinder.getPath(free.getPosition(), task.getPickup().getPosition()));
+			free.path.addAll(pathfinder.getPath(task.getPickup().getPosition(), task.getDropoff().getPosition()));
+			free.assignTask(task);
+		}
+		else
+		{
+			outstandingTasks.add(task);
+		}
 		
 	}
 
@@ -126,5 +142,16 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	@Override
 	public List<AgvTask> getCurrentTasks() {
 		return tasks;
+	}
+
+	public void finishedTask(AgvTask task) 
+	{
+		this.notify(new FactoryEvent(this, EventKind.AGV_CONTAINER_DELIVERED, task));
+//		System.out.println("CONTAINER HAS BEEN DELIVERED");
+		
+		if(!outstandingTasks.isEmpty())
+		{
+			submitTask(outstandingTasks.poll());
+		}
 	}
 }

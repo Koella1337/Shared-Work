@@ -6,18 +6,16 @@ import java.awt.Dimension;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import factory.shared.AbstractSubsystem;
 import factory.shared.Constants;
 import factory.shared.FactoryEvent;
-import factory.shared.Position;
-import factory.shared.ResourceBox;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.interfaces.Stoppable;
-import factory.subsystems.agv.AgvTask;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 class UserInterface implements Stoppable {
@@ -77,13 +75,12 @@ class UserInterface implements Stoppable {
 		this.menuPanel.setPreferredSize(new Dimension(new Dimension(Constants.UI_WIDTH_MENU, this.config.uiHeight+1)));
 		this.menuPanel.setLayout(null);
 
-		JButton addOrderButton = new JButton("place order");
-		addOrderButton.addActionListener(a -> {
-			AgvTask task = new AgvTask(Material.CAR, new ResourceBox(new Position(20, 20)), new ResourceBox(new Position(500, 500)));
-			this.monitor.getAgvSystem().submitTask(task);
+		JButton doNothingButton = new JButton("do nothing");
+		doNothingButton.addActionListener(a -> {
+			JOptionPane.showMessageDialog(null, "You've successfully done nothing! ");
 		});
-		addOrderButton.setBounds(20,100,160,20);
-		this.menuPanel.add(addOrderButton);
+		doNothingButton.setBounds(20,100,160,20);
+		this.menuPanel.add(doNothingButton);
 
 		JButton carFinishedButton = new JButton("car finished");
 		carFinishedButton.addActionListener(a -> monitor.handleEvent(new FactoryEvent(monitor.getAssemblyLine(), EventKind.CAR_FINISHED, Material.CAR)));

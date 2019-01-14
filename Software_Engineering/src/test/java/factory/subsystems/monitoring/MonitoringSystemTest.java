@@ -103,7 +103,7 @@ public class MonitoringSystemTest {
 				new Robot(RobotTypes.GRABBER, 1, pos, this.assemblyLineSystem));
 		this.monitor.handleEvent(event);
 
-		AgvTask agvTaskToSubmit = new AgvTask(Material.CAR, this.assemblyLineSystem.getConveyor().getOutputbox(),
+		AgvTask agvTaskToSubmit = new AgvTask(600000, Material.CAR, this.assemblyLineSystem.getConveyor().getOutputbox(),
 				this.monitor.getShippingBox());
 		ArgumentCaptor<AgvTask> argument = ArgumentCaptor.forClass(AgvTask.class);
 		Mockito.verify(this.agvSystem, Mockito.times(1)).submitTask(argument.capture());
@@ -121,7 +121,7 @@ public class MonitoringSystemTest {
 		ContainerSupplier storageSite = Mockito.mock(ContainerSupplier.class);
 		Mockito.doReturn(pos).when(storageSite).getPosition();
 
-		WarehouseTask wht = new WarehouseTask(Material.CAR_BODIES);
+		WarehouseTask wht = new WarehouseTask(600000, Material.CAR_BODIES);
 		Robot robot  = Mockito.mock(Robot.class);
 		HashMap<WarehouseTask, ContainerDemander> map = new HashMap<>(Collections.singletonMap(wht, robot));
 		map.put(wht, robot);
@@ -149,7 +149,7 @@ public class MonitoringSystemTest {
 
 		FactoryEvent event = new FactoryEvent(this.warehouseSystem, EventKind.ROBOTARMS_LACK_OF_MATERIAL, Material.CAR_BODIES,
 				robot);
-		WarehouseTask wht = new WarehouseTask(Material.CAR_BODIES);
+		WarehouseTask wht = new WarehouseTask(600000, Material.CAR_BODIES);
 		HashMap<WarehouseTask, ContainerDemander> map = new HashMap<>(Collections.singletonMap(wht, robot));
 		Mockito.doReturn(map).when(this.monitor).getWarehouseTaskDemanders();
 		

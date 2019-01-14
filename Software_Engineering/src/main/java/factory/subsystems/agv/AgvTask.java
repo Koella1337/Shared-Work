@@ -11,8 +11,8 @@ public class AgvTask extends Task {
 	private final ContainerDemander dropoff;
 	private final Material material;
 
-	public AgvTask( Material material,  ContainerSupplier pickup, ContainerDemander dropoff) {
-		super();
+	public AgvTask(long timeframe, Material material,  ContainerSupplier pickup, ContainerDemander dropoff) {
+		super(timeframe);
 		this.pickup = pickup;
 		this.dropoff = dropoff;
 		this.material = material;

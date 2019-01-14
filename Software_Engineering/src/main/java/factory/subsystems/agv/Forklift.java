@@ -11,13 +11,16 @@ import javax.swing.ImageIcon;
 
 import factory.shared.Constants;
 import factory.shared.Container;
+import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
+import factory.shared.enums.EventKind;
 import factory.shared.interfaces.Placeable;
 
 public class Forklift implements Placeable {
 	private static final double SPEED = 10000000; // distance moved per nanosecond (inverted for easier calculation)
 	private static final double THRESHOLD = 0.001; // maximum distance to a target to have reached it
+	private static final double COLLISION_RADIUS = 10; // minimum distance to all other forklifts to avoid collisions
 	private long lastTime; // last time the forklift's position was updated
 	private boolean shutdown;
 
@@ -25,6 +28,7 @@ public class Forklift implements Placeable {
 	private Position vec = new Position(0, -1); // this is for drawing, so it mustn't be null even at the start
 
     private static Image forkliftImage;
+    private static Image forkliftImageLoaded;
     
     private AgvCoordinator coordinator;
 
@@ -49,6 +53,7 @@ public class Forklift implements Placeable {
 		scheduler.scheduleAtFixedRate(move, 50l, 50l); // update every half-second
 		
 		forkliftImage = new ImageIcon("resources/Forklift-v3.png").getImage();
+		forkliftImageLoaded = new ImageIcon("resources/Forklift-v3-loaded.png").getImage();
 	}
 
 
@@ -90,6 +95,21 @@ public class Forklift implements Placeable {
 	{
 		return Position.length(Position.subtractPosition(pos, target)) < THRESHOLD;
 	}
+	
+	private void checkForCollision()	
+	{
+		for(Forklift f : coordinator.getForklifts())
+		{
+			if(Position.length(Position.subtractPosition(f.pos, this.pos)) < COLLISION_RADIUS)
+			{
+				if(f != this)
+				{
+					coordinator.notify(new FactoryEvent(coordinator, EventKind.AGV_FORKLIFT_COLLISION, this, f));
+//					System.out.println("FORKLIFT COLLISION OCCURRED");
+				}
+			}
+		}
+	}
 
 	final TimerTask move = new TimerTask() {
 		// this is periodically called to update the forklift's position
@@ -100,6 +120,7 @@ public class Forklift implements Placeable {
 			if (shutdown) {
 				return;
 			}
+			checkForCollision();
 			if (path != null && !path.isEmpty()) // no target means no moving
 			{
 				// Vector to next target along path
@@ -132,8 +153,9 @@ public class Forklift implements Placeable {
 					if (targetReached(currentTask.getDropoff().getPosition())) {
 						currentTask.getDropoff().receiveContainer(carriedBox);
 						carriedBox = null;
+						AgvTask saveTask = currentTask;
 						currentTask = null;
-						
+						coordinator.finishedTask(saveTask);
 					}
 				}
 			}
@@ -149,7 +171,7 @@ public class Forklift implements Placeable {
 			g2.rotate(angle);
 			int sizeX = Constants.PlaceableSize.FORKLIFT.x;
 			int sizeY = Constants.PlaceableSize.FORKLIFT.y;
-			g.drawImage(forkliftImage, -sizeX/2, -sizeY/2, sizeX, sizeY, null);
+			g.drawImage(carriedBox==null?forkliftImage:forkliftImageLoaded, -sizeX/2, -sizeY/2, sizeX, sizeY, null);
 			g2.rotate(-angle);
 	}
 }
