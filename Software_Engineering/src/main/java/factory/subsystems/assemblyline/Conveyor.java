@@ -1,32 +1,31 @@
 package factory.subsystems.assemblyline;
 
 import java.awt.Graphics;
+import java.util.List;
 
+import app.gui.SubsystemMenu;
 import factory.shared.Container;
+import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
 import factory.shared.Task;
+import factory.shared.enums.EventKind;
 import factory.shared.enums.SubsystemStatus;
+import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.assemblyline.interfaces.ConveyorMonitorInterface;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
-public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorMonitorInterface{
-
-	private Position pos;
-	
+public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeable, ConveyorMonitorInterface{
 	public int speed;
 	public int lubricant;
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private long timestamp;
-	private ResourceBox inputbox = new ResourceBox(new Position(10,20));//TODO @max set to correct value
-	private ResourceBox outputbox = new ResourceBox(new Position(100,20)); //TODO @max set to correct value
+	private ResourceBox inputbox;
+	private ResourceBox outputbox;
 
 	
-	public Conveyor(Position pos, int s) { //If no lubricant level is given, it will be assumed
-		this(pos, s,100);
-	}
 	
 	/**
 	 * 
@@ -38,36 +37,26 @@ public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorM
 	 * 
 	 * @param l how much lubricant is available initially
 	 */
-	public Conveyor(Position pos,int s, int l){
-		super();
-		this.pos = pos;
+	public Conveyor(int s, int l){
 		speed = (60/s) / 4; 
 		lubricant = l;
 	}
 	
-
+	public Conveyor(int s) { //If no lubricant level is given, it will be assumed
+		speed = (60/s) / 4;
+		lubricant = 100; //NOT A FINAL VALUE
+	}
 	
 	public void addBox(Container container) {
 		lubricant += container.getAmount();
 	}
 	
 
-	public void doWork() {
-		if(getStatus() == SubsystemStatus.WAITING) {
-			//Performs task
-			status = SubsystemStatus.RUNNING;
-			timestamp = (int) System.currentTimeMillis();
-			if(Math.random() * speed > 18) {
-				status = SubsystemStatus.BROKEN;
-			}
-		} else {
-			//THROW ERROR MESSAGE
-		} 
-	}
-
 	
-	public SubsystemStatus getStatus() {
+	public SubsystemStatus status() {
 		if (status == SubsystemStatus.BROKEN) { //if it's broken
+			FactoryEvent broken = new FactoryEvent(this, EventKind.CONVEYORS_BROKEN);
+			this.notify(broken);
 			return SubsystemStatus.BROKEN;
 		}
 		if (timestamp + speed <= System.currentTimeMillis()) { //Done with last task
@@ -95,50 +84,40 @@ public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorM
 
 	@Override
 	public Position getPosition() {
-		return pos;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-		
+		if(status == SubsystemStatus.WAITING) {
+			//Performs task
+			status = SubsystemStatus.RUNNING;
+			timestamp = (int) System.currentTimeMillis();
+			if(Math.random() * speed > 18) {
+				status = SubsystemStatus.BROKEN;
+			}
+		} else {
+			//THROW ERROR MESSAGE
+		} 
 	}
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-		
+		status = SubsystemStatus.STOPPED;
 	}
 
 	@Override
 	public void setSpeed(double speed) {
-		// TODO Auto-generated method stub
-		
+		this.speed = (int) speed;
 	}
 
 	@Override
 	public void draw(Graphics g) {
-		g.drawString("conv.", 0, 0);
-		
-	}
-
-	@Override
-	public boolean isReady() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void notifyMonitoringSystem(Task task, RobotEvent event) {
 		// TODO Auto-generated method stub
 		
 	}
-//
-//	@Override
-//	public void notifyMonitoringSystem(Task task, RobotEvent event) {
-//		// TODO Auto-generated method stub
-//		
-//	}
+
 
 	public ResourceBox getInputbox() {
 		return inputbox;
@@ -155,6 +134,32 @@ public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorM
 	public void setOutputbox(ResourceBox outputbox) {
 		this.outputbox = outputbox;
 	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public SubsystemStatus getStatus() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Placeable> getPlaceables() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SubsystemMenu getCurrentSubsystemMenu() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 

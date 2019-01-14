@@ -4,6 +4,7 @@ import java.util.List;
 
 import factory.shared.Container;
 import factory.shared.Task;
+import factory.shared.enums.SubsystemStatus;
 import factory.subsystems.assemblyline.RobotEvent;
 
 public interface RobotInterface{
@@ -14,23 +15,8 @@ public interface RobotInterface{
 	 */
 	void addBox(Container box);
 	
-	/**
-	 * does the robot-specific work
-	 */
-	void doWork();
-	
-	/**
-	 * @return true if the robot has finished its work and is ready again
-	 */
-	boolean isReady();
-	
-	/**
-	 * notifies the monitoring system about the given event 
-	 * @param task
-	 * @param event
-	 */
-	void notifyMonitoringSystem(Task task, RobotEvent event);
-	
 	int getMaterials();
+	
+	SubsystemStatus status();
 	
 }
