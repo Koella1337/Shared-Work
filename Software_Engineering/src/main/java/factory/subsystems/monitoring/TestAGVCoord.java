@@ -19,7 +19,7 @@ public class TestAGVCoord extends AgvCoordinator {
 	List<Placeable> plac;
 	
 	public TestAGVCoord(MonitoringInterface mon) {
-		super(mon);
+		super(mon, null);
 		this.forklift = new TestForklift();
 		this.forklift.pos = new Position(100,100);
 		this.plac = new ArrayList<>();

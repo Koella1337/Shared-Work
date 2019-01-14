@@ -52,12 +52,10 @@ public class FactoryApplication implements Stoppable {
 		//TODO @thomas create assembly line
 		//this.monitor.addToSubsystemList(assemblyLine);
 		
-		Element forklists = (Element) (factory).getElementsByTagName("forklifts").item(0);
-		AgvCoordinator agvSystem = new TestAGVCoord(this.monitor); //TODO @thomas add xmlelement to constructor
+		//Element forklists = (Element) (factory).getElementsByTagName("forklifts").item(0);
+		AgvCoordinator agvSystem = new AgvCoordinator(this.monitor, factory);
 		this.monitor.setAgvSystem(agvSystem);
-		
-		agvSystem.addForklift(new Forklift(new Position(100,100)));
-		
+
 		AssemblyLine assemblyLine = new AssemblyLine(this.monitor,new Position(50,50),new Robot[] {}, new Conveyor(new Position(200,100),1));
 		this.monitor.setAssemblyLine(assemblyLine);
 		

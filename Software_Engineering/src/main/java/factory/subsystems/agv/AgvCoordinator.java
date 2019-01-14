@@ -4,9 +4,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import app.gui.SubsystemMenu;
 import factory.shared.AbstractSubsystem;
+import factory.shared.Position;
 import factory.shared.Task;
+import factory.shared.Utils;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
 import factory.subsystems.agv.interfaces.AgvMonitorInterface;
@@ -17,12 +24,25 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	private final List<Forklift> forklifts = new LinkedList<>();
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private boolean ready = false;
+	private List<AgvTask> tasks = new LinkedList<>();
 	
-	public AgvCoordinator(MonitoringInterface mon)
+	public AgvCoordinator(MonitoringInterface mon, Element factory)
 	{
 		super(mon);
 		status = SubsystemStatus.RUNNING;
 		ready = true;
+		
+		// TODO: Read map and construct factory
+		Element forks = (Element) factory.getElementsByTagName("forklifts").item(0);
+		NodeList forkliftElements = forks.getElementsByTagName("forklift");
+		for(int i = 0; i < forkliftElements.getLength(); i++)
+		{
+			Node a = ((Element)forkliftElements.item(i)).getElementsByTagName("position").item(0);
+			String s = a.getFirstChild().getNodeValue();
+			Position p = Utils.parsePosition(s, null);
+			Forklift f = new Forklift(p, this);
+			addForklift(f);
+		}
 	}
 	
 	public void addForklift(Forklift forklift)
@@ -33,7 +53,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	@Override
 	public void submitTask(AgvTask task) {
 		System.out.println("SUBMIT AGV TASK");
-		// TODO: Choose best free Forklift and call forklift.assignTask
+		// TODO: Choose closest free Forklift and call forklift.assignTask
 	}
 
 	@Override
@@ -53,8 +73,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "AGV System";
 	}
 
 	@Override
@@ -65,19 +84,22 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-		
+		for(Forklift f : forklifts)
+		{
+			f.shutdown();
+		}
 	}
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-		
+		for(Forklift f : forklifts)
+		{
+			f.resume();
+		}
 	}
 
 	@Override
-	public Task getCurrentTask() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<AgvTask> getCurrentTasks() {
+		return tasks;
 	}
 }

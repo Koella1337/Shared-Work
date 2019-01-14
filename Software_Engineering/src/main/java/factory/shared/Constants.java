@@ -6,7 +6,7 @@ public class Constants {
 		SHELF				(  8, 35),
 		RESOURCE_BOX		( 40, 40),
 		
-		FORKLIFT			( 10, 10),
+		FORKLIFT			( 20, 20),
 		
 		ASSEMBLY_LINE		(350,100);
 		

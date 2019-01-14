@@ -43,10 +43,10 @@ public class MonitoringSystemTest {
 
 	@Test(description = "verifies if only the correct method of the error handler is called when a error occurs")
 	public void handleError() {
-		AbstractSubsystem subsystem = Mockito.mock(AgvCoordinator.class);
+		AgvCoordinator subsystem = Mockito.mock(AgvCoordinator.class);
 		EventKind agvForkliftDamaged = EventKind.AGV_FORKLIFT_DAMAGED;
 		
-		Forklift damagedForklift = new Forklift(new Position(100,100));
+		Forklift damagedForklift = new Forklift(new Position(100,100), subsystem);
 		FactoryEvent event = new FactoryEvent(subsystem, agvForkliftDamaged,damagedForklift);
 
 		this.monitor.handleEvent(event);

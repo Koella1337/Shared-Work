@@ -29,7 +29,4 @@ public class AgvTask extends Task {
 	public Material getMaterial() {
 		return material;
 	}
-
-	
-
 }
