@@ -127,7 +127,7 @@ public class StorageSite implements Placeable {
 	 * 		">0" ... rejected (overworked task count)
 	 */
 	protected int canAcceptTask(WarehouseTask task) {
-		int containerAmount = getContainerAmount(task.material);
+		int containerAmount = getContainerAmount(task.getMaterial());
 		if (containerAmount > 0)
 			return tasks.size();
 		else

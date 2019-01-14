@@ -14,8 +14,8 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 	
 	public ResourceBox(Position pos) {
 		this.pos = pos;
-		for (int i = 0; i < 10; i++)
-			content.add(Material.CAR_BODIES);
+		for (int i = 0; i < 40; i++)	//TODO: remove !!
+			this.receiveContainer(new Container(Material.CAR_BODIES));
 	}
 	
 	/** @return the amount of stored containers in this ResourceBox <br> (across all Materials) */
@@ -61,13 +61,20 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 	@Override
 	public Container deliverContainer(Material material) {
 		if (content.get(material) == null)
-			throw new IllegalArgumentException("Could not deliver \"" + material + "\" since it isn't stored in this ResourceBox.");
+			throw new IllegalArgumentException("Could not deliver \"" + material + "\" since it isn't stored in this " + this.toString());
 		return new Container(content.remove(material));
 	}
 
 	@Override
 	public void receiveContainer(Container container) {
+		if (getStoredContainerAmount() == Constants.RESOURCE_BOX_MAX_CONTAINERS)
+			throw new IllegalArgumentException(this.toString() + " is already full!");
 		content.add(container);
+	}
+	
+	@Override
+	public String toString() {
+		return "ResourceBox at " + pos.toString();
 	}
 	
 }
