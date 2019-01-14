@@ -2,7 +2,6 @@ package app.gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Collections;
 import java.util.function.Predicate;
 
 import javax.swing.JButton;
@@ -28,8 +27,6 @@ class MenuBarPanel extends GUIPanel {
 
 		startButton = new MonitorButton("START", m -> m.getStatus() == SubsystemStatus.STOPPED);
 		startButton.addActionListener(a -> {
-			Collections.shuffle(monitor.getTestSubSystemList());//TODO remove, only for testing
-			monitor.setCurrentSubsystemToShow(monitor.getTestSubSystemList().get(0));//TODO remove, only for testing
 			monitor.start();
 		});
 		this.add(startButton);

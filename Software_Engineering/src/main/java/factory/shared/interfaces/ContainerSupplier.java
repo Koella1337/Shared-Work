@@ -1,9 +1,13 @@
 package factory.shared.interfaces;
 
 import factory.shared.Container;
+import factory.shared.enums.Material;
 
-public interface ContainerSupplier {
+/**
+ * A physical (placeable) objects that can deliver containers.
+ */
+public interface ContainerSupplier extends Placeable{
 	
-	void deliverContainer(Container container);
+	Container deliverContainer(Material material);
 	
 }

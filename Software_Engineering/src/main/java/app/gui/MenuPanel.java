@@ -12,7 +12,6 @@ class MenuPanel extends GUIPanel {
 	
 	private SubsystemMenu subsystemMenu;
 	
-	
 	public MenuPanel(int fps, MonitoringInterface monitor) {
 		super(fps);
 		this.monitor = monitor;

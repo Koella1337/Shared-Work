@@ -13,7 +13,7 @@ public interface WarehouseMonitorInterface extends Monitorable {
 	
 	/**
 	 * @param task
-	 * @return the StorageSite which will perform the Task
+	 * @return the ResourceBox from which the demanded resource can be fetched
 	 */
 	public StorageSite receiveTask(WarehouseTask task);
 	

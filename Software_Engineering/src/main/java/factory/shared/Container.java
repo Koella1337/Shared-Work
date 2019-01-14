@@ -3,8 +3,6 @@ package factory.shared;
 import java.util.Objects;
 
 import factory.shared.enums.Material;
-import factory.shared.interfaces.ContainerDemander;
-import factory.shared.interfaces.ContainerSupplier;
 
 public class Container {
 	
@@ -25,12 +23,5 @@ public class Container {
 		return material.containerAmount;
 	}
 	
-	/**
-	 * Transfers this container from a supplier to a demander.
-	 */
-	public void transfer(ContainerSupplier source, ContainerDemander target) {
-		source.deliverContainer(this);
-		target.receiveContainer(this);
-	}
 	
 }

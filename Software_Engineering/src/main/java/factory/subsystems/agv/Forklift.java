@@ -9,6 +9,8 @@ import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 
+import factory.shared.Constants;
+import factory.shared.Container;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
 import factory.shared.interfaces.Placeable;
@@ -20,46 +22,51 @@ public class Forklift implements Placeable {
 	private boolean shutdown;
 
 	private List<Position> path;
-	private Position vec;
+	private Position vec = new Position(-1, 0); // this is for drawing, so it mustn't be null even at the start
 
     private static Image forkliftImage;
+    
+    private AgvCoordinator coordinator;
 
 	public Position getVec() {
 		return vec;
 	}
 
 	private Position pos;
-	private ResourceBox carriedBox;
-
-	private Graphics graph;
+	
+	private Container carriedBox;
 
 	private AgvTask currentTask;
 
-	public Forklift(Position pos) {
+	public Forklift(Position pos, AgvCoordinator coordinator) {
 		shutdown = false;
 		this.pos = pos;
 		carriedBox = null;
+		this.coordinator = coordinator;
 
 		lastTime = System.nanoTime();
 		Timer scheduler = new Timer();
 		scheduler.scheduleAtFixedRate(move, 500l, 500l); // update every half-second
 		
-		forkliftImage = new ImageIcon("resources/Forklift-v2.png").getImage();
+		forkliftImage = new ImageIcon("resources/Forklift-v3.png").getImage();
 	}
 
-	public Position getPos() {
-		return pos;
-	}
 
 	public AgvTask getCurrentTask() {
 		return currentTask;
 	}
 
 	public void assignTask(AgvTask newTask) {
-		if (currentTask != null) {
+		if (currentTask == null) {
 			// TODO: warn about unfinished task
+			// actually, I'm making the coordinator too,
+			// so I just won't assign to busy forklifts, who cares
+			// the monitor doesn't have to know
+			currentTask = newTask;
 		}
-		currentTask = newTask;
+		else
+		{
+		}
 	}
 
 	public Position getPosition() {
@@ -115,13 +122,14 @@ public class Forklift implements Placeable {
 					path.remove(0);
 				}
 				if (currentTask != null) {
-					if (targetReached(currentTask.getPickup())) {
-						carriedBox = currentTask.getBox();
-						// TODO: Pick up Box
+					if (targetReached(currentTask.getPickup().getPosition())) {
+						carriedBox = currentTask.getPickup().deliverContainer(currentTask.getMaterial());
 					}
-					if (targetReached(currentTask.getDropoff())) {
+					if (targetReached(currentTask.getDropoff().getPosition())) {
+						currentTask.getDropoff().receiveContainer(carriedBox);
 						carriedBox = null;
-						// TODO: Drop off Box
+						currentTask = null;
+						
 					}
 				}
 			}
@@ -131,11 +139,13 @@ public class Forklift implements Placeable {
 	@Override
 	public void draw(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;
-			g2.translate( (int)Math.round(getPosition().xPos), (int)Math.round(getPosition().yPos));
+			//g2.translate( (int)Math.round(getPosition().xPos), (int)Math.round(getPosition().yPos));
 			Position vec = getVec();
 			Double angle = Math.PI - Math.atan2(vec.xPos, vec.yPos);
-			System.out.println(angle);
 			g2.rotate(angle);
-			g.drawImage(forkliftImage, -60, -60, 120, 120, null);
+			int sizeX = Constants.PlaceableSize.FORKLIFT.x;
+			int sizeY = Constants.PlaceableSize.FORKLIFT.y;
+			g.drawImage(forkliftImage, -sizeX/2, -sizeY/2, sizeX, sizeY, null);
+			g2.rotate(-angle);
 	}
 }

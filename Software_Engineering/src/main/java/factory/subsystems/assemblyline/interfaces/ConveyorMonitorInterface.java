@@ -1,4 +1,4 @@
-package factory.subsystems.conveyors.interfaces;
+package factory.subsystems.assemblyline.interfaces;
 
 public interface ConveyorMonitorInterface {
 

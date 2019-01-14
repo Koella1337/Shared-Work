@@ -1,38 +1,59 @@
 package factory.subsystems.monitoring;
+
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import app.gui.GUIHandler;
 import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
+import factory.shared.Position;
+import factory.shared.ResourceBox;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.EventKind.EventSeverity;
+import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
+import factory.shared.interfaces.ContainerSupplier;
 import factory.shared.interfaces.Monitorable;
+import factory.subsystems.agv.AgvCoordinator;
+import factory.subsystems.agv.AgvTask;
+import factory.subsystems.assemblyline.AssemblyLine;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
+import factory.subsystems.monitoring.onlineshop.Order;
+import factory.subsystems.warehouse.StorageSite;
+import factory.subsystems.warehouse.WarehouseSystem;
+import factory.subsystems.warehouse.WarehouseTask;
 
 public class MonitoringSystem implements MonitoringInterface {
 	private static final Logger LOGGER = Logger.getLogger(MonitoringSystem.class.getName());
 
-	private SubsystemStatus status;
+	private final GUIHandler handler;
+	private final ErrorEventHandler errorHandler;
 
-	private List<AbstractSubsystem> testList = new ArrayList<>(); // TODO replace by one list for each type of subsystem
-	private GUIHandler handler;
-	private ErrorEventHandler errorHandler;
-	
-	
+	private final List<Order> orderList;
+
+	private SubsystemStatus status;
+	private AgvCoordinator agvSystem;
+	private WarehouseSystem warehouseSystem;
+	private AssemblyLine assemblyLine;
+
+	private ResourceBox shippingBox = new ResourceBox(new Position(10, 10));
+
 
 	public MonitoringSystem() {
 		this.handler = new GUIHandler(this);
 		this.errorHandler = new ErrorEventHandler(this);
+		this.orderList = new ArrayList<>();
 	}
-	
+
 	@Override
 	public synchronized void handleEvent(FactoryEvent event) {
 		try {
-			LOGGER.log(Level.INFO, String.format("handling event %s ...", event));
+			LOGGER.log(INFO, String.format("handling event %s ...", event));
 			Monitorable source = event.getSource();
 			EventKind eventKind = event.getKind();
 			EventSeverity severity = eventKind.severity;
@@ -49,6 +70,34 @@ public class MonitoringSystem implements MonitoringInterface {
 			case INFO:
 				break;
 			case NORMAL:
+				// handleNormalEvent(event);
+				switch (event.getKind()) {
+				case AGV_CONTAINER_DELIVERED:
+					System.out.println("AGV_CONTAINER_DELIVERED");
+					// AgvTask task = (AgvTask) event.getAttachment(1);
+					break;
+				case WAREHOUSE_TASK_COMPLETED:
+					System.out.println("WAREHOUSE_TASK_COMPLETED");
+					WarehouseTask task = (WarehouseTask) event.getAttachment(0);
+					Material mat = task.material;
+					ContainerSupplier box = (ContainerSupplier) event.getAttachment(1);
+
+					AgvTask agv = new AgvTask(mat, box, assemblyLine);
+					
+					
+					//AgvTask t = new AgvTask(mat, new ResourceBox(new Position(0,0)), new ResourceBox(new Position(1000,1000)));
+					
+					agvSystem.submitTask( agv);
+					break;
+				case CAR_FINISHED:
+					System.out.println("CAR_FINISHED");
+					Material material = (Material) event.getAttachment(0);
+					AgvTask agvtask = new AgvTask(material, assemblyLine.conveyor.getOutputbox(), shippingBox);
+					agvSystem.submitTask(agvtask);
+				default:
+					break;
+				}
+
 				break;
 			default:
 				break;
@@ -57,60 +106,56 @@ public class MonitoringSystem implements MonitoringInterface {
 			handleEventHandlingException(event, ex);
 		}
 	}
-	
-	@Override
-	public void addToSubsystemList(AbstractSubsystem subsystem) {
-		getTestSubSystemList().add(subsystem);
-		
-		//TODO: Alex hat des leida auskommentiern müssen :P
-		//this.handler.addToFactoryPanel(subsystem);
-	}
+
 
 	@Override
 	public void start() {
-		for (AbstractSubsystem subsystem : getTestSubSystemList()) {
-			LOGGER.log(Level.INFO, String.format("starting %s ...", subsystem.toString()));
-			subsystem.start();
-		}
+		Objects.requireNonNull(this.agvSystem);// TODO @thomas throw exception
+		Objects.requireNonNull(this.warehouseSystem);
+
+		this.agvSystem.start();
+		this.warehouseSystem.start();
+
 		this.handler.start();
 		this.setStatus(SubsystemStatus.RUNNING);
 	}
 
 	@Override
 	public void stop() {
-
-		for (AbstractSubsystem subsystem : getTestSubSystemList()) {
-			try {
-				LOGGER.log(Level.INFO, String.format("stopping %s ...", subsystem.toString()));
-				subsystem.stop();
-			} catch (Exception ex) {
-				// this should not happen but if the system fails to stop one subsystem, the
-				// others still should be stopped
-				LOGGER.log(Level.SEVERE, ex.toString(), ex);
-			}
+		try {
+			if (this.agvSystem != null)
+				this.agvSystem.stop();
+			if (this.warehouseSystem != null)
+				this.warehouseSystem.stop();
+		} catch (Exception ex) {
+			LOGGER.log(SEVERE, ex.toString(), ex);
 		}
 		this.setStatus(SubsystemStatus.STOPPED);
 	}
 
+	@Override
+	public void addOrder(Order order) {
+		LOGGER.log(INFO, "order placed: " + order);
+		this.orderList.add(order);
+		handleNewOrder(order);
+	}
 
-	/**
-	 * if the
-	 * 
-	 * @param ex
-	 */
+	private void handleNewOrder(Order order) {
+		WarehouseTask wht = new WarehouseTask(Material.CAR_BODIES);
+		StorageSite taskHandlingStorageSite = warehouseSystem.receiveTask(wht); //TODO @Omas: Alex changed "StorageSite" to "ContainerSupplier"
+		System.out.println("added warehouse task " + wht);
+		
+	 warehouseSystem.taskCompleted(taskHandlingStorageSite, wht);//TODO remove
+	}
+
 	private void handleEventHandlingException(FactoryEvent event, Exception ex) {
-		LOGGER.log(Level.SEVERE, ex.toString(), ex);
+		LOGGER.log(SEVERE, ex.toString(), ex);
 		getErrorHandler().handleGlobalError(event);
 		this.setStatus(SubsystemStatus.BROKEN);
 	}
 
-	protected ErrorEventHandler getErrorHandler() {
+	ErrorEventHandler getErrorHandler() {
 		return errorHandler;
-	}
-
-	@Override
-	public List<AbstractSubsystem> getTestSubSystemList() {
-		return testList;
 	}
 
 	@Override
@@ -118,10 +163,9 @@ public class MonitoringSystem implements MonitoringInterface {
 		return this.status;
 	}
 
-	
 	@Override
 	public void setStatus(SubsystemStatus status) {
-		LOGGER.log(Level.INFO, String.format("Status set to %s",status));
+		LOGGER.log(INFO, String.format("Status set to %s", status));
 		this.status = status;
 	}
 
@@ -130,5 +174,46 @@ public class MonitoringSystem implements MonitoringInterface {
 		this.handler.setCurrentSubsystem(subsystem);
 	}
 
+	@Override
+	public AgvCoordinator getAgvSystem() {
+		return agvSystem;
+	}
+
+	@Override
+	public void setAgvSystem(AgvCoordinator agvSystem) {
+		this.handler.addToFactoryPanel(agvSystem);
+		this.agvSystem = agvSystem;
+	}
+
+	@Override
+	public WarehouseSystem getWarehouseSystem() {
+		return warehouseSystem;
+	}
+
+	@Override
+	public void setWarehouseSystem(WarehouseSystem warehouseSystem) {
+		this.handler.addToFactoryPanel(warehouseSystem);
+		this.warehouseSystem = warehouseSystem;
+	}
+
+	@Override
+	public ResourceBox getShippingBox() {
+		return shippingBox;
+	}
+
+	@Override
+	public void setShippingBox(ResourceBox shippingBox) {
+		this.shippingBox = shippingBox;
+	}
+
+	@Override
+	public AssemblyLine getAssemblyLine() {
+		return assemblyLine;
+	}
+
+	@Override
+	public void setAssemblyLine(AssemblyLine assemblyLine) {
+		this.assemblyLine = assemblyLine;
+	}
 
 }

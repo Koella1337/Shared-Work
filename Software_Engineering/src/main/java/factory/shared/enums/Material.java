@@ -10,8 +10,12 @@ public enum Material {
 	COLOR_BLUE			(300),
 	COLOR_WHITE			(300),
 	COLOR_BLACK			(300),
-	COLOR_GRAY			(300);
-
+	COLOR_GRAY			(300),
+	CAR (1);
+	
+	
+	
+	
 	/** Amount of the material that fits into a single container. */
 	public final int containerAmount;
 	

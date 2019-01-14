@@ -7,7 +7,11 @@ import factory.shared.Position;
 public interface Placeable {
 
 	Position getPosition();
-	
-	void draw(Graphics g);	
-	
+
+	/**
+	 * draws the {@link Placeable} on the {@link Graphics} object
+	 * 
+	 * @param g the graphics object to draw on
+	 */
+	void draw(Graphics g);
 }

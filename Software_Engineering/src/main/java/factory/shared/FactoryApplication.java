@@ -1,63 +1,72 @@
 package factory.shared;
 
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
 
-import factory.shared.enums.SubsystemStatus;
-import factory.shared.interfaces.Placeable;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
 import factory.shared.interfaces.Stoppable;
+import factory.subsystems.agv.AgvCoordinator;
+import factory.subsystems.agv.Forklift;
+import factory.subsystems.assemblyline.AssemblyLine;
 import factory.subsystems.monitoring.MonitoringSystem;
+import factory.subsystems.monitoring.TestAGVCoord;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
+import factory.subsystems.warehouse.WarehouseSystem;
 
 public class FactoryApplication implements Stoppable {
 
 	private MonitoringInterface monitor;
 
-	public FactoryApplication() {
+	public FactoryApplication() throws SAXException, IOException, ParserConfigurationException {
 		this.monitor = new MonitoringSystem();
 
-		AbstractSubsystem testSubsystem1 = createTestSubsystem("TEST 1", 100);
-		AbstractSubsystem testSubsystem2 = createTestSubsystem("TEST 2", 200);
-		this.monitor.addToSubsystemList(testSubsystem1);
-		this.monitor.setCurrentSubsystemToShow(testSubsystem1);
-		this.monitor.addToSubsystemList(testSubsystem2);
+	
+	//	this.monitor.setCurrentSubsystemToShow(testSubsystem1);
+
+		Document layoutDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+				.parse(new File("resources/factory_layout.xml"));
+		initFactoryFromXML(layoutDoc);
 	}
 
-	// TODO remove
-	private AbstractSubsystem createTestSubsystem(String name, int y) {
-		return new AbstractSubsystem(this.monitor, name) {
-			private boolean run = false;
-			private int x = 0;
+	private void initFactoryFromXML(Document layoutDoc) {
+		Element factory = (Element) layoutDoc.getElementsByTagName("factory").item(0);
 
-			private void update() {
-				if (run)
-					x++;
-			}
+		Element warehousesystem = (Element) (factory).getElementsByTagName("warehouse").item(0);
+		WarehouseSystem whs = new WarehouseSystem(getMonitor(), (Element) warehousesystem);
+		this.monitor.setWarehouseSystem(whs);
 
-			@Override
-			public SubsystemStatus getStatus() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public void start() {
-				run = true;
-			}
-
-			@Override
-			public void stop() {
-				run = false;
-			}
-
-			@Override
-			public List<Placeable> getPlaceables() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-		};
+		Element assemblyLines = (Element) (factory).getElementsByTagName("assemblylines").item(0);
+		//TODO @thomas create assembly line
+		//this.monitor.addToSubsystemList(assemblyLine);
+		
+		//Element forklists = (Element) (factory).getElementsByTagName("forklifts").item(0);
+		AgvCoordinator agvSystem = new AgvCoordinator(this.monitor, factory);
+		this.monitor.setAgvSystem(agvSystem);
+		
+		AssemblyLine assemblyLine = new AssemblyLine(null,null);
+		this.monitor.setAssemblyLine(assemblyLine);
+		
+		addShippingBoxToMonitoring(factory);
+//		OnlineShopUser user = new OnlineShopUser("thomas");
+//		Order order = new Order(user, 4);
+//		this.monitor.addOrder(order);
+	}
+	
+	private void addShippingBoxToMonitoring(Element factory) {
+		Position shippingBoxPosition = Utils.xmlGetPositionFromFirstChild(factory, "shippingbox");
+		
+		ResourceBox shippingBox = new ResourceBox(shippingBoxPosition);
+		
+		this.monitor.setShippingBox(shippingBox);
 	}
 
+	
 	public void start() {
 		this.monitor.start();
 	}

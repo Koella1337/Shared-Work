@@ -7,9 +7,9 @@ import javax.swing.Timer;
 
 public class GUIPanel extends JPanel {
 
-	protected int frameIndex = 0;// only used for debugging //TODO remove
+	protected int frameIndex = 0;// only used for debugging //TODO @thomas remove
 
-	public GUIPanel(int fps) {
+	protected GUIPanel(int fps) {
 		Timer timer = new UpdateTimer(this, fps);
 		timer.setInitialDelay(0);
 		timer.start();

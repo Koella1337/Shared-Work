@@ -26,7 +26,9 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 		
 		NodeList storageSiteNodes = xmlWarehouseElem.getElementsByTagName("storagesite");
 		for (int i = 0; i < storageSiteNodes.getLength(); i++) {
-			storageSites.add(new StorageSite(this, i, (Element) storageSiteNodes.item(i)));
+			StorageSite newSite = new StorageSite(this, i, (Element) storageSiteNodes.item(i));
+			
+			storageSites.add(newSite);
 		}
 	}
 
@@ -62,7 +64,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 	
 	/** Called from a StorageSite when it completed a task. */
 	public void taskCompleted(StorageSite source, WarehouseTask task) {
-		this.notify(new FactoryEvent(this, EventKind.WAREHOUSE_TASK_COMPLETED, task));
+		this.notify(new FactoryEvent(this, EventKind.WAREHOUSE_TASK_COMPLETED, task, source.getOutputbox()));
 	}
 	
 	@Override
@@ -79,8 +81,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 
 	@Override
 	public List<Placeable> getPlaceables() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<Placeable>(storageSites); //TODO
 	}
 
 	@Override
