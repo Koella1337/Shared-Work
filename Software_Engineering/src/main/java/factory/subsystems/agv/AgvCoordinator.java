@@ -8,7 +8,6 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -17,7 +16,6 @@ import app.gui.SubsystemMenu;
 import factory.shared.AbstractSubsystem;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
-import factory.shared.Task;
 import factory.shared.Utils;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
