@@ -22,8 +22,8 @@ class Main {
 		
 		try {
 			Thread.sleep(10000);
-			System.out.println("ERROR automatically created");
-			// factory.getMonitor().handleEvent(new FactoryEvent(new AgvCoordinator(factory.getMonitor()), EventKind.MONITORING_HANDLE_EVENT_FAILED));
+			System.out.println("Main ERROR automatically created");
+			factory.getMonitor().handleEvent(new FactoryEvent(new AgvCoordinator(factory.getMonitor(), null), EventKind.MONITORING_HANDLE_EVENT_FAILED));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

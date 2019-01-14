@@ -1,6 +1,5 @@
 package factory.subsystems.assemblyline;
 import java.awt.Graphics;
-import java.util.List;
 
 import factory.shared.Container;
 import factory.shared.Position;
@@ -15,12 +14,12 @@ public class Robot implements RobotInterface, Stoppable, Placeable{
 	public Material material;
 	public int materials;
 	public int id;
-	public int[] position;
+	public Position position;
 	public boolean ready;
 	private int timestamp = 0;
 	
 	
-	public Robot(RobotTypes r, int mats, int id, int[] pos) {
+	public Robot(RobotTypes r, int mats, int id,Position pos) {
 		robot = r;
 		materials = mats;
 		id = this.id;
@@ -58,8 +57,7 @@ public class Robot implements RobotInterface, Stoppable, Placeable{
 
 	@Override
 	public Position getPosition() {
-		// TODO Auto-generated method stub
-		return null;
+		return position;
 	}
 
 	@Override
@@ -76,7 +74,7 @@ public class Robot implements RobotInterface, Stoppable, Placeable{
 
 	@Override
 	public void draw(Graphics g) {
-		// TODO Auto-generated method stub
+		g.drawString("robot", 0, 0);
 		
 	}
 

@@ -11,10 +11,10 @@ public class GUIHandler implements Stoppable{
 	private MonitoringInterface monitor;
 	private UserInterface ui;
 
-	public GUIHandler(MonitoringInterface monitor) {
+	public GUIHandler(MonitoringInterface monitor, UIConfiguration uiConfig) {
 		super();
 		this.monitor = monitor;
-		this.ui = new UserInterface(FPS, this.monitor);
+		this.ui = new UserInterface(FPS, this.monitor,uiConfig);
 	}
 
 	@Override
@@ -38,5 +38,6 @@ public class GUIHandler implements Stoppable{
 	public void setCurrentSubsystem(AbstractSubsystem subsystem) {
 		this.ui.getMenuPanel().setCurrentSubSystem(subsystem);
 	}
+	
 	
 }

@@ -3,7 +3,7 @@ package factory.shared;
 public class Constants {
 	
 	public enum PlaceableSize {
-		SHELF				(  6, 40),
+		SHELF				(  8, 35),
 		RESOURCE_BOX		( 40, 40),
 		
 		FORKLIFT			( 20, 20),
@@ -18,5 +18,9 @@ public class Constants {
 		}
 	}
 	
+	/** How much offset does a StorageSite shelf have from walls and boxes (and horizontally from other shelves). */
+	public static final int SHELF_OFFSET = 12;
+	
+	public static final int UI_WIDTH_MENU = 400;
 	
 }

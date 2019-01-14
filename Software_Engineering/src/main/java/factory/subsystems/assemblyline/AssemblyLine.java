@@ -1,8 +1,11 @@
 package factory.subsystems.assemblyline;
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.List;
 
 import app.gui.SubsystemMenu;
+import factory.shared.AbstractSubsystem;
+import factory.shared.Constants;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
@@ -15,16 +18,20 @@ import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
+import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
-public class AssemblyLine implements Monitorable,RobotInterface, Stoppable, Placeable, ContainerDemander, ContainerSupplier {
+public class AssemblyLine extends AbstractSubsystem implements Monitorable,RobotInterface, Stoppable,  ContainerDemander, ContainerSupplier {
 	public Robot[] robots;
 	public Conveyor conveyor;
-	//pos
+	private Position position;
 	
 	
-	public AssemblyLine(Robot[] r, Conveyor c) {
-		robots = r;
-		conveyor = c;
+	public AssemblyLine(MonitoringInterface monitor, Position position,Robot[] r, Conveyor c) {
+		super(monitor);
+		this.robots = r;
+		this.conveyor = c;
+		this.position = position;
+		
 	}
 	
 	public void addBox(Container box) { //Adds the box to the matching robot/conveyor
@@ -70,15 +77,11 @@ public class AssemblyLine implements Monitorable,RobotInterface, Stoppable, Plac
 		return ready;
 	}
 
-	@Override
-	public Position getPosition() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void draw(Graphics g) {
-		// TODO Auto-generated method stub
+		g.drawString("asssemblyline", 5, 15);
+		g.drawRect(0, 0, Constants.PlaceableSize.ASSEMBLY_LINE.x,  Constants.PlaceableSize.ASSEMBLY_LINE.y);
 		
 	}
 
@@ -126,14 +129,22 @@ public class AssemblyLine implements Monitorable,RobotInterface, Stoppable, Plac
 
 	@Override
 	public List<Placeable> getPlaceables() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Placeable> p = new ArrayList<>();
+		//p.addAll( Arrays.asList(robots));
+		p.add(this.conveyor);
+		p.add(this);
+		return p;
 	}
 
 	@Override
 	public SubsystemMenu getCurrentSubsystemMenu() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Position getPosition() {
+		return this.position;
 	}
 
 }

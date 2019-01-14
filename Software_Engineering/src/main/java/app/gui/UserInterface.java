@@ -1,6 +1,8 @@
 package app.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -8,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import factory.shared.AbstractSubsystem;
+import factory.shared.Constants;
 import factory.shared.FactoryEvent;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
@@ -26,17 +29,20 @@ class UserInterface implements Stoppable {
 
 	private FactoryPanel factoryPanel;
 	private MenuPanel menuPanel;
-	private MenuBarPanel menuBar;
+	private UIConfiguration config;
 
-	public UserInterface(int fps, MonitoringInterface monitor) {
+	public UserInterface(int fps, MonitoringInterface monitor, UIConfiguration config) {
 		super();
 		this.fps = fps;
 		this.monitor = monitor;
+		this.config = config;
 		initUI();
 	}
 
 	@Override
 	public void start() {
+		this.frame.pack();
+		this.frame.setLocationRelativeTo(null);
 		this.frame.setVisible(true);
 	}
 
@@ -46,48 +52,45 @@ class UserInterface implements Stoppable {
 	}
 
 	private void initUI() {
-		this.frame = new JFrame("Toy Car Factory v.0.0.0.0.0.1 ;)");
+		this.frame = new JFrame("Toy Car Factory");
 		this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		this.frame.setResizable(false);
+		
 		this.contentPane = (JPanel) frame.getContentPane();
 		this.contentPane.setBackground(Color.LIGHT_GRAY);
-		this.contentPane.setLayout(null);
-		this.frame.setSize(1400, 1050);
+		this.contentPane.setLayout(new BorderLayout());
 
-		initMenuBar();
 		initFactoryPanel();
 		initDefaultMenuPanel();
-
-		this.frame.setLocationRelativeTo(null);
-		this.frame.setResizable(false);
-	}
-
-	private void initMenuBar() {
-		this.menuBar = new MenuBarPanel(this.fps, this.monitor);
-		this.menuBar.setBounds(0, 0, 1000, 50);
-		this.menuBar.setBackground(new Color(150, 150, 150));
-		this.contentPane.add(this.menuBar);
 	}
 
 	private void initFactoryPanel() {
 		this.factoryPanel = new FactoryPanel(this.fps, this.monitor);
-		this.factoryPanel.setBounds(0, 50, 1000, 1000);
-		this.contentPane.add(this.factoryPanel);
+		this.factoryPanel.setPreferredSize(new Dimension(this.config.uiWidthFactory+1,this.config.uiHeight+1));
+		this.contentPane.add(this.factoryPanel, BorderLayout.CENTER);
 	}
 
 	private void initDefaultMenuPanel() {
 		this.menuPanel = new MenuPanel(this.fps, this.monitor);
 		this.menuPanel.setBackground(Color.LIGHT_GRAY);
-		this.menuPanel.setBounds(1000, 0, 400, 1000);
+		this.menuPanel.setPreferredSize(new Dimension(new Dimension(Constants.UI_WIDTH_MENU, this.config.uiHeight+1)));
+		this.menuPanel.setLayout(null);
 
 		JButton addOrderButton = new JButton("place order");
 		addOrderButton.addActionListener(a -> monitor.addOrder(new Order(new OnlineShopUser("thomas"), 3)));
+		addOrderButton.setBounds(20,100,160,20);
 		this.menuPanel.add(addOrderButton);
 
 		JButton carFinishedButton = new JButton("car finished");
 		carFinishedButton.addActionListener(a -> monitor.handleEvent(new FactoryEvent(monitor.getAssemblyLine(), EventKind.CAR_FINISHED, Material.CAR)));
+		carFinishedButton.setBounds(200,100,160,20);
 		this.menuPanel.add(carFinishedButton);
 		
-		this.contentPane.add(menuPanel);
+		Legend legend = new Legend(30);
+		legend.setBounds(20,180,360,100);
+		this.menuPanel.add(legend);
+		
+		this.contentPane.add(menuPanel, BorderLayout.LINE_END);
 	}
 
 	public FactoryPanel getFactoryPanel() {
@@ -109,5 +112,7 @@ class UserInterface implements Stoppable {
 	public void setCurrentSubsystem(AbstractSubsystem subsystem) {
 		this.menuPanel.setCurrentSubSystem(subsystem);
 	}
+
+
 
 }

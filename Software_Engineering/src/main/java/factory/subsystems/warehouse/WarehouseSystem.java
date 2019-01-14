@@ -19,6 +19,7 @@ import factory.subsystems.warehouse.interfaces.WarehouseMonitorInterface;
 public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonitorInterface {
 	
 	private final List<StorageSite> storageSites = new ArrayList<>();
+	private final List<Placeable> placeables = new ArrayList<>();
 
 	public WarehouseSystem(MonitoringInterface monitor, Element xmlWarehouseElem) {
 		super(monitor);
@@ -27,8 +28,9 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 		NodeList storageSiteNodes = xmlWarehouseElem.getElementsByTagName("storagesite");
 		for (int i = 0; i < storageSiteNodes.getLength(); i++) {
 			StorageSite newSite = new StorageSite(this, i, (Element) storageSiteNodes.item(i));
-			
 			storageSites.add(newSite);
+			placeables.add(newSite);
+			placeables.addAll(newSite.getPlaceables());
 		}
 	}
 
@@ -81,7 +83,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 
 	@Override
 	public List<Placeable> getPlaceables() {
-		return new ArrayList<Placeable>(storageSites); //TODO
+		return placeables;
 	}
 
 	@Override

@@ -15,7 +15,7 @@ public interface WarehouseMonitorInterface extends Monitorable {
 	 * @param task
 	 * @return the ResourceBox from which the demanded resource can be fetched
 	 */
-	public StorageSite receiveTask(WarehouseTask task);
+	public StorageSite receiveTask(WarehouseTask task);	//TODO: remove return type
 	
 	//TODO change type
 	public List<String> getTransactions();

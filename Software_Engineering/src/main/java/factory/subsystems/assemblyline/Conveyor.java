@@ -13,14 +13,20 @@ import factory.subsystems.assemblyline.interfaces.ConveyorMonitorInterface;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
 public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorMonitorInterface{
+
+	private Position pos;
+	
 	public int speed;
 	public int lubricant;
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private long timestamp;
-	private ResourceBox inputbox;
-	private ResourceBox outputbox;
+	private ResourceBox inputbox = new ResourceBox(new Position(10,20));//TODO @max set to correct value
+	private ResourceBox outputbox = new ResourceBox(new Position(100,20)); //TODO @max set to correct value
 
 	
+	public Conveyor(Position pos, int s) { //If no lubricant level is given, it will be assumed
+		this(pos, s,100);
+	}
 	
 	/**
 	 * 
@@ -32,15 +38,14 @@ public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorM
 	 * 
 	 * @param l how much lubricant is available initially
 	 */
-	public Conveyor(int s, int l){
+	public Conveyor(Position pos,int s, int l){
+		super();
+		this.pos = pos;
 		speed = (60/s) / 4; 
 		lubricant = l;
 	}
 	
-	public Conveyor(int s) { //If no lubricant level is given, it will be assumed
-		speed = (60/s) / 4;
-		lubricant = 100; //NOT A FINAL VALUE
-	}
+
 	
 	public void addBox(Container container) {
 		lubricant += container.getAmount();
@@ -90,8 +95,7 @@ public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorM
 
 	@Override
 	public Position getPosition() {
-		// TODO Auto-generated method stub
-		return null;
+		return pos;
 	}
 
 	@Override
@@ -114,7 +118,7 @@ public class Conveyor implements RobotInterface, Stoppable, Placeable, ConveyorM
 
 	@Override
 	public void draw(Graphics g) {
-		// TODO Auto-generated method stub
+		g.drawString("conv.", 0, 0);
 		
 	}
 

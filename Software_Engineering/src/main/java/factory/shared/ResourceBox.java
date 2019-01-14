@@ -1,5 +1,6 @@
 package factory.shared;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,8 +45,10 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 
 	@Override
 	public void draw(Graphics g) {
-		g.drawString("Res.Box", this.pos.xPos+2, this.pos.yPos);
-		g.drawRect(this.pos.xPos, this.pos.yPos, 20,20);
+		//TODO
+		g.setColor(Color.DARK_GRAY);	
+		g.drawRect(0, 0, this.pos.xSize, this.pos.ySize);
+		g.drawString("RES", 0, 15);	//TODO remove
 	}
 
 	@Override

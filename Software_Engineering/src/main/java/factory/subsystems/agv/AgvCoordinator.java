@@ -53,7 +53,6 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	@Override
 	public void submitTask(AgvTask task) {
 		System.out.println("SUBMIT AGV TASK");
-		
 		// TODO: Choose closest free Forklift and call forklift.assignTask
 	}
 
