@@ -55,9 +55,9 @@ public class MonitoringSystemTest {
 		this.monitor.setAgvSystem(agvSystem);
 		this.monitor.setAssemblyLine(assemblyLineSystem);
 
-		Conveyor conveyor = new Conveyor(this.assemblyLineSystem, new Position(10, 10), 5, 5);
-		conveyor.setOutputbox(new ResourceBox(this.assemblyLineSystem.getALSys(), new Position(20, 20)));
-		Mockito.doReturn(conveyor).when(this.assemblyLineSystem).getConveyor();
+//		Conveyor conveyor = new Conveyor(this.assemblyLineSystem, new Position(10, 10), 5, 5);
+//		conveyor.setOutputbox(new ResourceBox(this.assemblyLineSystem.getALSys(), new Position(20, 20)));
+//		Mockito.doReturn(conveyor).when(this.assemblyLineSystem).getConveyor();
 
 	}
 
@@ -99,9 +99,9 @@ public class MonitoringSystemTest {
 	@Test(description = "verifies that the correct task is submitted to the agv system when a car finished event is received")
 	public void testHandleCarFinishedEvent() {
 		Position pos = new Position(10, 14);
-		FactoryEvent event = new FactoryEvent(this.assemblyLineSystem, EventKind.CAR_FINISHED, Material.CAR,
-				new Robot(RobotTypes.GRABBER, 1, pos, this.assemblyLineSystem));
-		this.monitor.handleEvent(event);
+//		FactoryEvent event = new FactoryEvent(this.assemblyLineSystem, EventKind.CAR_FINISHED, Material.CAR,
+//				new Robot(RobotTypes.GRABBER, 1, pos, this.assemblyLineSystem));
+//		this.monitor.handleEvent(event);
 
 		AgvTask agvTaskToSubmit = new AgvTask(600000, Material.CAR, this.assemblyLineSystem.getConveyor().getOutputbox(),
 				this.monitor.getShippingBox());

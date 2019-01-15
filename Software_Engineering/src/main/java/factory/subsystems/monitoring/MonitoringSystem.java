@@ -159,8 +159,8 @@ public class MonitoringSystem implements MonitoringInterface {
 			this.warehouseSystem.start();
 		}).start();
 
-		new Thread(() -> {
-			this.assemblyLine.start(500);
+		new Thread(() -> {//TODO
+			//this.assemblyLine.start(500);
 		}).start();
 
 		this.handler.start();
