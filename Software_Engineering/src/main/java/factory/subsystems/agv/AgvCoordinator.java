@@ -59,10 +59,10 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			e.printStackTrace();
 		}
 		
-		submitTask(new AgvTask(600000, null, new ResourceBox(this, new Position(20, 20)), new ResourceBox(this, new Position(500, 500))));
-		submitTask(new AgvTask(600000, null, new ResourceBox(this, new Position(20, 40)), new ResourceBox(this, new Position(500, 400))));
-		submitTask(new AgvTask(600000, null, new ResourceBox(this, new Position(20, 60)), new ResourceBox(this, new Position(400, 500))));
-		submitTask(new AgvTask(600000, null, new ResourceBox(this, new Position(20, 80)), new ResourceBox(this, new Position(400, 400))));
+		submitTask(new AgvTask(600, null, new ResourceBox(this, new Position(20, 20)), new ResourceBox(this, new Position(500, 500))));
+		submitTask(new AgvTask(600, null, new ResourceBox(this, new Position(20, 40)), new ResourceBox(this, new Position(500, 400))));
+		submitTask(new AgvTask(600, null, new ResourceBox(this, new Position(20, 60)), new ResourceBox(this, new Position(400, 500))));
+		submitTask(new AgvTask(600, null, new ResourceBox(this, new Position(20, 80)), new ResourceBox(this, new Position(400, 400))));
 		submitTask(new AgvTask(600000, null, new ResourceBox(this, new Position(20, 100)), new ResourceBox(this, new Position(300, 500))));
 		submitTask(new AgvTask(600000, null, new ResourceBox(this, new Position(20, 100)), new ResourceBox(this, new Position(500, 300))));
 	}
@@ -146,12 +146,17 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 
 	public void finishedTask(AgvTask task) 
 	{
+		if(task.getTimeLeft() < 0)
+		{
+			this.notify(new FactoryEvent(this, EventKind.TASK_NOT_COMPLETED_BEFORE_DEADLINE, task));
+		}
 		this.notify(new FactoryEvent(this, EventKind.AGV_CONTAINER_DELIVERED, task));
 //		System.out.println("CONTAINER HAS BEEN DELIVERED");
 		
 		if(!outstandingTasks.isEmpty())
 		{
-			submitTask(outstandingTasks.poll());
+			AgvTask nextTask = outstandingTasks.poll();
+			submitTask(nextTask);
 		}
 	}
 }

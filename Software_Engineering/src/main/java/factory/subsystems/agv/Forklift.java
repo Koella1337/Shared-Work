@@ -105,7 +105,6 @@ public class Forklift implements Placeable {
 				if(f != this)
 				{
 					coordinator.notify(new FactoryEvent(coordinator, EventKind.AGV_FORKLIFT_COLLISION, this, f));
-//					System.out.println("FORKLIFT COLLISION OCCURRED");
 				}
 			}
 		}
