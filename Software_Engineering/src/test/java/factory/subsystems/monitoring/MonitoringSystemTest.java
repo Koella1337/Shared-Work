@@ -103,7 +103,7 @@ public class MonitoringSystemTest {
 //				new Robot(RobotTypes.GRABBER, 1, pos, this.assemblyLineSystem));
 //		this.monitor.handleEvent(event);
 
-		AgvTask agvTaskToSubmit = new AgvTask(600000, Material.CAR, this.assemblyLineSystem.getConveyor().getOutputbox(),
+		AgvTask agvTaskToSubmit = new AgvTask(600000, Material.CAR_RED, this.assemblyLineSystem.getConveyor().getOutputbox(),
 				this.monitor.getShippingBox());
 		ArgumentCaptor<AgvTask> argument = ArgumentCaptor.forClass(AgvTask.class);
 		Mockito.verify(this.agvSystem, Mockito.times(1)).submitTask(argument.capture());
@@ -121,7 +121,7 @@ public class MonitoringSystemTest {
 		ContainerSupplier storageSite = Mockito.mock(ContainerSupplier.class);
 		Mockito.doReturn(pos).when(storageSite).getPosition();
 
-		WarehouseTask wht = new WarehouseTask(600000, Material.CAR_BODIES);
+		WarehouseTask wht = new WarehouseTask(600000, Material.BODIES);
 		Robot robot  = Mockito.mock(Robot.class);
 		HashMap<WarehouseTask, ContainerDemander> map = new HashMap<>(Collections.singletonMap(wht, robot));
 		map.put(wht, robot);
@@ -137,7 +137,7 @@ public class MonitoringSystemTest {
 		AgvTask param = argument.getValue();
 		assertEquals(param.getDropoff(), robot);
 		assertEquals(param.getPickup(),storageSite);
-		assertEquals(param.getMaterial(),Material.CAR_BODIES);
+		assertEquals(param.getMaterial(),Material.BODIES);
 	}
 	
 	@Test(description = "verifies that the correct warehousetask submitted to the warehouse system when a ROBOTARMS_LACK_OF_MATERIAL event is received")
@@ -147,9 +147,9 @@ public class MonitoringSystemTest {
 		Robot robot  = Mockito.mock(Robot.class);
 		Mockito.doReturn(pos).when(robot).getPosition();
 
-		FactoryEvent event = new FactoryEvent(this.warehouseSystem, EventKind.ROBOTARMS_LACK_OF_MATERIAL, Material.CAR_BODIES,
+		FactoryEvent event = new FactoryEvent(this.warehouseSystem, EventKind.ROBOTARMS_LACK_OF_MATERIAL, Material.BODIES,
 				robot);
-		WarehouseTask wht = new WarehouseTask(600000, Material.CAR_BODIES);
+		WarehouseTask wht = new WarehouseTask(600000, Material.BODIES);
 		HashMap<WarehouseTask, ContainerDemander> map = new HashMap<>(Collections.singletonMap(wht, robot));
 		Mockito.doReturn(map).when(this.monitor).getWarehouseTaskDemanders();
 		
@@ -159,7 +159,7 @@ public class MonitoringSystemTest {
 		Mockito.verify(this.warehouseSystem, Mockito.times(1)).receiveTask(argument.capture());
 
 		WarehouseTask param = argument.getValue();
-		assertEquals(param.getMaterial(), Material.CAR_BODIES);
+		assertEquals(param.getMaterial(), Material.BODIES);
 	}
 	
 	

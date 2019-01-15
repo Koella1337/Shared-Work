@@ -97,7 +97,7 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 	 */
 	public void addTask(Material color, int q) {
 		switch (color) {
-		case CAR_BODIES:
+		case BODIES:
 			break;
 		case COLOR_BLACK:
 			task[0] = q;

@@ -79,7 +79,7 @@ class UserInterface implements Stoppable {
 		JButton doNothingButton = new JButton("warehouse test");
 		doNothingButton.addActionListener(a -> {
 			//JOptionPane.showMessageDialog(null, "You've successfully done nothing! ");
-			monitor.getWarehouseSystem().receiveTask(new WarehouseTask(0, Material.CAR_BODIES));
+			monitor.getWarehouseSystem().receiveTask(new WarehouseTask(0, Material.BODIES));
 		});
 		doNothingButton.setBounds(20,100,160,20);
 		this.menuPanel.add(doNothingButton);

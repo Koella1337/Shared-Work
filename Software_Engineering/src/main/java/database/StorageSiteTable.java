@@ -36,7 +36,7 @@ public class StorageSiteTable extends DatabaseTable {
 		Random rng = new Random();
 		
 		for (Material mat : Material.values()) {
-			if (mat == Material.CAR)
+			if (mat.toString().startsWith("CAR"))
 				continue;
 			
 			try {

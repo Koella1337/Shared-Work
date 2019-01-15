@@ -291,7 +291,7 @@ public class StorageSite implements Placeable {
 	
 	private void checkForResupply() {
 		for (Material mat : Material.values()) {
-			if (mat == Material.CAR)
+			if (mat.toString().startsWith("CAR"))
 				continue;
 			
 			try {
