@@ -34,10 +34,11 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 	
 	public AssemblyLine(Position pos, AL_Subsystem al, int direction, Material c) {
 		position = pos;
-		this.color = c;
-		this.alsubsys = al;
-		this.alsubsys.al[0] = this;
+		color = c;
+		alsubsys = al;
+		alstatus = SubsystemStatus.WAITING;
 		Position rpos = position;
+		
 		if(direction > 0) {
 			
 			robots[0] = new Robot(this, rpos, direction, RobotTypes.GRABBER, null, 0); //Create 4 robots
@@ -47,6 +48,7 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 			robots[2] = new Robot(this, rpos, direction, RobotTypes.PAINTER, color,  100);
 			rpos.xPos += (350/4) * direction;
 			robots[3] = new Robot(this, rpos, direction, RobotTypes.INSPECTOR, null, 0);
+			
 		} else {
 			rpos.xPos -= (350/4);
 			robots[0] = new Robot(this, rpos, direction, RobotTypes.GRABBER, null, 0); //Create 4 robots
@@ -61,6 +63,9 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 		
 		if(direction > 0) {
 			rpos = position;
+		} else {
+			rpos = position;
+			rpos.xPos -= 350;
 		}
 		rpos.yPos -= 60;
 		conveyor = new Conveyor(this, rpos, direction, 20, 100); //Create conveyor
