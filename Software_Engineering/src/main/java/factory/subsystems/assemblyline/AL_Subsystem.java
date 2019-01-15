@@ -223,16 +223,16 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 	
 	public List<Placeable> getAGVAll(){
 		List<Placeable> plc = new ArrayList<Placeable>();
-		plc.add((Placeable) getAGVRobots());
-		plc.add((Placeable) getAGVConveyor());
-		plc.add((Placeable) getAGVOutputbox());
+		plc.addAll(getAGVRobots());
+		plc.addAll(getAGVConveyor());
+		plc.addAll(getAGVOutputbox());
 		return plc;
 	}
 	
 	public List<Placeable> getAGVRobots(){
 		List<Placeable> plc = new ArrayList<Placeable>();
 		for(AssemblyLine a: al) {
-			plc.add((Placeable) a.getAGVRobot());
+			plc.addAll(a.getAGVRobot());
 		}
 		return plc;
 	}
@@ -240,7 +240,7 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 	public List<Placeable> getAGVConveyor(){
 		List<Placeable> plc = new ArrayList<Placeable>();
 		for(AssemblyLine a: al) {
-			plc.add((Placeable) a.getAGVConveyor());
+			plc.addAll(a.getAGVConveyor());
 		}
 		return plc;
 	}
@@ -248,7 +248,7 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 	public List<Placeable> getAGVOutputbox(){
 		List<Placeable> plc = new ArrayList<Placeable>();
 		for(AssemblyLine a: al) {
-			plc.add((Placeable) a.getAGVOutputbox());
+			plc.addAll(a.getAGVOutputbox());
 		}
 		return plc;
 	}
