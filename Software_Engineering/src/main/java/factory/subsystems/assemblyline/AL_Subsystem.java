@@ -25,7 +25,7 @@ import factory.subsystems.warehouse.StorageSite;
 
 @SuppressWarnings("unused")
 public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stoppable{
-	public AssemblyLine[] al = new AssemblyLine[6];
+	private AssemblyLine[] al = new AssemblyLine[6];
 	private int[] task = new int[6]; 
 
 	
@@ -53,6 +53,7 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 		
 		NodeList alNodes = xmlAL.getElementsByTagName("assemblyline");
 		for (int i = 0; i < al.length; i++) {
+			
 			Position pos = Utils.xmlGetPositionFromElement((Element) alNodes.item(i));
 			Element asLi = (Element) alNodes.item(i);
 			String direction = asLi.getElementsByTagName("direction").item(0).getTextContent();
