@@ -47,8 +47,8 @@ public class FactoryApplication implements Stoppable {
 		AgvCoordinator agvSystem = new AgvCoordinator(this.monitor,factory);
 		this.monitor.setAgvSystem(agvSystem);
 
-		AssemblyLine assemblyLine = new AssemblyLine(new Position(50,50),new AL_Subsystem(this.monitor));
-		this.monitor.setAssemblyLine(assemblyLine);
+		AL_Subsystem alSystem = new AL_Subsystem(this.monitor, assemblyLines);
+		this.monitor.setAssemblyLine(alSystem); //TODO check if it works -Max
 		
 		addShippingBoxToMonitoring(factory);
 		//		OnlineShopUser user = new OnlineShopUser("thomas");

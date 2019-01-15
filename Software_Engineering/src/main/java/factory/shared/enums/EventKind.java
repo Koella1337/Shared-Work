@@ -31,6 +31,7 @@ public enum EventKind {
 	
 	//------------------------------- Conveyors Notifications -------------------------------
 	CONVEYORS_LACK_OF_OIL			(EventSeverity.IMPORTANT, 	Conveyor.class),
+	CONVEYOR_PICK_UP_BOX			(EventSeverity.NORMAL, Material.class, Conveyor.class),
 	
 	//---------------------------------- Conveyors Errors -----------------------------------
 	CONVEYORS_BROKEN				(EventSeverity.IMPORTANT, 	Conveyor.class),
@@ -49,7 +50,6 @@ public enum EventKind {
 	//------------------------------------- AGV Errors --------------------------------------
 	AGV_FORKLIFT_DAMAGED 			(EventSeverity.ERROR,		Forklift.class),
 	AGV_FORKLIFT_COLLISION 			(EventSeverity.GLOBAL_EROR,	Forklift.class, Forklift.class),
-	AGV_PATHING_IMPOSSIBLE			(EventSeverity.IMPORTANT,	AgvTask.class),
 	
 	
 	//------------------------------- Monitoring Notifications ------------------------------
