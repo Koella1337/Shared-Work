@@ -3,9 +3,7 @@ package app;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -15,17 +13,12 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import app.gui.SubsystemMenu;
-import database.Database;
-import database.DatabaseTable;
-import database.StorageSiteTable;
-import database.TransactionsTable;
 import factory.shared.FactoryEvent;
 
 import factory.shared.Position;
 import factory.shared.Utils;
 
 import factory.shared.enums.EventKind;
-import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
@@ -35,8 +28,6 @@ import factory.subsystems.warehouse.WarehouseSystem;
  * TODO Temporary test class, to be removed later
  */
 public class Test implements Monitorable {
-	
-	private static final Database db = Database.INSTANCE;
 
 	public static void main(String[] args) {
 		System.out.println("------------------------------------- XML SETUP -------------------------------------");
@@ -54,12 +45,6 @@ public class Test implements Monitorable {
 		} catch (SAXException | IOException | ParserConfigurationException e1) {
 			e1.printStackTrace();
 		}
-		
-		System.out.println("------------------------------------- DATABASE TESTING -------------------------------------");
-		
-		//db.initialize();
-		
-		testDatabase();
 		
 		System.out.println();
 		System.out.println("------------------------------------- EVENT TESTING -------------------------------------");
@@ -92,34 +77,34 @@ public class Test implements Monitorable {
 		
 	}
 	
-	public static void testDatabase() {
-		//make sure database was freshly created before executing this test (otherwise there are duplicate entries)
-		try {
-			Random rng = new Random();
-			Material[] materials = Material.values();
-			
-			for (DatabaseTable dbTable : db.getTables()) {
-				switch(dbTable.getClass().getSimpleName()) {
-					case "StorageSiteTable":
-						StorageSiteTable storTable = (StorageSiteTable) dbTable;
-						storTable.addMaterial(materials[rng.nextInt(materials.length)], rng.nextInt(50));
-						storTable.addMaterial(materials[rng.nextInt(materials.length)], rng.nextInt(50));
-						break;
-					case "TransactionsTable":
-						TransactionsTable transTable = (TransactionsTable) dbTable;
-						transTable.insertTransaction("this_isAThirtyCharacterCompany", Material.SCREWS, 10, 50, "17.12.18", 1);
-						transTable.insertTransaction("notSoLongName", Material.LUBRICANT, 20, 345, "23.12.18", 1);
-						break;
-					default:
-						throw new RuntimeException("Invalid DatabaseTable for testing! (" + dbTable.getClass().getSimpleName() + ")");
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		db.printToConsole();
-	}
+//	public static void testDatabase() {
+//		//make sure database was freshly created before executing this test (otherwise there are duplicate entries)
+//		try {
+//			Random rng = new Random();
+//			Material[] materials = Material.values();
+//			
+//			for (DatabaseTable dbTable : db.getTables()) {
+//				switch(dbTable.getClass().getSimpleName()) {
+//					case "StorageSiteTable":
+//						StorageSiteTable storTable = (StorageSiteTable) dbTable;
+//						storTable.addMaterial(materials[rng.nextInt(materials.length)], rng.nextInt(50));
+//						storTable.addMaterial(materials[rng.nextInt(materials.length)], rng.nextInt(50));
+//						break;
+//					case "TransactionsTable":
+//						TransactionsTable transTable = (TransactionsTable) dbTable;
+//						transTable.insertTransaction("this_isAThirtyCharacterCompany", Material.SCREWS, 10, 50, "17.12.18", 1);
+//						transTable.insertTransaction("notSoLongName", Material.LUBRICANT, 20, 345, "23.12.18", 1);
+//						break;
+//					default:
+//						throw new RuntimeException("Invalid DatabaseTable for testing! (" + dbTable.getClass().getSimpleName() + ")");
+//				}
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		db.printToConsole();
+//	}
 
 	public void notify(FactoryEvent event) {
 		return;

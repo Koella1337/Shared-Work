@@ -31,7 +31,7 @@ public class Position implements Cloneable {
 	
 	@Override
 	public String toString() {
-		return String.format("(Pos: %3d, %3d | Size: %3d, %3d)", xPos, yPos, xSize, ySize);
+		return String.format("[Pos: %3d, %3d | Size: %3d, %3d]", xPos, yPos, xSize, ySize);
 	}
 	
 	@Override

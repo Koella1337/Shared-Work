@@ -52,13 +52,8 @@ public enum MaterialStatus {
 			if (status1 == status2)
 				return 0;
 			else
-				return status1.isWorse(status2) ? -1 : 1;
+				return status2.ordinal() - status1.ordinal();
 		};
-	}
-	
-	/** Returns whether this status is worse than the specified status. */
-	public boolean isWorse(MaterialStatus otherStatus) {
-		return this.ordinal() > otherStatus.ordinal();
 	}
 
 }

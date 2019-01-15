@@ -14,31 +14,37 @@ import factory.shared.interfaces.Placeable;
 /**
  * Simulated forklift that is used within StorageSites.
  */
-public class WarehouseForklift implements Placeable {
+class WarehouseForklift implements Placeable {
 	
-	private static final int SIM_MOVEMENT_MULTIPLIER = 2;	//TODO: *10
+	private static final int SIM_MOVEMENT_MULTIPLIER = 7;
 	
-	private static final int SIM_DURATION_SORTSHELF = 4500;
-	private static final int SIM_DURATION_GRABCONTAINER = 1000;
-	private static final int SIM_DURATION_DELIVERCONTAINER = 1000;
+	private static final int SIM_DURATION_SORTSHELF = 5000;
+	private static final int SIM_DURATION_GRABCONTAINER = 2500;
+	private static final int SIM_DURATION_DELIVERCONTAINER = 2500;
 	
 	private static final int X_SIZE = PlaceableSize.SHELF.x;
 	private static final int Y_SIZE = X_SIZE;
-	private static final Color FORKLIFT_COLOR = Color.MAGENTA;
+	
+	private static final Color WORKING_COLOR = Color.MAGENTA;
+	private static final Color TRAVELLING_COLOR = Color.PINK;
 	
 	private final StorageSite storageSite;
 	
 	private Position pos;
+	private Color color;
 	
 	public WarehouseForklift(StorageSite storageSite, Position startPos) {
 		this.storageSite = storageSite;
 		this.pos = startPos;
+		this.color = WORKING_COLOR;
 	}
 
 	protected void moveTo(Position goal) throws InterruptedException {
+		this.color = TRAVELLING_COLOR;
 		int moveDuration = (int) (Position.length(Position.subtractPosition(goal, this.pos)) * SIM_MOVEMENT_MULTIPLIER);
 		Thread.sleep(moveDuration);
 		this.pos = goal;
+		this.color = WORKING_COLOR;
 	}
 	
 	protected void moveTo(Shelf shelf) throws InterruptedException {
@@ -47,7 +53,7 @@ public class WarehouseForklift implements Placeable {
 	
 	protected void moveTo(ResourceBox box) throws InterruptedException {
 		PlaceableSize boxSize = PlaceableSize.RESOURCE_BOX;
-		moveTo(Position.add(box.getPosition(), boxSize.x / 2 - X_SIZE / 2, boxSize.y / 2 + Y_SIZE));
+		moveTo(Position.add(box.getPosition(), boxSize.x / 2 - X_SIZE / 2, 2*(boxSize.y / 3 + Y_SIZE / 3)));
 	}
 	
 	protected void sortShelf(Shelf shelf) throws InterruptedException {
@@ -88,7 +94,7 @@ public class WarehouseForklift implements Placeable {
 
 	@Override
 	public void draw(Graphics g) {
-		g.setColor(FORKLIFT_COLOR);
+		g.setColor(color);
 		g.fillRect(1, 1, X_SIZE - 1, Y_SIZE - 1);
 		g.setColor(Constants.UI_BORDER_COLOR);
 		g.drawRect(0, 0, X_SIZE, Y_SIZE);

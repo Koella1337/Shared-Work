@@ -1,5 +1,6 @@
 package factory.subsystems.warehouse;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -8,6 +9,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import database.Database;
+import database.TransactionsTable;
 import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
 import factory.shared.enums.EventKind;
@@ -19,6 +21,8 @@ import factory.subsystems.warehouse.interfaces.WarehouseMonitorInterface;
 
 public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonitorInterface {
 	
+	private final TransactionsTable dbTable;
+	
 	private final List<StorageSite> storageSites = new ArrayList<>();
 	private final List<Placeable> placeables = new ArrayList<>();
 	
@@ -29,6 +33,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 		super(monitor);
 		Objects.requireNonNull(xmlWarehouseElem);
 		
+		//xml init
 		NodeList storageSiteNodes = xmlWarehouseElem.getElementsByTagName("storagesite");
 		for (int i = 0; i < storageSiteNodes.getLength(); i++) {
 			StorageSite newSite = new StorageSite(this, i, (Element) storageSiteNodes.item(i));
@@ -37,10 +42,19 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 			placeables.addAll(newSite.getPlaceables());
 		}
 		
-		this.status = SubsystemStatus.WAITING;
-		this.wasSubsystemAlreadyStarted = false;
+
+		//database init
+		this.dbTable = new TransactionsTable();
+		Database.INSTANCE.addTable(dbTable);
 		
 		Database.INSTANCE.initialize();
+		for (StorageSite s : storageSites) {
+			s.initializeShelves();
+		}
+		
+		//general init
+		this.status = SubsystemStatus.WAITING;
+		this.wasSubsystemAlreadyStarted = false;
 	}
 
 	@Override
@@ -49,7 +63,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 	}
 	
 	@Override
-	public StorageSite receiveTask(WarehouseTask task) {
+	public void receiveTask(WarehouseTask task) {
 		StorageSite leastOverworkedSite = null;
 		int leastOverworkedSiteTaskCount = Integer.MAX_VALUE;
 		
@@ -61,7 +75,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 			
 			if (overworkedTaskCount == 0) {
 				s.receiveTask(task);
-				return s;
+				return;
 			}
 			else {
 				if (leastOverworkedSite == null || overworkedTaskCount < leastOverworkedSiteTaskCount) {
@@ -75,12 +89,6 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 			throw new IllegalArgumentException("The task \"" + task + "\" can not be accepted by any StorageSite.");
 		
 		leastOverworkedSite.receiveTask(task);
-		return leastOverworkedSite;
-	}
-	
-	/** Called from a StorageSite when it completed a task. */
-	public void taskCompleted(StorageSite source, WarehouseTask task) {
-		this.notify(new FactoryEvent(this, EventKind.WAREHOUSE_TASK_COMPLETED, task, source.getOutputbox()));
 	}
 	
 	@Override
@@ -93,9 +101,22 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 	}
 
 	@Override
-	public List<String> getTransactions() {
-		// TODO Auto-generated method stub
-		return null;
+	public synchronized Transaction[] getTransactions() {
+		try {
+			return dbTable.getAllTransactions();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	protected synchronized void addTransaction(Transaction t) {
+		try {
+			dbTable.insertTransaction(t);
+			this.notify(new FactoryEvent(this, EventKind.WAREHOUSE_NEW_TRANSACTION, t));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

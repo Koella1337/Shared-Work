@@ -4,9 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import factory.shared.enums.Material;
+import factory.subsystems.warehouse.Transaction;
 
 public class TransactionsTable extends DatabaseTable {
 
@@ -21,6 +24,11 @@ public class TransactionsTable extends DatabaseTable {
 	@Override
 	public String getTableName() {
 		return tableName;
+	}
+	
+	@Override
+	public void initialTableFill() {
+		return;		//start with empty Transactions table
 	}
 
 	@Override
@@ -43,14 +51,32 @@ public class TransactionsTable extends DatabaseTable {
 		}
 	}
 	
-	public void insertTransaction(String company, Material material, int containerAmount, int cost, String date, int storageSiteID) throws SQLException {
-		insertTransaction.setString(1, company);
-		insertTransaction.setString(2, material.toString());
-		insertTransaction.setInt(3, containerAmount);
-		insertTransaction.setInt(4, cost);
-		insertTransaction.setString(5, date);
-		insertTransaction.setInt(6, storageSiteID);
+	public void insertTransaction(Transaction t) throws SQLException {
+		insertTransaction.setString(1, t.company);
+		insertTransaction.setString(2, t.material.toString());
+		insertTransaction.setInt(3, t.containerAmount);
+		insertTransaction.setInt(4, t.cost);
+		insertTransaction.setString(5, t.date);
+		insertTransaction.setInt(6, t.storageSiteID);
 		insertTransaction.execute();
+	}
+	
+	public Transaction[] getAllTransactions() throws SQLException {
+		List<Transaction> transactions = new ArrayList<>();
+		ResultSet result = selectEverything.executeQuery();
+		
+		while (result.next()) {
+			transactions.add(new Transaction(
+					result.getString(0),
+					Material.valueOf(result.getString(1)),
+					result.getInt(2),
+					result.getInt(3),
+					result.getString(4),
+					result.getInt(5)
+			));
+		}
+		
+		return transactions.toArray(new Transaction[0]);
 	}
 
 	/**

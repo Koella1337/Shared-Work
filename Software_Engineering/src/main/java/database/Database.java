@@ -9,6 +9,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import factory.shared.Constants;
+
 public class Database {
 
 	private static final String URL = "jdbc:derby:database";
@@ -19,16 +21,6 @@ public class Database {
 	
 	private Connection connection;
 	
-	{ 
-		//TODO: rather than initializing the list here statically, add a table for each StorageSite when the layout.xml is being processed
-		addTable(new TransactionsTable());
-	}
-	
-	//TODO: only for current testing, remove this method later
-	public List<DatabaseTable> getTables() {
-		return tables;
-	}
-	
 	/** add all tables before initialize() is called */
 	public synchronized void addTable(DatabaseTable table) {
 		tables.add(table);
@@ -36,22 +28,27 @@ public class Database {
 	
 	/**
 	 * Initializes the connection to the database. Call this after all tables have been added.
+	 * @return true if the database was newly created. false if a database already existed.
 	 */
 	public void initialize() {
 		try {
 			Connection c = null;
+			boolean wasNewlyCreated;
 			try {
 				//get connection to existing database
 				c = DriverManager.getConnection(URL);
+				wasNewlyCreated = false;
 			} catch (SQLException databaseNotFound) {
 				//create new database
 				c = DriverManager.getConnection(URL + ";create=true");
 				Statement creationStatement = c.createStatement();
 				for (DatabaseTable table : tables) {
-					System.out.println(table.getCreationString());
+					if (Constants.DEBUG)
+						System.out.println(table.getCreationString());
 					creationStatement.addBatch(table.getCreationString());
 				}
 				creationStatement.executeBatch();
+				wasNewlyCreated = true;
 			}
 			connection = c;
 			
@@ -64,7 +61,12 @@ public class Database {
 			
 			for (DatabaseTable table : tables) {
 				table.prepareStatements(connection);
+				if (wasNewlyCreated)
+					table.initialTableFill();
 			}
+			
+			if (Constants.DEBUG)
+				this.printToConsole();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Establishing Database Connection failed.");

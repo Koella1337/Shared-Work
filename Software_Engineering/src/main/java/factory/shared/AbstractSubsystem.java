@@ -1,5 +1,7 @@
 package factory.shared;
 
+import java.util.Objects;
+
 import app.gui.SubsystemMenu;
 import factory.shared.interfaces.Monitorable;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
@@ -10,14 +12,12 @@ public abstract class AbstractSubsystem implements Monitorable {
 	private MonitoringInterface monitor;
 
 	public AbstractSubsystem(MonitoringInterface monitor) {
-		this(monitor,"-no name-");
+		this(Objects.requireNonNull(monitor), "-no name-");
 	}
 	
 	public AbstractSubsystem(MonitoringInterface monitor, String name) {
-		super();
-		//TODO: uncomment: Objects.requireNonNull(monitor);
-		this.monitor = monitor;
-		this.name = name;
+		this.monitor = Objects.requireNonNull(monitor);
+		this.name = Objects.requireNonNull(name);
 	}
 	
 	@Override
