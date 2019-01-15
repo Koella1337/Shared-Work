@@ -24,9 +24,10 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private long timestamp = 0;
 	private AssemblyLine al;
+	private Material car;
 	
 	
-	public Robot(AssemblyLine al, Position pos, int direction, RobotTypes r, Material mat, int mats) {
+	public Robot(AssemblyLine al, Position pos, RobotTypes r, Material mat, int mats) {
 		robot = r;
 		materials = mats;
 		position = pos;
@@ -85,7 +86,6 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 				
 			} else if(robot == RobotTypes.INSPECTOR) {
 				if(Math.random() < 0.95) {
-					Material car;
 					if(material != null)
 					{
 						switch(material) {

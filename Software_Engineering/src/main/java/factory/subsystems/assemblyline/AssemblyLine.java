@@ -41,23 +41,23 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 		
 		if(direction > 0) {
 			
-			robots[0] = new Robot(this, rpos, direction, RobotTypes.GRABBER, null, 0); //Create 4 robots
-			rpos.xPos += (350/4) * direction;
-			robots[1] = new Robot(this, rpos, direction, RobotTypes.SCREWDRIVER, Material.SCREWS, 100);
-			rpos.xPos += (350/4) * direction;
-			robots[2] = new Robot(this, rpos, direction, RobotTypes.PAINTER, color,  100);
-			rpos.xPos += (350/4) * direction;
-			robots[3] = new Robot(this, rpos, direction, RobotTypes.INSPECTOR, null, 0);
+			robots[0] = new Robot(this, rpos, RobotTypes.GRABBER, null, 0); //Create 4 robots
+			rpos.xPos += (350/4);
+			robots[1] = new Robot(this, rpos, RobotTypes.SCREWDRIVER, Material.SCREWS, 100);
+			rpos.xPos += (350/4);
+			robots[2] = new Robot(this, rpos, RobotTypes.PAINTER, color,  100);
+			rpos.xPos += (350/4);
+			robots[3] = new Robot(this, rpos, RobotTypes.INSPECTOR, null, 0);
 			
 		} else {
 			rpos.xPos -= (350/4);
-			robots[0] = new Robot(this, rpos, direction, RobotTypes.GRABBER, null, 0); //Create 4 robots
+			robots[0] = new Robot(this, rpos, RobotTypes.GRABBER, null, 0); //Create 4 robots
 			rpos.xPos -= (350/4);
-			robots[1] = new Robot(this, rpos, direction, RobotTypes.SCREWDRIVER, Material.SCREWS, 100);
-			rpos.xPos -= (350/4) * direction;
-			robots[2] = new Robot(this, rpos, direction, RobotTypes.PAINTER, color,  100);
-			rpos.xPos -= (350/4) * direction;
-			robots[3] = new Robot(this, rpos, direction, RobotTypes.INSPECTOR, null, 0);
+			robots[1] = new Robot(this, rpos, RobotTypes.SCREWDRIVER, Material.SCREWS, 100);
+			rpos.xPos -= (350/4);
+			robots[2] = new Robot(this, rpos, RobotTypes.PAINTER, color,  100);
+			rpos.xPos -= (350/4);
+			robots[3] = new Robot(this, rpos, RobotTypes.INSPECTOR, null, 0);
 			
 		}
 		

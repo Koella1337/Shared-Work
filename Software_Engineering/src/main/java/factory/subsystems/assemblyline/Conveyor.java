@@ -135,17 +135,16 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 		case BROKEN:
 			g.setColor(Color.RED);
 		case RUNNING:
-			g.setColor(Color.BLUE);
+			g.setColor(Color.YELLOW);
 			break;
 		case STOPPED:
 			g.setColor(Color.ORANGE);
 			break;
 		case WAITING:
-			g.setColor(Color.GREEN);
+			g.setColor(Color.GRAY);
 			break;
 		}
 		g.fillRect(0, 0, position.xSize, position.ySize);
-		//g.fillRect(position.xPos, position.yPos, position.xSize, position.ySize);
 		g.setColor(old);
 	}
 
