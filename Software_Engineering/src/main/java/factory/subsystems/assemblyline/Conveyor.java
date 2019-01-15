@@ -30,7 +30,6 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 	private Container box;
 	private AssemblyLine al;
 	private Position position;
-	private Car[] cars;
 
 	
 	
@@ -99,37 +98,10 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 		return position;
 	}
 	
-	private Car[] moveCars(Car[] cars) {
-		for(int i = 1; i < cars.length; i++) {
-			cars[i] = cars[i-1]; //Moves the cars in the array
-			cars[i].move(); //Tells the cars they have been moved
-			for(Robot r: al.getRobots()) {
-				if(cars[i].infront() == r.robot) {
-					Position p = r.getPosition();
-					p.xPos += 20;
-					p.yPos -= 75;
-					p.xSize = 5;
-					p.ySize = 5;
-					cars[i].setPosition(p);
-				}
-			}
-		}
-		return cars;
-	}
 
-	
-	public Car[] start(Car[] c) {
+	@Override
+	public void start() {
 		if(status() == SubsystemStatus.WAITING) {
-			cars = c;
-			cars = moveCars(cars);
-			Robot rob = al.getRobots()[0];
-			Position p = rob.getPosition();
-			p.xPos += 20;
-			p.yPos -= 75;
-			p.xSize = 5;
-			p.ySize = 5;
-			cars[0] = new Car(p); //New car is fetched
-			
 			lubricant -= Math.random();
 			if(lubricant < 10) {
 				FactoryEvent event = new FactoryEvent(al.getALSys(), EventKind.CONVEYORS_LACK_OF_OIL, this);
@@ -144,7 +116,6 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 				notify(broken);
 			}
 		}
-		return cars; //Returns the cars
 	}
 
 	@Override
@@ -173,10 +144,6 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 			break;
 		}
 		g.fillRect(position.xPos, position.yPos, position.xSize, position.ySize);
-
-		for(Car c: cars) {
-			c.draw(g);
-		}
 	}
 
 
@@ -213,9 +180,6 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 		List<Placeable> l = new ArrayList<Placeable>();
 		l.add(this);
 		l.add(outputbox);
-		for(Car c: cars) {
-			l.add(c);
-		}
 		return l;
 	}
 
@@ -233,11 +197,6 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 		status = SubsystemStatus.WAITING;
 	}
 
-	@Override
-	public void start() {
-
-	}
-	
 	
 
 

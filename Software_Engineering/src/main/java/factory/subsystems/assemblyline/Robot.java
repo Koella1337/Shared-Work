@@ -68,8 +68,9 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	public Position getPosition() {
 		return position;
 	}
-
-	public void start(Car c) {
+	
+	@Override
+	public void start() {
 		if(status() == SubsystemStatus.WAITING) {
 			
 			if(robot == RobotTypes.SCREWDRIVER || robot ==  RobotTypes.PAINTER) {
@@ -207,11 +208,6 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 		status = SubsystemStatus.WAITING;
 	}
 
-	@Override
-	public void start() {
-		// TODO Auto-generated method stub
-		
-	}
 
 
 }

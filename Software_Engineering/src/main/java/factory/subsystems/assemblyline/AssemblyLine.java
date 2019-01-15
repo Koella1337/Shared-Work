@@ -130,20 +130,13 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 		double speed = q/10; //Adaptive speed
 		if(speed > 30) speed = 30; else if(speed < 10) speed = 10; //Boundaries for the speed
 		conveyor.setSpeed(speed);
-		Car[] cars = new Car[4];
 		while (alstatus == SubsystemStatus.RUNNING) {
 			
 			for(Robot r: robots) {
-				for(Car c: cars) {
-					if(c != null && c.infront() == r.robot) {
-						r.start(c);
-					}
-				}
+				r.start();
 			}
 			while(notReady()) { //Waiting for the robots
 			}
-			
-			cars = conveyor.start(cars);
 			
 			
 			while(conveyor.status() != SubsystemStatus.WAITING) { //Waiting for the conveyor
