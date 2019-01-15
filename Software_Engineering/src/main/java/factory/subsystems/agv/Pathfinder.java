@@ -15,6 +15,7 @@ import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.Utils;
 import factory.shared.enums.EventKind;
+import factory.shared.interfaces.Placeable;
 
 public class Pathfinder {
 
@@ -29,7 +30,7 @@ public class Pathfinder {
     private PathingNode[][] nodeMap;
     private AgvCoordinator coordinator;
 
-    public Pathfinder(AgvCoordinator coordinator, Element factory) throws ParserConfigurationException, SAXException, IOException
+    public Pathfinder(AgvCoordinator coordinator, Element factory, List<Placeable> freeParking) throws ParserConfigurationException, SAXException, IOException
     {
     	this.coordinator = coordinator;
         Position factorySize = Utils.parsePosition(((Element) factory.getElementsByTagName("size").item(0)).getFirstChild().getNodeValue(), null);
@@ -49,6 +50,11 @@ public class Pathfinder {
         {
             // String direction = ((Element)((Element) assemblyLines.item(i)).getElementsByTagName("direction").item(0)).getNodeValue();
             addAssemblyLine(Utils.xmlGetPositionFromElement((Element) assemblyLines.item(i)));
+        }
+        // remove free parking spaces!
+        for (Placeable p : freeParking)
+        {
+            removeFreeParking(p);
         }
 
         // Generate nodemap
@@ -83,7 +89,19 @@ public class Pathfinder {
 //        }
     }
 
-    private void addObstacle(Position p)
+    private void removeFreeParking(Placeable pl) 
+    {
+    	Position p = pl.getPosition();
+        for (int x = 0; x < p.xSize; x = x + 20)
+        {
+            for (int y = 0; y < p.ySize; y = y + 20)
+            {
+                collisionMap[(x + p.xPos) / 20][(y + p.yPos) / 20] = false;
+            }
+        }
+	}
+
+	private void addObstacle(Position p)
     {
         for (int x = 0; x < p.xSize; x = x + 20)
         {
