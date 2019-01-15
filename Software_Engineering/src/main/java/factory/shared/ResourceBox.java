@@ -19,17 +19,15 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 	public ResourceBox(AbstractSubsystem owningSystem, Position pos) {
 		this.owningSystem = owningSystem;
 		this.pos = Utils.assignSize(pos, PlaceableSize.RESOURCE_BOX);
-		for (int i = 0; i < 40; i++)	//TODO: remove !!
-			this.receiveContainer(new Container(Material.CAR_BODIES));
 	}
 	
 	/** returns all Materials stored in this box */
-	public Material[] getStoredMaterials() {
+	public synchronized Material[] getStoredMaterials() {
 		return content.getMap().keySet().toArray(new Material[0]);
 	}
 	
 	/** @return the amount of stored containers in this ResourceBox <br> (across all Materials) */
-	public int getContainerAmount() {
+	public synchronized int getContainerAmount() {
 		int amount = 0;
 		for (Material mat : content.getMap().keySet()) {
 			amount += content.get(mat);
@@ -37,14 +35,14 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 		return amount;
 	}
 	
-	public MaterialStatus getFullness() {
+	public synchronized MaterialStatus getFullness() {
 		int percent = (int) (((float) getContainerAmount() / (float) Constants.RESOURCE_BOX_MAX_CONTAINERS) * 100);
 		
 		if (percent == 0)
 			return MaterialStatus.EMPTY;
-		else if (percent < 10)
+		else if (percent < 15)
 			return MaterialStatus.PERFECT;
-		else if (percent < 25)
+		else if (percent < 30)
 			return MaterialStatus.WELL;
 		else if (percent < 50)
 			return MaterialStatus.AVERAGE;
@@ -60,7 +58,7 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 	}
 
 	@Override
-	public void draw(Graphics g) {
+	public synchronized void draw(Graphics g) {
 		g.setColor(getFullness().uiColor);
 		g.fillRect(1, 1, pos.xSize - 1, pos.ySize - 1);
 		g.setColor(Constants.UI_BORDER_COLOR);	
@@ -69,14 +67,14 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 	}
 
 	@Override
-	public Container deliverContainer(Material material) {
+	public synchronized Container deliverContainer(Material material) {
 		if (content.get(material) == null)
 			throw new IllegalArgumentException("Could not deliver \"" + material + "\" since it isn't stored in this " + this.toString());
 		return new Container(content.remove(material));
 	}
 
 	@Override
-	public void receiveContainer(Container container) {
+	public synchronized void receiveContainer(Container container) {
 		content.add(container);
 		
 		if (getContainerAmount() == Constants.RESOURCE_BOX_MAX_CONTAINERS)
@@ -87,7 +85,7 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 	
 	@Override
 	public String toString() {
-		return "ResourceBox at " + pos.toString();
+		return "(ResourceBox at " + pos.toString() + ")";
 	}
 	
 }

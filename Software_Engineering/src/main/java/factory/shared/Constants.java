@@ -1,6 +1,8 @@
 package factory.shared;
 
 import java.awt.Color;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class Constants {
 	
@@ -20,7 +22,17 @@ public class Constants {
 		}
 	}
 	
-	public static final int RESOURCE_BOX_MAX_CONTAINERS = 50;
+	/** toggle console output */
+	public static final boolean DEBUG = true;
+	
+	public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
+	
+	public static final int RESOURCE_BOX_MAX_CONTAINERS = 100;
+	
+	/** The amount of containers the warehouse should at least have for each Material. */
+	public static final int WAREHOUSE_RESUPPLY_THRESHOLD = 30;
+	/** The minimum amount that can be ordered for resupplying a Material. */
+	public static final int WAREHOUSE_RESUPPLY_MIN_AMOUNT = 10;
 	
 	/** How much offset does a StorageSite shelf have from walls and boxes (and horizontally from other shelves). */
 	public static final int SHELF_OFFSET = 12;

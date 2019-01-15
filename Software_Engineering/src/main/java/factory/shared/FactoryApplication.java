@@ -66,7 +66,7 @@ public class FactoryApplication implements Stoppable {
 	
 	private void addShippingBoxToMonitoring(Element factory) {
 		Position shippingBoxPosition = Utils.xmlGetPositionFromFirstChild(factory, "shippingbox");
-		this.monitor.setShippingBox(shippingBoxPosition);	//TODO: @Omas check
+		this.monitor.setShippingBox(shippingBoxPosition);
 	}
 	
 	public void start() {

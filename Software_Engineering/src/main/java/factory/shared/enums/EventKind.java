@@ -8,6 +8,7 @@ import factory.subsystems.agv.Forklift;
 import factory.subsystems.assemblyline.Conveyor;
 import factory.subsystems.assemblyline.Robot;
 import factory.subsystems.warehouse.WarehouseTask;
+import factory.subsystems.warehouse.Transaction;
 
 /**
  * The kind of a FactoryEvent.<br>
@@ -15,7 +16,7 @@ import factory.subsystems.warehouse.WarehouseTask;
  */
 public enum EventKind {
 	//----------------------------------- Generic Events -----------------------------------
-	TASK_NOT_COMPLETED_BEFORE_DEADLINE (EventSeverity.INFO,		Task.class),		//TODO: fire this event
+	TASK_NOT_COMPLETED_BEFORE_DEADLINE (EventSeverity.INFO,		Task.class),
 	
 	RESOURCEBOX_FULL				(EventSeverity.ERROR, 		ResourceBox.class),
 	RESOURCEBOX_ALMOST_FULL			(EventSeverity.IMPORTANT, 	ResourceBox.class),
@@ -38,10 +39,7 @@ public enum EventKind {
 	
 	//------------------------------- Warehouse Notifications -------------------------------
 	WAREHOUSE_TASK_COMPLETED		(EventSeverity.NORMAL,		WarehouseTask.class, ContainerSupplier.class),
-	
-	//---------------------------------- Warehouse Errors -----------------------------------
-	
-	
+	WAREHOUSE_NEW_TRANSACTION		(EventSeverity.NORMAL,		Transaction.class),	
 	
 	//---------------------------------- AGV Notifications ----------------------------------
 	AGV_CONTAINER_DELIVERED 		(EventSeverity.NORMAL,		AgvTask.class),

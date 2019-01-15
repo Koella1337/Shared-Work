@@ -13,6 +13,9 @@ public abstract class DatabaseTable {
 	
 	public abstract String getTableName();
 	
+	/** Fills the table initially (called when database was newly created) */
+	public abstract void initialTableFill();
+	
 	/** Utility method for testing purposes */
 	public abstract void printToConsole();
 	
@@ -25,6 +28,7 @@ public abstract class DatabaseTable {
 	public void prepareStatements(Connection databaseConnection) {
 		try {
 			selectEverything = databaseConnection.prepareStatement("SELECT * FROM " + getTableName());
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

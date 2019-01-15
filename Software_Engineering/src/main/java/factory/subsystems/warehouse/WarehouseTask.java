@@ -15,6 +15,5 @@ public class WarehouseTask extends Task {
 	public Material getMaterial() {
 		return material;
 	}
-
 	
 }

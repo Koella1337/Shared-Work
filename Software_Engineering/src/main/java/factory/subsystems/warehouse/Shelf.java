@@ -3,7 +3,6 @@ package factory.subsystems.warehouse;
 import java.awt.Graphics;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Random;
 
 import factory.shared.Constants;
 import factory.shared.Container;
@@ -14,7 +13,7 @@ import factory.shared.enums.MaterialStatus;
 import factory.shared.interfaces.ContainerDemander;
 import factory.shared.interfaces.ContainerSupplier;
 
-public class Shelf implements ContainerSupplier, ContainerDemander {
+class Shelf implements ContainerSupplier, ContainerDemander {
 	
 	private final Position pos;
 	private final ItemSlot[] slots;
@@ -29,22 +28,11 @@ public class Shelf implements ContainerSupplier, ContainerDemander {
 		for (int i = 0; i < slots.length; i++) {
 			slots[i] = new ItemSlot();
 		}
-		
-		//TODO: remove !!
-		Random rng = new Random();
-		int rnd = rng.nextInt(20);
-		for (int i = 0; i < rnd; i++) {
-			this.receiveContainer(new Container(Material.CAR_BODIES));
-		}
-		rnd = rng.nextInt(15);
-		for (int i = 0; i < rnd; i++) {
-			this.deliverContainer(Material.CAR_BODIES);
-		}
 	}
 	
 	/** @return a Container of the supplied Material, or null if that material isn't stored in this shelf */
 	@Override
-	public Container deliverContainer(Material material) {
+	public synchronized Container deliverContainer(Material material) {
 		for (int i = 0; i < slots.length; i++) {
 			Container container = slots[i].takeContainer(material);
 			if (container != null) return container;
@@ -52,14 +40,14 @@ public class Shelf implements ContainerSupplier, ContainerDemander {
 		return null;
 	}
 	
-	public void receiveContainer(Container container) {
+	public synchronized void receiveContainer(Container container) {
 		for (int i = 0; i < slots.length; i++) {
 			if (slots[i].storeContainer(container) != -1)
 				return;
 		}
 	}
 	
-	protected boolean hasMaterial(Material material) {
+	protected synchronized boolean hasMaterial(Material material) {
 		for (int i = 0; i < slots.length; i++) {
 			if (slots[i].hasMaterial(material)) {
 				return true;
@@ -68,7 +56,7 @@ public class Shelf implements ContainerSupplier, ContainerDemander {
 		return false;
 	}
 	
-	protected boolean hasFreeSlot() {
+	protected synchronized boolean hasFreeSlot() {
 		for (int i = 0; i < slots.length; i++) {
 			if (slots[i].canTakeContainer()) {
 				return true;
@@ -77,7 +65,7 @@ public class Shelf implements ContainerSupplier, ContainerDemander {
 		return false;
 	}
 	
-	protected boolean isEmpty() {
+	protected synchronized boolean isEmpty() {
 		for (int i = 0; i < slots.length; i++) {
 			if (!slots[i].isEmpty()) {
 				return false;
@@ -86,7 +74,7 @@ public class Shelf implements ContainerSupplier, ContainerDemander {
 		return true;
 	}
 	
-	protected MaterialStatus getShelfSortedness() {
+	protected synchronized MaterialStatus getShelfSortedness() {
 		if (this.isEmpty())
 			return MaterialStatus.EMPTY;
 
@@ -112,7 +100,7 @@ public class Shelf implements ContainerSupplier, ContainerDemander {
 		return curStatus;
 	}
 	
-	protected void sortShelf() {
+	protected synchronized void sortShelf() {
 		MaterialStorageMap allMaterials = new MaterialStorageMap();
 		
 		Arrays.stream(slots).forEach(slot -> {
@@ -136,7 +124,7 @@ public class Shelf implements ContainerSupplier, ContainerDemander {
 	}
 
 	@Override
-	public void draw(Graphics g) {
+	public synchronized void draw(Graphics g) {
 		g.setColor(this.getShelfSortedness().uiColor);
 		g.fillRect(1, 1, pos.xSize - 1, pos.ySize - 1);
 		g.setColor(Constants.UI_BORDER_COLOR);
