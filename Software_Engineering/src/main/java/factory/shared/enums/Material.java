@@ -11,7 +11,12 @@ public enum Material {
 	COLOR_WHITE			(300),
 	COLOR_BLACK			(300),
 	COLOR_GRAY			(300),
-	CAR (1);
+	CAR_RED (1),
+	CAR_GREEN (1),
+	CAR_BLUE (1),
+	CAR_WHITE (1),
+	CAR_BLACK (1),
+	CAR_GRAY (1);
 	
 	
 	/** Amount of the material that fits into a single container. */

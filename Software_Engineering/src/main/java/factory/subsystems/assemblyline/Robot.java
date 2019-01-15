@@ -31,8 +31,8 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 		materials = mats;
 		position = pos;
 		this.al = al;
-		position.xSize = 10;
-		position.ySize = 10;
+		position.xSize = 50;
+		position.ySize = 50;
 	}
 	
 	public void addBox(Container container) {
@@ -69,8 +69,7 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 		return position;
 	}
 
-	@Override
-	public void start() {
+	public void start(Car c) {
 		if(status() == SubsystemStatus.WAITING) {
 			
 			if(robot == RobotTypes.SCREWDRIVER || robot ==  RobotTypes.PAINTER) {
@@ -84,7 +83,31 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 				
 			} else if(robot == RobotTypes.INSPECTOR) {
 				if(Math.random() < 0.95) {
-					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED, Material.CAR, this);
+					Material car;
+					switch(material) {
+					case COLOR_BLACK:
+						car = Material.CAR_BLACK;
+						break;
+					case COLOR_BLUE:
+						car = Material.CAR_BLUE;
+						break;
+					case COLOR_GRAY:
+						car = Material.CAR_GRAY;
+						break;
+					case COLOR_GREEN:
+						car = Material.CAR_GREEN;
+						break;
+					case COLOR_RED:
+						car = Material.CAR_RED;
+						break;
+					case COLOR_WHITE:
+						car = Material.CAR_WHITE;
+						break;
+					default:
+						car = Material.CAR_BLACK;
+						break;
+					}
+					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED, car, this);
 					notify(done);
 				}
 			}
@@ -112,10 +135,6 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 		case RUNNING:
 			if(robot == RobotTypes.PAINTER) {
 				switch(material) {
-				case CAR:
-					break;
-				case CAR_BODIES:
-					break;
 				case COLOR_BLACK:
 					g.setColor(Color.BLACK);
 					break;
@@ -134,15 +153,8 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 				case COLOR_WHITE:
 					g.setColor(Color.WHITE);
 					break;
-				case LUBRICANT:
-					break;
-				case SCREWS:
-					break;
-				case WHEELS:
-					break;
 				default:
 					break;
-				
 				}
 			} else	g.setColor(Color.BLUE);
 			break;
@@ -193,6 +205,12 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	
 	public void restart() {
 		status = SubsystemStatus.WAITING;
+	}
+
+	@Override
+	public void start() {
+		// TODO Auto-generated method stub
+		
 	}
 
 

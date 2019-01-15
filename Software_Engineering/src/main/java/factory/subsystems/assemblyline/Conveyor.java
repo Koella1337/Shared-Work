@@ -27,8 +27,10 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 	private long timestamp;
 	private ResourceBox inputbox;
 	private ResourceBox outputbox;
+	private Container box;
 	private AssemblyLine al;
 	private Position position;
+	private Car[] cars;
 
 	
 	
@@ -47,16 +49,16 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 		lubricant = l;
 		this.al = al;
 		position = pos;
-		position.xSize = 60;
-		position.ySize = 10;
+		position.xSize = 350;
+		position.ySize = 40;
 		Position opb = pos;
 		if(direction > 0) {
-			opb.xPos += 60;
+			opb.xPos += 350;
 		} else {
-			opb.xPos -= 10; //TODO depending on size
+			opb.xPos -= 40;
 		}
 		outputbox = new ResourceBox(al.getALSys(), position);
-		Container box = new Container(al.getMaterial());
+		box = new Container(al.getMaterial());
 		
 
 	}
@@ -96,10 +98,38 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 	public Position getPosition() {
 		return position;
 	}
+	
+	private Car[] moveCars(Car[] cars) {
+		for(int i = 1; i < cars.length; i++) {
+			cars[i] = cars[i-1]; //Moves the cars in the array
+			cars[i].move(); //Tells the cars they have been moved
+			for(Robot r: al.getRobots()) {
+				if(cars[i].infront() == r.robot) {
+					Position p = r.getPosition();
+					p.xPos += 20;
+					p.yPos -= 75;
+					p.xSize = 5;
+					p.ySize = 5;
+					cars[i].setPosition(p);
+				}
+			}
+		}
+		return cars;
+	}
 
-	@Override
-	public void start() {
+	
+	public Car[] start(Car[] c) {
 		if(status() == SubsystemStatus.WAITING) {
+			cars = c;
+			cars = moveCars(cars);
+			Robot rob = al.getRobots()[0];
+			Position p = rob.getPosition();
+			p.xPos += 20;
+			p.yPos -= 75;
+			p.xSize = 5;
+			p.ySize = 5;
+			cars[0] = new Car(p); //New car is fetched
+			
 			lubricant -= Math.random();
 			if(lubricant < 10) {
 				FactoryEvent event = new FactoryEvent(al.getALSys(), EventKind.CONVEYORS_LACK_OF_OIL, this);
@@ -114,6 +144,7 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 				notify(broken);
 			}
 		}
+		return cars; //Returns the cars
 	}
 
 	@Override
@@ -141,7 +172,11 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 			g.setColor(Color.GREEN);
 			break;
 		}
-		g.drawRect(position.xPos, position.yPos, position.xSize, position.ySize);
+		g.fillRect(position.xPos, position.yPos, position.xSize, position.ySize);
+		g.setColor(Color.MAGENTA);
+		for(Car c: cars) {
+			g.fillRect(c.getPosition().xPos, c.getPosition().yPos, c.getPosition().xSize, c.getPosition().ySize);
+		}
 	}
 
 
@@ -192,6 +227,11 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 	
 	public void restart() {
 		status = SubsystemStatus.WAITING;
+	}
+
+	@Override
+	public void start() {
+
 	}
 	
 	

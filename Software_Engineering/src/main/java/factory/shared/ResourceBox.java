@@ -87,5 +87,6 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 	public String toString() {
 		return "(ResourceBox at " + pos.toString() + ")";
 	}
+
 	
 }

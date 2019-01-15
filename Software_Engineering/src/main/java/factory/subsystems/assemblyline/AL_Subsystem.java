@@ -97,8 +97,6 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 	 */
 	public void addTask(Material color, int q) {
 		switch (color) {
-		case CAR:
-			break;
 		case CAR_BODIES:
 			break;
 		case COLOR_BLACK:
@@ -131,12 +129,6 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 			al[5].restart();
 			al[5].start(task[5]);
 			break;
-		case LUBRICANT:
-			break;
-		case SCREWS:
-			break;
-		case WHEELS:
-			break;
 		default:
 			break;
 		}
@@ -162,10 +154,6 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 	
 	public void stopProduction(Material color) {
 		switch (color) {
-		case CAR:
-			break;
-		case CAR_BODIES:
-			break;
 		case COLOR_BLACK:
 			al[0].stop();
 			break;
@@ -184,12 +172,6 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 		case COLOR_WHITE:
 			al[5].stop();
 			break;
-		case LUBRICANT:
-			break;
-		case SCREWS:
-			break;
-		case WHEELS:
-			break;
 		default:
 			break;
 			
@@ -197,7 +179,7 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 	}
 
 	@Override
-	public void stop() {
+	public void stop() { // Stops everything
 		for(int i = 0; i < 6; i++) {
 			((Stoppable) al[i]).stop();
 		}
@@ -205,9 +187,13 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 	}
 
 	public void addBox(Container box) { //You can't add a box to the general subsystem
+		System.out.println("You shouldn't add a box this way");
+		System.out.println("Try adding it to the Compnent itself");
+		System.out.println("The component is always included in the notification");
+		System.out.println("---------- No box has been added ----------");
 	}
 	
-	public void restart() { //Everything just got fixed... magically
+	public void restart() { // This assumes that all technical difficulties have been solved
 		for(AssemblyLine a: al) {
 			a.restart();
 		}
@@ -217,7 +203,7 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 
 
 	@Override
-	public SubsystemStatus getStatus() {
+	public SubsystemStatus getStatus() { // Only for debugging reasons
 		SubsystemStatus status = SubsystemStatus.WAITING;
 		for(int i = 0; i < 6; i++) {
 			if(al[i].status() == SubsystemStatus.BROKEN) status = SubsystemStatus.BROKEN;

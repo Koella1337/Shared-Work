@@ -22,35 +22,52 @@ import factory.shared.interfaces.Stoppable;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
 @SuppressWarnings("unused")
-public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Placeable, ContainerDemander, ContainerSupplier {
+public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Placeable, ContainerDemander {
 	private Robot[] robots = new Robot[4];
 	private Conveyor conveyor;
 	private Position position;
-	private AL_Subsystem alsys;
+	private AL_Subsystem alsubsys;
 	private int finished;
-	private SubsystemStatus status;
+	private SubsystemStatus alstatus;
 	private Material color;
 	
 	
 	public AssemblyLine(Position pos, AL_Subsystem al, int direction, Material color) {
 		position = pos;
 		this.color = color;
-		this.alsys = al;
-		this.alsys.al[0] = this;
+		this.alsubsys = al;
+		this.alsubsys.al[0] = this;
 		Position rpos = position;
-		robots[0] = new Robot(this, rpos, direction, RobotTypes.GRABBER, null, 0); //Create 4 robots
-		rpos.xPos += 10 * direction;
-		robots[1] = new Robot(this, rpos, direction, RobotTypes.SCREWDRIVER, Material.SCREWS, 100);
-		rpos.xPos += 10 * direction;
-		robots[2] = new Robot(this, rpos, direction, RobotTypes.PAINTER, color,  100);
-		rpos.xPos += 10 * direction;
-		robots[3] = new Robot(this, rpos, direction, RobotTypes.INSPECTOR, null, 0);
+		if(direction > 0) {
+			
+			robots[0] = new Robot(this, rpos, direction, RobotTypes.GRABBER, null, 0); //Create 4 robots
+			rpos.xPos += (350/4) * direction;
+			robots[1] = new Robot(this, rpos, direction, RobotTypes.SCREWDRIVER, Material.SCREWS, 100);
+			rpos.xPos += (350/4) * direction;
+			robots[2] = new Robot(this, rpos, direction, RobotTypes.PAINTER, color,  100);
+			rpos.xPos += (350/4) * direction;
+			robots[3] = new Robot(this, rpos, direction, RobotTypes.INSPECTOR, null, 0);
+		} else {
+			rpos.xPos -= (350/4);
+			robots[0] = new Robot(this, rpos, direction, RobotTypes.GRABBER, null, 0); //Create 4 robots
+			rpos.xPos -= (350/4);
+			robots[1] = new Robot(this, rpos, direction, RobotTypes.SCREWDRIVER, Material.SCREWS, 100);
+			rpos.xPos -= (350/4) * direction;
+			robots[2] = new Robot(this, rpos, direction, RobotTypes.PAINTER, color,  100);
+			rpos.xPos -= (350/4) * direction;
+			robots[3] = new Robot(this, rpos, direction, RobotTypes.INSPECTOR, null, 0);
+			
+		}
 		
-		if(direction > 0) { //The Conveyor always starts at the left point
+		if(direction > 0) {
 			rpos = position;
 		}
-		rpos.yPos -= 10;
+		rpos.yPos -= 60;
 		conveyor = new Conveyor(this, rpos, direction, 20, 100); //Create conveyor
+	}
+	
+	public Robot[] getRobots() {
+		return robots;
 	}
 	
 	public void addBox(Container box) { //Adds the box to the matching robot/conveyor
@@ -109,25 +126,32 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 	}
 
 	public void start(int q) {
-		finished = -4;
 		double speed = q/10; //Adaptive speed
 		if(speed > 30) speed = 30; else if(speed < 10) speed = 10; //Boundaries for the speed
 		conveyor.setSpeed(speed);
-		
-		while (finished < q || status == SubsystemStatus.RUNNING) {
+		Car[] cars = new Car[4];
+		while (alstatus == SubsystemStatus.RUNNING) {
+			
 			for(Robot r: robots) {
-				r.start();
+				for(Car c: cars) {
+					if(c != null && c.infront() == r.robot) {
+						r.start(c);
+					}
+				}
 			}
 			while(notReady()) { //Waiting for the robots
 			}
-			conveyor.start();
+			
+			cars = conveyor.start(cars);
+			
+			
 			while(conveyor.status() != SubsystemStatus.WAITING) { //Waiting for the conveyor
 			}
-			
 		}
 		FactoryEvent taskDone = new FactoryEvent(this, EventKind.TASK_FINISHED);
 		this.notify(taskDone);
 	}
+	
 	
 	private boolean notReady() {
 		for(Robot r: robots) {
@@ -144,14 +168,9 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 			r.stop();
 		}
 		conveyor.stop();
-		status = SubsystemStatus.STOPPED;
+		alstatus = SubsystemStatus.STOPPED;
 	}
 
-	@Override
-	public Container deliverContainer(Material material) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void receiveContainer(Container box) {
@@ -163,8 +182,7 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Assembly Line with color " + color;
 	}
 
 
@@ -209,7 +227,7 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 
 	@Override
 	public void start() {
-		status = SubsystemStatus.RUNNING;
+		alstatus = SubsystemStatus.RUNNING;
 		start(0);
 	}
 
@@ -217,16 +235,40 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 	public void notify(FactoryEvent event) {
 		if(event.getKind() == EventKind.CAR_FINISHED) {
 			finished++;
-			//TODO add car to box
+			Material car;
+			switch(color) {
+			case COLOR_BLACK:
+				car = Material.CAR_BLACK;
+				break;
+			case COLOR_BLUE:
+				car = Material.CAR_BLUE;
+				break;
+			case COLOR_GRAY:
+				car = Material.CAR_GRAY;
+				break;
+			case COLOR_GREEN:
+				car = Material.CAR_GREEN;
+				break;
+			case COLOR_RED:
+				car = Material.CAR_RED;
+				break;
+			case COLOR_WHITE:
+				car = Material.CAR_WHITE;
+				break;
+			default:
+				car = Material.CAR_BLACK;
+				break;
+			}
+			conveyor.getOutputbox().receiveContainer(new Container(car));
 			if(conveyor.getOutputbox().getFullness() == MaterialStatus.BAD) {
-				FactoryEvent full = new FactoryEvent(getALSys(), EventKind.RESOURCEBOX_ALMOST_FULL, Material.CAR, conveyor.getOutputbox());
+				FactoryEvent full = new FactoryEvent(getALSys(), EventKind.RESOURCEBOX_ALMOST_FULL, car, conveyor.getOutputbox());
 			}
 		}
-		alsys.notify(event);
+		alsubsys.notify(event);
 	}
 	
 	public AL_Subsystem getALSys() {
-		return alsys;
+		return alsubsys;
 	}
 	
 	public void restart() {
@@ -240,14 +282,11 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 	public Conveyor getConveyor() {
 		return conveyor;
 	}
-
-	public void setConveyor(Conveyor conveyor) {
-		this.conveyor = conveyor;
-	}
 	
 	public Material getMaterial() {
 		return color;
 	}
+	
 
 
 }
