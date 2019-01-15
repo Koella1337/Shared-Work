@@ -18,7 +18,9 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 	
 	public ResourceBox(AbstractSubsystem owningSystem, Position pos) {
 		this.owningSystem = owningSystem;
-		this.pos = Utils.assignSize(pos, PlaceableSize.RESOURCE_BOX);
+		this.pos = pos;
+		if (pos.xSize == 1 && pos.ySize == 1)
+			Utils.assignSize(pos, PlaceableSize.RESOURCE_BOX);
 	}
 	
 	/** returns all Materials stored in this box */

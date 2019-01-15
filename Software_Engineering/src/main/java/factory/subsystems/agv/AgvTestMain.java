@@ -22,7 +22,7 @@ public class AgvTestMain{
     private static Forklift f;
     
 	public static void main(String[] args) {
-		AgvCoordinator m = new AgvCoordinator(null, null); // we won't contact the monitor in this test
+		AgvCoordinator m = new AgvCoordinator(null, null, null); // we won't contact the monitor in this test
 		f = new Forklift(new Position(50,50), m);
 		m.addForklift(f);
 		

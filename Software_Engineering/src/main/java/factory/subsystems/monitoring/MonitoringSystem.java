@@ -28,7 +28,6 @@ import factory.shared.interfaces.Monitorable;
 import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.agv.AgvTask;
 import factory.subsystems.assemblyline.AL_Subsystem;
-import factory.subsystems.assemblyline.AssemblyLine;
 import factory.subsystems.assemblyline.Robot;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 import factory.subsystems.monitoring.onlineshop.OnlineShopUser;
@@ -52,6 +51,7 @@ public class MonitoringSystem implements MonitoringInterface {
 	private OnlineShop onlineShop;
 
 	private ResourceBox shippingBox;
+	private Position staffQuarterPosition;
 
 	/**
 	 * this map stores the info to which ContainerDemander the prepared material
@@ -104,12 +104,12 @@ public class MonitoringSystem implements MonitoringInterface {
 					System.out.println("WAREHOUSE_TASK_COMPLETED");
 					WarehouseTask task = (WarehouseTask) event.getAttachment(0);
 					Material mat = task.getMaterial();
-					ContainerSupplier box = (ContainerSupplier) event.getAttachment(1);
+					ContainerSupplier supplier = (ContainerSupplier) event.getAttachment(1);
 					ContainerDemander demander = getWarehouseTaskDemanders().get(task);
 					if (demander == null) {
 						LOGGER.warning("no demander for the warehousetask found");
 					} else {
-						AgvTask agv = new AgvTask(600000, mat, box, demander);
+						AgvTask agv = new AgvTask(600000, mat, supplier, demander);
 						agvSystem.submitTask(agv);
 					}
 					break;
@@ -161,7 +161,7 @@ public class MonitoringSystem implements MonitoringInterface {
 		}).start();
 
 		new Thread(() -> {
-			this.alsubsys.start();
+			//TODO: this.alsubsys.start();
 		}).start();
 
 		this.handler.start();
@@ -257,7 +257,7 @@ public class MonitoringSystem implements MonitoringInterface {
 	/** Only call this after WarehouseSystem has been set. */
 	@Override
 	public void setShippingBox(Position shippingBoxPos) {
-		ResourceBox box = new ResourceBox(warehouseSystem, shippingBoxPos);	//TODO: @Omas check
+		ResourceBox box = new ResourceBox(warehouseSystem, shippingBoxPos);
 		this.shippingBox = box;
 	}
 
@@ -268,7 +268,7 @@ public class MonitoringSystem implements MonitoringInterface {
 
 	@Override
 	public void setAssemblyLine(AL_Subsystem assemblyLine) {
-		this.handler.addToFactoryPanel(assemblyLine);
+		//TODO: this.handler.addToFactoryPanel(assemblyLine);
 		this.alsubsys = assemblyLine;
 	}
 
@@ -279,6 +279,16 @@ public class MonitoringSystem implements MonitoringInterface {
 
 	public Map<WarehouseTask, ContainerDemander> getWarehouseTaskDemanders() {
 		return warehouseTaskDemanders;
+	}
+
+	@Override
+	public Position getStaffQuarterPosition() {
+		return staffQuarterPosition;
+	}
+
+	@Override
+	public void setStaffQuarterPosition(Position staffQuarterPosition) {
+		this.staffQuarterPosition = staffQuarterPosition;
 	}
 
 }

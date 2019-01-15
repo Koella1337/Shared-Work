@@ -35,7 +35,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	private Pathfinder pathfinder;
 	private Queue<AgvTask> outstandingTasks = new PriorityQueue<AgvTask>();
 	
-	public AgvCoordinator(MonitoringInterface mon, Element factory)
+	public AgvCoordinator(MonitoringInterface mon, Element factory, List<Placeable> accessiblePlaceables)
 	{
 		super(mon);
 		status = SubsystemStatus.RUNNING;

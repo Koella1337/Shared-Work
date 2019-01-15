@@ -55,4 +55,8 @@ public interface MonitoringInterface extends Stoppable {
 	void setAssemblyLine(AL_Subsystem alSystem);
 
 	Map<OnlineShopUser, List<Order>> getOrderMap();
+
+	Position getStaffQuarterPosition();
+
+	void setStaffQuarterPosition(Position staffQuarterPosition);
 }
