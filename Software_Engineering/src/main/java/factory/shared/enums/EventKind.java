@@ -47,6 +47,7 @@ public enum EventKind {
 	//------------------------------------- AGV Errors --------------------------------------
 	AGV_FORKLIFT_DAMAGED 			(EventSeverity.ERROR,		Forklift.class),
 	AGV_FORKLIFT_COLLISION 			(EventSeverity.GLOBAL_EROR,	Forklift.class, Forklift.class),
+	AGV_PATHING_IMPOSSIBLE			(EventSeverity.IMPORTANT,	AgvTask.class),
 	
 	
 	//------------------------------- Monitoring Notifications ------------------------------

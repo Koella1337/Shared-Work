@@ -1,5 +1,7 @@
 package factory.subsystems.assemblyline;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.List;
 
 import app.gui.SubsystemMenu;
@@ -20,11 +22,11 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	public int materials;
 	public Position position;
 	private SubsystemStatus status = SubsystemStatus.WAITING;
-	private int timestamp = 0;
+	private long timestamp = 0;
 	private AssemblyLine al;
 	
 	
-	public Robot(RobotTypes r, int mats, Position pos, AssemblyLine al) {
+	public Robot(AssemblyLine al, Position pos, int direction, RobotTypes r, Material mat, int mats) {
 		robot = r;
 		materials = mats;
 		position = pos;
@@ -49,7 +51,7 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 			return status;
 		}
 		
-		if(timestamp+5 <= System.currentTimeMillis()) { //Finished with task
+		if(timestamp+5000 <= System.currentTimeMillis()) { //Finished with task
 			status = SubsystemStatus.WAITING;
 			return SubsystemStatus.WAITING;
 		} else {
@@ -69,23 +71,31 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 
 	@Override
 	public void start() {
-		if(status == SubsystemStatus.WAITING) {
+		if(status() == SubsystemStatus.WAITING) {
 			
 			if(robot == RobotTypes.SCREWDRIVER || robot ==  RobotTypes.PAINTER) {
+				
 				materials--;
+				
 				if(materials < 10) {
 					FactoryEvent lowmat = new FactoryEvent(al.getALSys(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, this);
 					this.notify(lowmat);
-				}	
+				}
+				
 			} else if(robot == RobotTypes.INSPECTOR) {
 				if(Math.random() < 0.95) {
-					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED,Material.CAR, this);
-					this.notify(done);
+					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED, Material.CAR, this);
+					notify(done);
 				}
 			}
 			
-			timestamp = (int) System.currentTimeMillis(); //The Robot takes 5 seconds to perform it's task
+			timestamp = System.currentTimeMillis(); //The Robot takes 5 seconds to perform it's task
 		}
+		status();
+		
+	}
+	
+	public void notifyDone() {
 		
 	}
 
@@ -93,11 +103,57 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	public void stop() {
 		status = SubsystemStatus.STOPPED;
 	}
-
+	
 	@Override
 	public void draw(Graphics g) {
-		// TODO Auto-generated method stub
-		
+		switch(status()) {
+		case BROKEN:
+			g.setColor(Color.RED);
+		case RUNNING:
+			if(robot == RobotTypes.PAINTER) {
+				switch(material) {
+				case CAR:
+					break;
+				case CAR_BODIES:
+					break;
+				case COLOR_BLACK:
+					g.setColor(Color.BLACK);
+					break;
+				case COLOR_BLUE:
+					g.setColor(Color.BLUE);
+					break;
+				case COLOR_GRAY:
+					g.setColor(Color.GRAY);
+					break;
+				case COLOR_GREEN:
+					g.setColor(Color.GREEN);
+					break;
+				case COLOR_RED:
+					g.setColor(Color.RED);
+					break;
+				case COLOR_WHITE:
+					g.setColor(Color.WHITE);
+					break;
+				case LUBRICANT:
+					break;
+				case SCREWS:
+					break;
+				case WHEELS:
+					break;
+				default:
+					break;
+				
+				}
+			} else	g.setColor(Color.BLUE);
+			break;
+		case STOPPED:
+			g.setColor(Color.ORANGE);
+			break;
+		case WAITING:
+			g.setColor(Color.GREEN);
+			break;
+		}
+		g.fillRect(position.xPos, position.yPos, position.xSize, position.ySize);
 	}
 
 
@@ -109,8 +165,8 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		String s = "Robot Type " + robot + " @ " + position.xPos + " / " + position.yPos;
+		return s;
 	}
 
 	@Override
@@ -125,20 +181,18 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 
 	@Override
 	public List<Placeable> getPlaceables() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Placeable> l = new ArrayList<Placeable>();
+		l.add(this);
+		return l;
 	}
 
 	@Override
 	public SubsystemMenu getCurrentSubsystemMenu() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
-	public void fixBroken() {
-		if(status() == SubsystemStatus.BROKEN) {
-			status = SubsystemStatus.WAITING;
-		}
+	public void restart() {
+		status = SubsystemStatus.WAITING;
 	}
 
 

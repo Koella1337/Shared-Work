@@ -6,6 +6,7 @@ import factory.shared.Container;
 import factory.shared.Task;
 import factory.shared.enums.SubsystemStatus;
 
+@SuppressWarnings("unused")
 public interface RobotInterface{
 	
 	/**
