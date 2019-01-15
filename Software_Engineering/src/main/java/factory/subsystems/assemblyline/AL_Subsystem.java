@@ -221,6 +221,13 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 		return plc;
 	}
 	
+	public List<Placeable> getAGVAll(){
+		List<Placeable> plc = new ArrayList<Placeable>();
+		plc.add((Placeable) getAGVRobots());
+		plc.add((Placeable) getAGVConveyor());
+		plc.add((Placeable) getAGVOutputbox());
+	}
+	
 	public List<Placeable> getAGVRobots(){
 		List<Placeable> plc = new ArrayList<Placeable>();
 		for(AssemblyLine a: al) {

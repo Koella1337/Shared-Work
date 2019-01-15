@@ -162,8 +162,7 @@ public class MonitoringSystem implements MonitoringInterface {
 		}).start();
 
 		new Thread(() -> {
-			//TODO: this.alsubsys.start();
-//			this.alsubsys.start();
+			this.alsubsys.start();
 		}).start();
 
 		this.handler.start();

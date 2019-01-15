@@ -51,7 +51,7 @@ public class FactoryApplication implements Stoppable {
 		
 		AL_Subsystem alSystem = new AL_Subsystem(this.monitor, assemblyLines);
 		this.monitor.setAssemblyLine(alSystem); //TODO check if it works -Max
-		agvAccessiblePlacables.add(alSystem.getAGVRobots(), alSystem.getAGVConveyor(), alSystem.getAGVOutputbox());
+		agvAccessiblePlacebles.addAll(alSystem.getAGVAll());
 		
 		addShippingBoxToMonitoring(factory);
 		//		OnlineShopUser user = new OnlineShopUser("thomas");
