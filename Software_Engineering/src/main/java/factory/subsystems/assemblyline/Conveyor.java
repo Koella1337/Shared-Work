@@ -49,6 +49,16 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 		position = pos;
 		position.xSize = 60;
 		position.ySize = 10;
+		Position opb = pos;
+		if(direction > 0) {
+			opb.xPos += 60;
+		} else {
+			opb.xPos -= 10; //TODO depending on size
+		}
+		outputbox = new ResourceBox(al.getALSys(), position);
+		Container box = new Container(al.getMaterial());
+		
+
 	}
 	
 	public void addBox(Container container) {

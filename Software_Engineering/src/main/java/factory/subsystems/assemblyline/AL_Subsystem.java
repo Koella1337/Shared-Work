@@ -103,21 +103,33 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 			break;
 		case COLOR_BLACK:
 			task[0] = q;
+			al[0].restart();
+			al[0].start(task[0]);
 			break;
 		case COLOR_BLUE:
 			task[1] = q;
+			al[1].restart();
+			al[1].start(task[1]);
 			break;
 		case COLOR_GRAY:
 			task[2] = q;
+			al[2].restart();
+			al[2].start(task[2]);
 			break;
 		case COLOR_GREEN:
 			task[3] = q;
+			al[3].restart();
+			al[3].start(task[3]);
 			break;
 		case COLOR_RED:
 			task[4] = q;
+			al[4].restart();
+			al[4].start(task[4]);
 			break;
 		case COLOR_WHITE:
 			task[5] = q;
+			al[5].restart();
+			al[5].start(task[5]);
 			break;
 		case LUBRICANT:
 			break;
@@ -128,7 +140,6 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 		default:
 			break;
 		}
-		start();
 	}
 	
 	
@@ -141,8 +152,10 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 
 	@Override
 	public void start() {
+		
 		for(int i = 0; i < 6; i++) {
-			al[i].start(task[i]);
+			al[i].restart();
+			al[i].start();
 		}
 	}
 	

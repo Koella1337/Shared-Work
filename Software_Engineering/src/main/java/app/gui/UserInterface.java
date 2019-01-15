@@ -85,7 +85,7 @@ class UserInterface implements Stoppable {
 		this.menuPanel.add(doNothingButton);
 
 		JButton carFinishedButton = new JButton("car finished");
-		carFinishedButton.addActionListener(a -> monitor.handleEvent(new FactoryEvent(monitor.getAssemblyLine(), EventKind.CAR_FINISHED, Material.CAR)));
+		//carFinishedButton.addActionListener(a -> monitor.handleEvent(new FactoryEvent(monitor.getAssemblyLine(), EventKind.CAR_FINISHED, Material.CAR)));
 		carFinishedButton.setBounds(200,100,160,20);
 		this.menuPanel.add(carFinishedButton);
 		

@@ -53,7 +53,7 @@ public class MonitoringSystemTest {
 
 		this.monitor.setWarehouseSystem(warehouseSystem);
 		this.monitor.setAgvSystem(agvSystem);
-		this.monitor.setAssemblyLine(assemblyLineSystem);
+		//this.monitor.setAssemblyLine(assemblyLineSystem);
 
 //		Conveyor conveyor = new Conveyor(this.assemblyLineSystem, new Position(10, 10), 5, 5);
 //		conveyor.setOutputbox(new ResourceBox(this.assemblyLineSystem.getALSys(), new Position(20, 20)));

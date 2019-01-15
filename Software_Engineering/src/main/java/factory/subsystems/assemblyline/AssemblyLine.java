@@ -12,6 +12,7 @@ import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
+import factory.shared.enums.MaterialStatus;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.ContainerDemander;
 import factory.shared.interfaces.ContainerSupplier;
@@ -22,19 +23,22 @@ import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
 @SuppressWarnings("unused")
 public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Placeable, ContainerDemander, ContainerSupplier {
-	public Robot[] robots = new Robot[4];
+	private Robot[] robots = new Robot[4];
 	private Conveyor conveyor;
-	public Position position;
+	private Position position;
 	private AL_Subsystem alsys;
 	private int finished;
+	private SubsystemStatus status;
+	private Material color;
 	
 	
 	public AssemblyLine(Position pos, AL_Subsystem al, int direction, Material color) {
 		position = pos;
+		this.color = color;
 		this.alsys = al;
 		this.alsys.al[0] = this;
 		Position rpos = position;
-		robots[0] = new Robot(this, rpos, direction, RobotTypes.GRABBER, null, 0);
+		robots[0] = new Robot(this, rpos, direction, RobotTypes.GRABBER, null, 0); //Create 4 robots
 		rpos.xPos += 10 * direction;
 		robots[1] = new Robot(this, rpos, direction, RobotTypes.SCREWDRIVER, Material.SCREWS, 100);
 		rpos.xPos += 10 * direction;
@@ -46,7 +50,7 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 			rpos = position;
 		}
 		rpos.yPos -= 10;
-		conveyor = new Conveyor(this, rpos, direction, 20, 100);
+		conveyor = new Conveyor(this, rpos, direction, 20, 100); //Create conveyor
 	}
 	
 	public void addBox(Container box) { //Adds the box to the matching robot/conveyor
@@ -64,7 +68,7 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 	}
 	
 	@Override
-	public SubsystemStatus status() { //TODO
+	public SubsystemStatus status() {
 		SubsystemStatus status = SubsystemStatus.WAITING;
 		for(Robot r: robots) {
 			if(r.status() == SubsystemStatus.RUNNING && status == SubsystemStatus.WAITING) {
@@ -110,12 +114,11 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 		if(speed > 30) speed = 30; else if(speed < 10) speed = 10; //Boundaries for the speed
 		conveyor.setSpeed(speed);
 		
-		while (finished < q) {
+		while (finished < q || status == SubsystemStatus.RUNNING) {
 			for(Robot r: robots) {
 				r.start();
 			}
 			while(notReady()) { //Waiting for the robots
-				//This seems like bad programming, but I think it will work
 			}
 			conveyor.start();
 			while(conveyor.status() != SubsystemStatus.WAITING) { //Waiting for the conveyor
@@ -141,6 +144,7 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 			r.stop();
 		}
 		conveyor.stop();
+		status = SubsystemStatus.STOPPED;
 	}
 
 	@Override
@@ -187,32 +191,36 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 
 
 	@Override
-	public SubsystemStatus getStatus() {
-		SubsystemStatus status = SubsystemStatus.WAITING;
+	public SubsystemStatus getStatus() { //This should only be used for test cases
+		SubsystemStatus alstatus = SubsystemStatus.WAITING;
 		for(Robot r: robots) {
-			if(r.status() == SubsystemStatus.RUNNING && status == SubsystemStatus.WAITING) {
-				status = r.status();
+			if(r.status() == SubsystemStatus.RUNNING && alstatus == SubsystemStatus.WAITING) {
+				alstatus = r.status();
 			}
-			if(r.status() == SubsystemStatus.STOPPED && status != SubsystemStatus.BROKEN) {
-				status = r.status();
+			if(r.status() == SubsystemStatus.STOPPED && alstatus != SubsystemStatus.BROKEN) {
+				alstatus = r.status();
 			}
 			if(r.status() == SubsystemStatus.BROKEN) {
-				status = r.status();
+				alstatus = r.status();
 			}
 		}
-		return status;
+		return alstatus;
 	}
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-		
+		status = SubsystemStatus.RUNNING;
+		start(0);
 	}
 
 	@Override
 	public void notify(FactoryEvent event) {
 		if(event.getKind() == EventKind.CAR_FINISHED) {
 			finished++;
+			//TODO add car to box
+			if(conveyor.getOutputbox().getFullness() == MaterialStatus.BAD) {
+				FactoryEvent full = new FactoryEvent(getALSys(), EventKind.RESOURCEBOX_ALMOST_FULL, Material.CAR, conveyor.getOutputbox());
+			}
 		}
 		alsys.notify(event);
 	}
@@ -226,6 +234,7 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 			r.restart();
 		}
 		conveyor.restart();
+		start();
 	}
 
 	public Conveyor getConveyor() {
@@ -234,6 +243,10 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 
 	public void setConveyor(Conveyor conveyor) {
 		this.conveyor = conveyor;
+	}
+	
+	public Material getMaterial() {
+		return color;
 	}
 
 

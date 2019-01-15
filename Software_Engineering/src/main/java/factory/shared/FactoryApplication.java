@@ -49,10 +49,8 @@ public class FactoryApplication implements Stoppable {
 
 		Element assemblyLines = (Element) (factory).getElementsByTagName("assemblylines").item(0);
 		
-
-
-//		AssemblyLine assemblyLine = new AssemblyLine(new Position(50,50),new AL_Subsystem(this.monitor));
-//		this.monitor.setAssemblyLine(assemblyLine);
+//		AL_Subsystem alSystem = new AL_Subsystem(this.monitor, assemblyLines);
+//		this.monitor.setAssemblyLine(alSystem); //TODO check if it works -Max
 		//TODO: agvAccessiblePlacables.add(Robots, Conveyors, Outputboxes)
 		
 		addShippingBoxToMonitoring(factory);
@@ -62,6 +60,9 @@ public class FactoryApplication implements Stoppable {
 		
 		AgvCoordinator agvSystem = new AgvCoordinator(this.monitor, factory, agvAccessiblePlaceables);
 		this.monitor.setAgvSystem(agvSystem);
+		
+		this.monitor.setShippingBox(Utils.xmlGetPositionFromFirstChild(factory, "shippingbox"));
+		this.monitor.setStaffQuarterPosition(Utils.xmlGetPositionFromFirstChild(factory, "staffquarter"));
 	}
 
 	private UIConfiguration getUiConfigFromFactoryElement(Element factory) {
@@ -74,7 +75,6 @@ public class FactoryApplication implements Stoppable {
 	
 	private void addShippingBoxToMonitoring(Element factory) {
 		Position shippingBoxPosition = Utils.xmlGetPositionFromFirstChild(factory, "shippingbox");
-		this.monitor.setShippingBox(shippingBoxPosition);
 	}
 	
 	public void start() {

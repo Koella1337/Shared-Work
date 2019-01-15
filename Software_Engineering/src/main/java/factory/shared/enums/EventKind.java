@@ -32,6 +32,7 @@ public enum EventKind {
 	
 	//------------------------------- Conveyors Notifications -------------------------------
 	CONVEYORS_LACK_OF_OIL			(EventSeverity.IMPORTANT, 	Conveyor.class),
+	CONVEYOR_PICK_UP_BOX			(EventSeverity.NORMAL, Material.class, Conveyor.class),
 	
 	//---------------------------------- Conveyors Errors -----------------------------------
 	CONVEYORS_BROKEN				(EventSeverity.IMPORTANT, 	Conveyor.class),
