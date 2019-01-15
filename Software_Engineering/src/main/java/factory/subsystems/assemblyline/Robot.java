@@ -20,7 +20,7 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	public RobotTypes robot;
 	public Material material;
 	public int materials;
-	public Position position;
+	public final Position position;
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private long timestamp = 0;
 	private AssemblyLine al;
@@ -30,7 +30,7 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	public Robot(AssemblyLine al, Position pos, RobotTypes r, Material mat, int mats) {
 		robot = r;
 		materials = mats;
-		position = pos;
+		position = pos.clone();
 		this.al = al;
 		position.xSize = 50;
 		position.ySize = 50;

@@ -16,7 +16,6 @@ import org.testng.annotations.Test;
 import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
-import factory.shared.ResourceBox;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.interfaces.ContainerDemander;
@@ -27,7 +26,6 @@ import factory.subsystems.agv.Forklift;
 import factory.subsystems.assemblyline.AssemblyLine;
 import factory.subsystems.assemblyline.Conveyor;
 import factory.subsystems.assemblyline.Robot;
-import factory.subsystems.assemblyline.RobotTypes;
 import factory.subsystems.warehouse.WarehouseSystem;
 import factory.subsystems.warehouse.WarehouseTask;
 
@@ -94,24 +92,6 @@ public class MonitoringSystemTest {
 
 		this.monitor.handleEvent(event);
 		Mockito.verifyZeroInteractions(this.errorEventHandler);
-	}
-
-	@Test(description = "verifies that the correct task is submitted to the agv system when a car finished event is received")
-	public void testHandleCarFinishedEvent() {
-		Position pos = new Position(10, 14);
-//		FactoryEvent event = new FactoryEvent(this.assemblyLineSystem, EventKind.CAR_FINISHED, Material.CAR,
-//				new Robot(RobotTypes.GRABBER, 1, pos, this.assemblyLineSystem));
-//		this.monitor.handleEvent(event);
-
-		AgvTask agvTaskToSubmit = new AgvTask(600000, Material.CAR_RED, this.assemblyLineSystem.getConveyor().getOutputbox(),
-				this.monitor.getShippingBox());
-		ArgumentCaptor<AgvTask> argument = ArgumentCaptor.forClass(AgvTask.class);
-		Mockito.verify(this.agvSystem, Mockito.times(1)).submitTask(argument.capture());
-
-		AgvTask param = argument.getValue();
-		assertEquals(param.getDropoff(), agvTaskToSubmit.getDropoff());
-		assertEquals(param.getPickup(), agvTaskToSubmit.getPickup());
-		assertEquals(param.getMaterial(), agvTaskToSubmit.getMaterial());
 	}
 
 	@Test(description = "verifies that the correct agv task is submitted to the agv system when a car finished event is received")

@@ -16,14 +16,6 @@ class Main {
 	public static void main(String[] args) throws SAXException, IOException, ParserConfigurationException {
 		FactoryApplication factory = new FactoryApplication();
 		factory.start();
-		
-		try {
-			Thread.sleep(10000);
-			System.out.println("Main ERROR automatically created");
-			//factory.getMonitor().handleEvent(new FactoryEvent(new AgvCoordinator(factory.getMonitor(), null), EventKind.MONITORING_HANDLE_EVENT_FAILED));
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 }
