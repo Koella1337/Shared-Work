@@ -269,7 +269,7 @@ public class MonitoringSystem implements MonitoringInterface {
 
 	@Override
 	public void setAssemblyLine(AL_Subsystem assemblyLine) {
-		//TODO: this.handler.addToFactoryPanel(assemblyLine);
+		this.handler.addToFactoryPanel(assemblyLine);
 		this.alsubsys = assemblyLine;
 	}
 
