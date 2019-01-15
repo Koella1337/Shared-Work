@@ -10,7 +10,6 @@ import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
-import factory.shared.Task;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Monitorable;
@@ -20,7 +19,7 @@ import factory.subsystems.assemblyline.interfaces.ConveyorMonitorInterface;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
 @SuppressWarnings("unused")
-public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeable, ConveyorMonitorInterface{
+public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeable, ConveyorMonitorInterface {
 	public double speed;
 	public int lubricant;
 	private SubsystemStatus status = SubsystemStatus.WAITING;
@@ -31,62 +30,54 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 	private AssemblyLine al;
 	private Position position;
 
-	
-	
 	/**
 	 * 
-	 * @param s determines how many revelations (1 revelation = 4 steps) the conveyor does per minute
-	 * 10 revelations are slow
-	 * 20 revelations are normal
-	 * 30 revelations are fast
-	 * This will be considered when simulating technical failure
+	 * @param s
+	 *            determines how many revelations (1 revelation = 4 steps) the
+	 *            conveyor does per minute 10 revelations are slow 20 revelations
+	 *            are normal 30 revelations are fast This will be considered when
+	 *            simulating technical failure
 	 * 
-	 * @param l how much lubricant is available initially
+	 * @param l
+	 *            how much lubricant is available initially
 	 */
-	public Conveyor(AssemblyLine al, Position pos, int direction, int s, int l){
-		speed = (60/s) / 4; 
+	public Conveyor(AssemblyLine al, Position pos, int s, int l) {
+		speed = (60 / s) / 4;
 		lubricant = l;
 		this.al = al;
-		position = pos;
-		position.xSize = 350;
+		position = pos.clone();
+		position.yPos += 60;
+		position.xSize = 320;
 		position.ySize = 40;
-		Position opb = pos;
-		if(direction > 0) {
-			opb.xPos += 350;
-		} else {
-			opb.xPos -= 40;
-		}
-		outputbox = new ResourceBox(al.getALSys(), position);
+		outputbox = new ResourceBox(al.getALSys(), new Position(position.xPos+320, position.yPos));
 		box = new Container(al.getMaterial());
-		
 
 	}
-	
+
 	public void addBox(Container container) {
 		lubricant += container.getAmount();
 	}
-	
 
-	
 	public SubsystemStatus status() {
-		
-		if (status == SubsystemStatus.BROKEN) { //if it's broken
+
+		if (status == SubsystemStatus.BROKEN) { // if it's broken
 			return SubsystemStatus.BROKEN;
-		} else if (timestamp + speed <= System.currentTimeMillis()) { //Done with last task
+		} else if (timestamp + speed <= System.currentTimeMillis()) { // Done with last task
 			status = SubsystemStatus.WAITING;
 		} else {
 			return SubsystemStatus.RUNNING;
 		}
 		return status;
 	}
-	
+
 	public int getMaterials() {
 		return lubricant;
 	}
-	
+
 	/**
 	 * 
-	 * @return this returns the amount of seconds it takes for one step of the conveyor
+	 * @return this returns the amount of seconds it takes for one step of the
+	 *         conveyor
 	 */
 	@Override
 	public double getSpeed() {
@@ -97,20 +88,20 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 	public Position getPosition() {
 		return position;
 	}
-	
 
 	@Override
 	public void start() {
-		if(status() == SubsystemStatus.WAITING) {
+		if (status() == SubsystemStatus.WAITING) {
 			lubricant -= Math.random();
-			if(lubricant < 10) {
+			if (lubricant < 10) {
 				FactoryEvent event = new FactoryEvent(al.getALSys(), EventKind.CONVEYORS_LACK_OF_OIL, this);
 				notify(event);
 			}
-			//Performs task
+			// Performs task
 			status = SubsystemStatus.RUNNING;
 			timestamp = (int) System.currentTimeMillis();
-			if(Math.random() * speed > 25 * lubricant/100) { //Simulation on how speed & lubricant impact chances of breaking
+			if (Math.random() * speed > 25 * lubricant / 100) { // Simulation on how speed & lubricant impact chances of
+																// breaking
 				status = SubsystemStatus.BROKEN;
 				FactoryEvent broken = new FactoryEvent(al.getALSys(), EventKind.CONVEYORS_BROKEN, this);
 				notify(broken);
@@ -131,7 +122,7 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 	@Override
 	public void draw(Graphics g) {
 		Color old = g.getColor();
-		switch(status()) {
+		switch (status()) {
 		case BROKEN:
 			g.setColor(Color.RED);
 		case RUNNING:
@@ -147,7 +138,6 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 		g.fillRect(0, 0, position.xSize, position.ySize);
 		g.setColor(old);
 	}
-
 
 	public ResourceBox getInputbox() {
 		return inputbox;
@@ -171,7 +161,6 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 		return s;
 	}
 
-
 	@Override
 	public SubsystemStatus getStatus() {
 		return status();
@@ -194,17 +183,9 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 	public void notify(FactoryEvent event) {
 		al.notify(event);
 	}
-	
+
 	public void restart() {
 		status = SubsystemStatus.WAITING;
 	}
-
-	
-
-
-
-
-	
-	
 
 }

@@ -81,7 +81,7 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 				color = null;
 				break;
 			}
-			al[i] = new AssemblyLine(pos, this, textToDirection(direction), color);
+			al[i] = new AssemblyLine(pos, this, color);
 		}
 	}
 	

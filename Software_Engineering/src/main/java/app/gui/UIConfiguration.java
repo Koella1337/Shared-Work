@@ -5,8 +5,6 @@ public class UIConfiguration {
 	public final int uiHeight;
 	public final int uiWidthFactory;
 	
-	
-	
 	public UIConfiguration(int uiWidthFactory,int uiHeight ) {
 		super();
 		this.uiHeight = uiHeight;

@@ -20,9 +20,6 @@ public class GUIPanel extends JPanel {
 		addDebuggingInformation(g);
 	}
 
-	/**
-	 * TODO remove
-	 */
 	private void addDebuggingInformation(Graphics g) {
 		g.drawString(getClass().getSimpleName(), getWidth() - 100, getHeight() - 130);
 		g.drawString(getWidth() + " / " + getHeight(), getWidth() - 100, getHeight() - 110);
