@@ -1,6 +1,8 @@
 package factory.shared.enums;
 
 import factory.shared.interfaces.ContainerSupplier;
+import factory.shared.Task;
+import factory.shared.ResourceBox;
 import factory.subsystems.agv.AgvTask;
 import factory.subsystems.agv.Forklift;
 import factory.subsystems.assemblyline.Conveyor;
@@ -11,43 +13,48 @@ import factory.subsystems.warehouse.WarehouseTask;
  * The kind of a FactoryEvent.<br>
  * EventKinds can portray simple Notifications (e.g. a Task being completed), but can also be errors.
  */
-
 public enum EventKind {
+	//----------------------------------- Generic Events -----------------------------------
+	TASK_NOT_COMPLETED_BEFORE_DEADLINE (EventSeverity.INFO,		Task.class),		//TODO: fire this event
+	
+	RESOURCEBOX_FULL				(EventSeverity.ERROR, 		ResourceBox.class),
+	RESOURCEBOX_ALMOST_FULL			(EventSeverity.IMPORTANT, 	ResourceBox.class),
+	
 	//------------------------------- RobotArms Notifications -------------------------------
-	CAR_FINISHED (EventSeverity.NORMAL, Material.class, Robot.class),
+	CAR_FINISHED 					(EventSeverity.NORMAL, 		Material.class, Robot.class),
 	TASK_FINISHED 					(EventSeverity.NORMAL),
-	ROBOTARMS_LACK_OF_MATERIAL 		(EventSeverity.NORMAL, Material.class, Robot.class),
+	ROBOTARMS_LACK_OF_MATERIAL 		(EventSeverity.NORMAL, 		Material.class, Robot.class),
 	
 	
 	//---------------------------------- RobotArms Errors -----------------------------------
-	ROBOTARMS_BROKEN				(EventSeverity.IMPORTANT, Robot.class),
+	ROBOTARMS_BROKEN				(EventSeverity.IMPORTANT, 	Robot.class),
 	
 	//------------------------------- Conveyors Notifications -------------------------------
-	CONVEYORS_LACK_OF_OIL			(EventSeverity.IMPORTANT, Conveyor.class),
+	CONVEYORS_LACK_OF_OIL			(EventSeverity.IMPORTANT, 	Conveyor.class),
 	
 	//---------------------------------- Conveyors Errors -----------------------------------
-	CONVEYORS_BROKEN				(EventSeverity.IMPORTANT, Conveyor.class),
+	CONVEYORS_BROKEN				(EventSeverity.IMPORTANT, 	Conveyor.class),
 	
 	
 	//------------------------------- Warehouse Notifications -------------------------------
-	WAREHOUSE_TASK_COMPLETED		(EventSeverity.NORMAL,WarehouseTask.class,ContainerSupplier.class),
+	WAREHOUSE_TASK_COMPLETED		(EventSeverity.NORMAL,		WarehouseTask.class, ContainerSupplier.class),
 	
 	//---------------------------------- Warehouse Errors -----------------------------------
 	
 	
 	
 	//---------------------------------- AGV Notifications ----------------------------------
-	AGV_CONTAINER_DELIVERED 		(EventSeverity.NORMAL,AgvTask.class),
+	AGV_CONTAINER_DELIVERED 		(EventSeverity.NORMAL,		AgvTask.class),
 	
 	//------------------------------------- AGV Errors --------------------------------------
-	AGV_FORKLIFT_DAMAGED 			(EventSeverity.ERROR,Forklift.class),
-	AGV_FORKLIFT_COLLISION 			(EventSeverity.GLOBAL_EROR,Forklift.class, Forklift.class),
+	AGV_FORKLIFT_DAMAGED 			(EventSeverity.ERROR,		Forklift.class),
+	AGV_FORKLIFT_COLLISION 			(EventSeverity.GLOBAL_EROR,	Forklift.class, Forklift.class),
 	
 	
 	//------------------------------- Monitoring Notifications ------------------------------
 	
 	//---------------------------------- Monitoring Errors ----------------------------------
-	MONITORING_HANDLE_EVENT_FAILED(EventSeverity.GLOBAL_EROR)
+	MONITORING_HANDLE_EVENT_FAILED	(EventSeverity.GLOBAL_EROR)
 	
 	;
 	
@@ -76,11 +83,11 @@ public enum EventKind {
 	public String toString() {
 		StringBuilder attachmentsSb = new StringBuilder();
 		for (int i = 0; i < attachmentTypes.length; i++) {
-			attachmentsSb.append(attachmentTypes[i].getSimpleName());
-			if (i != attachmentTypes.length - 1)
+			if (i != 0)
 				attachmentsSb.append(", ");
+			attachmentsSb.append(attachmentTypes[i].getSimpleName());
 		}
-		return String.format("Event: \"%s\", Attachments: %d -- [%s]", super.toString(), attachmentTypes.length, attachmentsSb.toString());
+		return String.format("(Event: \"%s\", Attachments: %d -- [%s])", super.toString(), attachmentTypes.length, attachmentsSb.toString());
 	}
 	
 	

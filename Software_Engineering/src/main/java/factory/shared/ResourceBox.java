@@ -2,6 +2,8 @@ package factory.shared;
 
 import java.awt.Graphics;
 
+import factory.shared.Constants.PlaceableSize;
+import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.enums.MaterialStatus;
 import factory.shared.interfaces.ContainerDemander;
@@ -9,17 +11,25 @@ import factory.shared.interfaces.ContainerSupplier;
 
 public class ResourceBox implements ContainerDemander, ContainerSupplier {
 
+	private final AbstractSubsystem owningSystem;
+	
 	private final Position pos;
 	private final MaterialStorageMap content = new MaterialStorageMap();
 	
-	public ResourceBox(Position pos) {
-		this.pos = pos;
+	public ResourceBox(AbstractSubsystem owningSystem, Position pos) {
+		this.owningSystem = owningSystem;
+		this.pos = Utils.assignSize(pos, PlaceableSize.RESOURCE_BOX);
 		for (int i = 0; i < 40; i++)	//TODO: remove !!
 			this.receiveContainer(new Container(Material.CAR_BODIES));
 	}
 	
+	/** returns all Materials stored in this box */
+	public Material[] getStoredMaterials() {
+		return content.getMap().keySet().toArray(new Material[0]);
+	}
+	
 	/** @return the amount of stored containers in this ResourceBox <br> (across all Materials) */
-	public int getStoredContainerAmount() {
+	public int getContainerAmount() {
 		int amount = 0;
 		for (Material mat : content.getMap().keySet()) {
 			amount += content.get(mat);
@@ -28,7 +38,7 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 	}
 	
 	public MaterialStatus getFullness() {
-		int percent = (int) (((float) getStoredContainerAmount() / (float) Constants.RESOURCE_BOX_MAX_CONTAINERS) * 100);
+		int percent = (int) (((float) getContainerAmount() / (float) Constants.RESOURCE_BOX_MAX_CONTAINERS) * 100);
 		
 		if (percent == 0)
 			return MaterialStatus.EMPTY;
@@ -55,7 +65,7 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 		g.fillRect(1, 1, pos.xSize - 1, pos.ySize - 1);
 		g.setColor(Constants.UI_BORDER_COLOR);	
 		g.drawRect(0, 0, pos.xSize, pos.ySize);
-		g.drawString(""+getStoredContainerAmount(), pos.xSize/3, pos.ySize/2);
+		g.drawString(""+getContainerAmount(), pos.xSize/3, pos.ySize/2);
 	}
 
 	@Override
@@ -67,9 +77,12 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 
 	@Override
 	public void receiveContainer(Container container) {
-		if (getStoredContainerAmount() == Constants.RESOURCE_BOX_MAX_CONTAINERS)
-			throw new IllegalArgumentException(this.toString() + " is already full!");
 		content.add(container);
+		
+		if (getContainerAmount() == Constants.RESOURCE_BOX_MAX_CONTAINERS)
+			owningSystem.notify(new FactoryEvent(owningSystem, EventKind.RESOURCEBOX_FULL, this));
+		else if (getFullness() == MaterialStatus.TERRIBLE)
+			owningSystem.notify(new FactoryEvent(owningSystem, EventKind.RESOURCEBOX_ALMOST_FULL, this));
 	}
 	
 	@Override

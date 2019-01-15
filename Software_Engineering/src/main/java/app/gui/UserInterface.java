@@ -17,6 +17,7 @@ import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
+import factory.subsystems.warehouse.WarehouseTask;
 
 class UserInterface implements Stoppable {
 
@@ -75,9 +76,10 @@ class UserInterface implements Stoppable {
 		this.menuPanel.setPreferredSize(new Dimension(new Dimension(Constants.UI_WIDTH_MENU, this.config.uiHeight+1)));
 		this.menuPanel.setLayout(null);
 
-		JButton doNothingButton = new JButton("do nothing");
+		JButton doNothingButton = new JButton("warehouse test");
 		doNothingButton.addActionListener(a -> {
-			JOptionPane.showMessageDialog(null, "You've successfully done nothing! ");
+			//JOptionPane.showMessageDialog(null, "You've successfully done nothing! ");
+			monitor.getWarehouseSystem().receiveTask(new WarehouseTask(20000, Material.CAR_BODIES));
 		});
 		doNothingButton.setBounds(20,100,160,20);
 		this.menuPanel.add(doNothingButton);

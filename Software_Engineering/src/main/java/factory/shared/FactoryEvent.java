@@ -16,7 +16,8 @@ public class FactoryEvent {
 		this.kind = kind;
 		this.attachments = attachments;
 		if (!areAttachmentsValid())
-			throw new IllegalArgumentException("Invalid Attachments for " + kind.toString());
+			throw new IllegalArgumentException(String.format("Invalid Attachments for %s. Attachments were: %s", 
+					kind.toString(), Arrays.toString(attachments)));
 	}
 	
 	public Monitorable getSource() {

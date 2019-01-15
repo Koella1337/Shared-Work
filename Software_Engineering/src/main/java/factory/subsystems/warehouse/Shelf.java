@@ -11,9 +11,10 @@ import factory.shared.MaterialStorageMap;
 import factory.shared.Position;
 import factory.shared.enums.Material;
 import factory.shared.enums.MaterialStatus;
-import factory.shared.interfaces.Placeable;
+import factory.shared.interfaces.ContainerDemander;
+import factory.shared.interfaces.ContainerSupplier;
 
-public class Shelf implements Placeable {
+public class Shelf implements ContainerSupplier, ContainerDemander {
 	
 	private final Position pos;
 	private final ItemSlot[] slots;
@@ -33,18 +34,17 @@ public class Shelf implements Placeable {
 		Random rng = new Random();
 		int rnd = rng.nextInt(20);
 		for (int i = 0; i < rnd; i++) {
-			this.storeContainer(new Container(Material.CAR_BODIES));
+			this.receiveContainer(new Container(Material.CAR_BODIES));
 		}
-		rnd = rng.nextInt(10);
+		rnd = rng.nextInt(15);
 		for (int i = 0; i < rnd; i++) {
-			this.takeContainer(Material.CAR_BODIES);
+			this.deliverContainer(Material.CAR_BODIES);
 		}
-		//System.out.println(this.toString());
-		this.sortShelf();
 	}
 	
 	/** @return a Container of the supplied Material, or null if that material isn't stored in this shelf */
-	protected Container takeContainer(Material material) {
+	@Override
+	public Container deliverContainer(Material material) {
 		for (int i = 0; i < slots.length; i++) {
 			Container container = slots[i].takeContainer(material);
 			if (container != null) return container;
@@ -52,13 +52,11 @@ public class Shelf implements Placeable {
 		return null;
 	}
 	
-	/** @return the row the container will be stored in or -1 if the Shelf is full. */
-	protected int storeContainer(Container container) {
+	public void receiveContainer(Container container) {
 		for (int i = 0; i < slots.length; i++) {
-			int column = slots[i].storeContainer(container);
-			if (column != -1) return i;
+			if (slots[i].storeContainer(container) != -1)
+				return;
 		}
-		return -1;
 	}
 	
 	protected boolean hasMaterial(Material material) {
@@ -127,7 +125,7 @@ public class Shelf implements Placeable {
 			
 			while (allMaterials.get(mat) != null) {
 				allMaterials.remove(mat);
-				this.storeContainer(new Container(mat));
+				this.receiveContainer(new Container(mat));
 			}
 		}
 	}
@@ -139,10 +137,10 @@ public class Shelf implements Placeable {
 
 	@Override
 	public void draw(Graphics g) {
-		g.setColor(Constants.UI_BORDER_COLOR);
-		g.drawRect(0, 0, pos.xSize, pos.ySize);
 		g.setColor(this.getShelfSortedness().uiColor);
 		g.fillRect(1, 1, pos.xSize - 1, pos.ySize - 1);
+		g.setColor(Constants.UI_BORDER_COLOR);
+		g.drawRect(0, 0, pos.xSize, pos.ySize);
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package factory.shared.enums;
 
 import java.awt.Color;
+import java.util.Comparator;
 
 /** 
  * Portrays how the status (in regards to Materials) of a certain Placeable is. <br>
@@ -10,13 +11,13 @@ import java.awt.Color;
  *   - ...
  */
 public enum MaterialStatus {
+	EMPTY			(Color.LIGHT_GRAY),
+	
 	PERFECT			(new Color(  0, 170,  0)),	//dark green
 	WELL			(new Color(145, 245, 65)),	//lime-green
 	AVERAGE			(Color.YELLOW),
-	BAD				(new Color(255, 123, 0)),	//orange
-	TERRIBLE		(Color.RED),
-	
-	EMPTY			(Color.LIGHT_GRAY);
+	BAD				(new Color(255, 125,  0)),	//orange
+	TERRIBLE		(Color.RED);
 	
 	/** The color that the Placeable could be displayed with on the UI regarding its MaterialStatus. */
 	public final Color uiColor;
@@ -24,6 +25,8 @@ public enum MaterialStatus {
 	private MaterialStatus(Color uiColor) {
 		this.uiColor = uiColor;
 	}
+	
+
 	
 	public static MaterialStatus getBestStatus() {
 		return PERFECT;
@@ -42,4 +45,20 @@ public enum MaterialStatus {
 			default: 		return TERRIBLE;
 		}
 	}
+	
+	/** Returns a comparator for sorting by MaterialStatus. Worst = First */
+	public static Comparator<MaterialStatus> comparator() {
+		return (status1, status2) -> {
+			if (status1 == status2)
+				return 0;
+			else
+				return status1.isWorse(status2) ? -1 : 1;
+		};
+	}
+	
+	/** Returns whether this status is worse than the specified status. */
+	public boolean isWorse(MaterialStatus otherStatus) {
+		return this.ordinal() > otherStatus.ordinal();
+	}
+
 }

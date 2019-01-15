@@ -56,7 +56,7 @@ public class MonitoringSystemTest {
 		this.monitor.setAssemblyLine(assemblyLineSystem);
 
 		Conveyor conveyor = new Conveyor(this.assemblyLineSystem, new Position(10, 10), 5, 5);
-		conveyor.setOutputbox(new ResourceBox(new Position(20, 20)));
+		conveyor.setOutputbox(new ResourceBox(this.assemblyLineSystem.getALSys(), new Position(20, 20)));
 		Mockito.doReturn(conveyor).when(this.assemblyLineSystem).getConveyor();
 
 	}

@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import database.Database;
 import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
 import factory.shared.enums.EventKind;
@@ -20,6 +21,9 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 	
 	private final List<StorageSite> storageSites = new ArrayList<>();
 	private final List<Placeable> placeables = new ArrayList<>();
+	
+	private SubsystemStatus status;
+	private boolean wasSubsystemAlreadyStarted;
 
 	public WarehouseSystem(MonitoringInterface monitor, Element xmlWarehouseElem) {
 		super(monitor);
@@ -32,13 +36,18 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 			placeables.add(newSite);
 			placeables.addAll(newSite.getPlaceables());
 		}
+		
+		this.status = SubsystemStatus.WAITING;
+		this.wasSubsystemAlreadyStarted = false;
+		
+		Database.INSTANCE.initialize();
 	}
 
 	@Override
 	public SubsystemStatus getStatus() {
-		return SubsystemStatus.RUNNING;		// TODO 
+		return status;
 	}
-
+	
 	@Override
 	public StorageSite receiveTask(WarehouseTask task) {
 		StorageSite leastOverworkedSite = null;
@@ -96,19 +105,25 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 
 	@Override
 	public String getName() {
-		return "warehouse";
+		return this.getClass().getSimpleName();
 	}
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-		
+		if (!wasSubsystemAlreadyStarted) {
+			for (StorageSite s : storageSites) {
+				Thread thread = new Thread(() -> s.start());
+				thread.setDaemon(true);
+				thread.start();
+			}
+			wasSubsystemAlreadyStarted = true;
+		}
+		status = SubsystemStatus.RUNNING;
 	}
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-		
+		status = SubsystemStatus.STOPPED;
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import factory.shared.AbstractSubsystem;
 import factory.shared.FactoryEvent;
+import factory.shared.Position;
 import factory.shared.ResourceBox;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Stoppable;
@@ -46,7 +47,7 @@ public interface MonitoringInterface extends Stoppable {
 
 	ResourceBox getShippingBox();
 
-	void setShippingBox(ResourceBox shippingBox);
+	void setShippingBox(Position shippingBoxPosition);
 
 	AssemblyLine getAssemblyLine();
 

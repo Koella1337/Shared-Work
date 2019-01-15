@@ -37,7 +37,6 @@ import factory.subsystems.warehouse.WarehouseSystem;
 public class Test implements Monitorable {
 	
 	private static final Database db = Database.INSTANCE;
-	
 
 	public static void main(String[] args) {
 		System.out.println("------------------------------------- XML SETUP -------------------------------------");
@@ -58,7 +57,7 @@ public class Test implements Monitorable {
 		
 		System.out.println("------------------------------------- DATABASE TESTING -------------------------------------");
 		
-		db.initialize();
+		//db.initialize();
 		
 		testDatabase();
 		

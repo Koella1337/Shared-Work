@@ -59,12 +59,12 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			e.printStackTrace();
 		}
 		
-		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 20)), new ResourceBox(new Position(500, 500))));
-		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 40)), new ResourceBox(new Position(500, 400))));
-		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 60)), new ResourceBox(new Position(400, 500))));
-		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 80)), new ResourceBox(new Position(400, 400))));
-		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 100)), new ResourceBox(new Position(300, 500))));
-		submitTask(new AgvTask(600000, null, new ResourceBox(new Position(20, 100)), new ResourceBox(new Position(500, 300))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(this, new Position(20, 20)), new ResourceBox(this, new Position(500, 500))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(this, new Position(20, 40)), new ResourceBox(this, new Position(500, 400))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(this, new Position(20, 60)), new ResourceBox(this, new Position(400, 500))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(this, new Position(20, 80)), new ResourceBox(this, new Position(400, 400))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(this, new Position(20, 100)), new ResourceBox(this, new Position(300, 500))));
+		submitTask(new AgvTask(600000, null, new ResourceBox(this, new Position(20, 100)), new ResourceBox(this, new Position(500, 300))));
 	}
 	
 	public void addForklift(Forklift forklift)

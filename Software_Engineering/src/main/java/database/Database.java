@@ -29,6 +29,7 @@ public class Database {
 		return tables;
 	}
 	
+	/** add all tables before initialize() is called */
 	public synchronized void addTable(DatabaseTable table) {
 		tables.add(table);
 	}

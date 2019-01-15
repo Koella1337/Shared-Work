@@ -50,7 +50,7 @@ public class MonitoringSystem implements MonitoringInterface {
 	private AssemblyLine assemblyLine;
 	private OnlineShop onlineShop;
 
-	private ResourceBox shippingBox = new ResourceBox(new Position(10, 10));
+	private ResourceBox shippingBox;
 
 	/**
 	 * this map stores the info to which ContainerDemander the prepared material
@@ -253,9 +253,11 @@ public class MonitoringSystem implements MonitoringInterface {
 		return shippingBox;
 	}
 
+	/** Only call this after WarehouseSystem has been set. */
 	@Override
-	public void setShippingBox(ResourceBox shippingBox) {
-		this.shippingBox = shippingBox;
+	public void setShippingBox(Position shippingBoxPos) {
+		ResourceBox box = new ResourceBox(warehouseSystem, shippingBoxPos);	//TODO: @Omas check
+		this.shippingBox = box;
 	}
 
 	@Override

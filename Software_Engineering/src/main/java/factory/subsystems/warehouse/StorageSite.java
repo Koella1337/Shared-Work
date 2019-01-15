@@ -15,12 +15,15 @@ import factory.shared.Constants;
 import factory.shared.Constants.PlaceableSize;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
-import factory.shared.Task;
+import factory.shared.TaskQueue;
 import factory.shared.Utils;
 import factory.shared.enums.Material;
+import factory.shared.enums.MaterialStatus;
+import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
+import factory.shared.interfaces.Stoppable;
 
-public class StorageSite implements Placeable {
+public class StorageSite implements Placeable, Stoppable {
 	
 	private final WarehouseSystem warehouseSystem;
 	private final StorageSiteTable dbTable;
@@ -31,28 +34,24 @@ public class StorageSite implements Placeable {
 	
 	private final List<Placeable> placeables;
 	private final List<Shelf> shelves;
-	private final List<Task> tasks;		//TODO: PriorityQueue ?
+	private final TaskQueue<WarehouseTask> tasks;		//TODO: PriorityQueue ?
 	
 	private final ResourceBox inputbox;
 	private final ResourceBox outputbox;
 	
 	public StorageSite(WarehouseSystem warehouseSystem, int id, Element xmlStorageSiteElem) {
 		Objects.requireNonNull(xmlStorageSiteElem);
+		this.warehouseSystem = Objects.requireNonNull(warehouseSystem);
 		
 		//xml init
-		final PlaceableSize boxSize = PlaceableSize.RESOURCE_BOX;
 		this.pos = Utils.xmlGetPositionFromElement(xmlStorageSiteElem);
-		this.inputbox = new ResourceBox(Utils.assignSize(Utils.xmlGetPositionFromFirstChild(xmlStorageSiteElem, "inputbox"), boxSize));
-		this.outputbox = new ResourceBox(Utils.assignSize(Utils.xmlGetPositionFromFirstChild(xmlStorageSiteElem, "outputbox"), boxSize));
-		
-		System.out.printf("%d-inbox : %s%n", id, inputbox.getPosition().toString());	//TODO: remove
-		System.out.printf("%d-outbox: %s%n", id, outputbox.getPosition().toString());
+		this.inputbox = new ResourceBox(warehouseSystem, Utils.xmlGetPositionFromFirstChild(xmlStorageSiteElem, "inputbox"));
+		this.outputbox = new ResourceBox(warehouseSystem, Utils.xmlGetPositionFromFirstChild(xmlStorageSiteElem, "outputbox"));
 		
 		//general init
-		this.warehouseSystem = Objects.requireNonNull(warehouseSystem);
-		this.forklift = new WarehouseForklift(new Position(pos.xPos, pos.yPos));
 		this.id = id;
-		this.tasks = new ArrayList<>();
+		this.tasks = new TaskQueue<>();
+		this.forklift = new WarehouseForklift(this, new Position(pos.xPos, pos.yPos));
 		
 		//interior init
 		this.placeables = new ArrayList<>();
@@ -60,6 +59,7 @@ public class StorageSite implements Placeable {
 		placeables.add(outputbox);
 		this.shelves = buildShelves();
 		placeables.addAll(shelves);
+		placeables.add(forklift);		//add forklift last so it is drawn over other Placeables
 		
 		//database init
 		this.dbTable = new StorageSiteTable(id);
@@ -98,7 +98,7 @@ public class StorageSite implements Placeable {
 			nextShelfPos.yPos = pos.yPos + shelfOffset;
 		}
 		
-		return Collections.unmodifiableList(shelves);
+		return shelves;
 	}
 
 	public int getId() {
@@ -107,6 +107,24 @@ public class StorageSite implements Placeable {
 	
 	public List<Placeable> getPlaceables() {
 		return placeables;
+	}
+	
+	/** Returns a shelf with at least one free ItemSlot. */
+	protected Shelf getFreeShelf() {
+		for (Shelf shelf : shelves) {
+			if (shelf.hasFreeSlot())
+				return shelf;
+		}
+		throw new IllegalArgumentException(this.toString() + " is completely full!");
+	}
+	
+	/** Returns a shelf from which the specified material can be fetched. */
+	protected Shelf getShelfForMaterial(Material mat) {
+		for (Shelf shelf : shelves) {
+			if (shelf.hasMaterial(mat))
+				return shelf;
+		}
+		throw new IllegalArgumentException("Material \"" + mat + "\" not present in " + this.toString());
 	}
 	
 	protected int getContainerAmount(Material material) {
@@ -136,7 +154,16 @@ public class StorageSite implements Placeable {
 	
 	/** Receive a Task from the WarehouseSystem. */
 	protected void receiveTask(WarehouseTask task) {
-		tasks.add(task);	//TODO
+		tasks.offer(task);	
+		//TODO remove material from dbTable
+	}
+	
+	protected ResourceBox getOutputbox() {
+		return outputbox;
+	}
+
+	protected ResourceBox getInputbox() {
+		return inputbox;
 	}
 	
 	//TODO: testing method, remove later
@@ -144,7 +171,7 @@ public class StorageSite implements Placeable {
 		warehouseSystem.taskCompleted(this, new WarehouseTask(600000, Material.CAR_BODIES));
 	}
 
-	@Override //TODO
+	@Override
 	public Position getPosition() {
 		return this.pos;
 	}
@@ -152,16 +179,52 @@ public class StorageSite implements Placeable {
 	@Override
 	public void draw(Graphics g) {
 		g.setColor(Constants.UI_BORDER_COLOR);
-		g.drawRect(0, 0, this.pos.xSize, this.pos.ySize);
-		g.drawString("StorageSite "+id, 10, 10);			//TODO: remove?
+		g.drawRect(0, 0, pos.xSize, pos.ySize);
+		g.drawString(this.toString(), 10, 10);
 	}
 
-	protected ResourceBox getOutputbox() {
-		return outputbox;
+	@Override
+	public void start() {
+		try {
+			//continous loop as daemon thread --> only stops at program exit
+			while (true) {
+				if (warehouseSystem.getStatus() == SubsystemStatus.RUNNING) {
+					WarehouseTask task = tasks.poll();
+					if (task != null) {
+						forklift.doTask(task);
+					}
+					else {
+						//TODO inputbox management
+						Collections.sort(shelves, (shelf1, shelf2) -> {
+							return MaterialStatus.comparator().compare(shelf1.getShelfSortedness(), shelf2.getShelfSortedness());
+						});
+						
+						Shelf shelfToSort = shelves.get(0);
+						MaterialStatus shelfStatus = shelfToSort.getShelfSortedness();
+						
+						//TODO: decide between shelf-sorting and inputbox management
+						
+						if ( !(shelfStatus == MaterialStatus.PERFECT || shelfStatus == MaterialStatus.EMPTY) )
+							forklift.sortShelf(shelfToSort);
+					}
+				}
+				else {
+					Thread.sleep(1000);	//wait before querying status again
+				}
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
-	protected ResourceBox getInputbox() {
-		return inputbox;
+	@Override
+	public void stop() {
+		
+	}
+	
+	@Override
+	public String toString() {
+		return "StorageSite " + this.id;
 	}
 	
 }

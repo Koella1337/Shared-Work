@@ -1,13 +1,13 @@
 package factory.shared;
 
 public abstract class Task implements Comparable<Task> {
-	private static int currentId = 1;
+	
+	private static int currentId = 1;	//TODO remove ?
 	
 	private final int id;
 	private final long deadline;
 	
-	public Task(long timeframe)
-	{
+	public Task(long timeframe) {
 		this.id = currentId;
 		currentId++;
 		deadline = timeframe + System.currentTimeMillis();
@@ -17,9 +17,8 @@ public abstract class Task implements Comparable<Task> {
 		return id;
 	}
 	
-	public int compareTo(Task other)
-	{
+	public int compareTo(Task other) {
 		// as long as the time difference is less than ~600h converting to int should be fine
-		return (int)(deadline - other.deadline);
+		return (int) (deadline - other.deadline);
 	}
 }
