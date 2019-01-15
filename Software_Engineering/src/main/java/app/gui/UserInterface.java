@@ -3,21 +3,18 @@ package app.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.function.Predicate;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import factory.shared.AbstractSubsystem;
 import factory.shared.Constants;
-import factory.shared.FactoryEvent;
-import factory.shared.enums.EventKind;
-import factory.shared.enums.Material;
+import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
-import factory.subsystems.warehouse.WarehouseTask;
 
 class UserInterface implements Stoppable {
 
@@ -30,6 +27,10 @@ class UserInterface implements Stoppable {
 	private FactoryPanel factoryPanel;
 	private MenuPanel menuPanel;
 	private UIConfiguration config;
+	
+	private MonitorButton emergencyStop;
+	private MonitorButton startButton;
+	private MonitorButton errorFixedButton;
 
 	public UserInterface(int fps, MonitoringInterface monitor, UIConfiguration config) {
 		super();
@@ -55,7 +56,7 @@ class UserInterface implements Stoppable {
 		this.frame = new JFrame("Toy Car Factory");
 		this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		this.frame.setResizable(false);
-		
+
 		this.contentPane = (JPanel) frame.getContentPane();
 		this.contentPane.setBackground(Color.LIGHT_GRAY);
 		this.contentPane.setLayout(new BorderLayout());
@@ -66,37 +67,45 @@ class UserInterface implements Stoppable {
 
 	private void initFactoryPanel() {
 		this.factoryPanel = new FactoryPanel(this.fps, this.monitor);
-		this.factoryPanel.setPreferredSize(new Dimension(this.config.uiWidthFactory+1,this.config.uiHeight+1));
+		this.factoryPanel.setPreferredSize(new Dimension(this.config.uiWidthFactory + 1, this.config.uiHeight + 1));
 		this.contentPane.add(this.factoryPanel, BorderLayout.CENTER);
 	}
 
 	private void initDefaultMenuPanel() {
 		this.menuPanel = new MenuPanel(this.fps, this.monitor);
 		this.menuPanel.setBackground(Color.LIGHT_GRAY);
-		this.menuPanel.setPreferredSize(new Dimension(new Dimension(Constants.UI_WIDTH_MENU, this.config.uiHeight+1)));
+		this.menuPanel
+				.setPreferredSize(new Dimension(new Dimension(Constants.UI_WIDTH_MENU, this.config.uiHeight + 1)));
 		this.menuPanel.setLayout(null);
 
-		JButton doNothingButton = new JButton("warehouse test");
-		doNothingButton.addActionListener(a -> {
-			//JOptionPane.showMessageDialog(null, "You've successfully done nothing! ");
-			monitor.getWarehouseSystem().receiveTask(new WarehouseTask(0, Material.BODIES));
-		});
-		doNothingButton.setBounds(20,100,160,20);
-		this.menuPanel.add(doNothingButton);
-
-		JButton carFinishedButton = new JButton("car finished");
-		//carFinishedButton.addActionListener(a -> monitor.handleEvent(new FactoryEvent(monitor.getAssemblyLine(), EventKind.CAR_FINISHED, Material.CAR)));
-		carFinishedButton.setBounds(200,100,160,20);
-		this.menuPanel.add(carFinishedButton);
-		
 		Legend legend = new Legend(this.fps);
-		legend.setBounds(20,180,360,100);
+		legend.setBounds(20, 180, 360, 100);
 		this.menuPanel.add(legend);
-		
+
 		OrderListView orderListView = new OrderListView(this.fps, this.monitor);
 		orderListView.setBackground(Color.white);
-		orderListView.setBounds(20,320,360,300);
+		orderListView.setBounds(20, 320, 360, 300);
 		this.menuPanel.add(orderListView);
+
+		startButton = new MonitorButton("START", m -> m.getStatus() == SubsystemStatus.STOPPED);
+		startButton.setBounds(20,20,80,20);
+		startButton.setFocusable(false);
+		startButton.addActionListener(a -> {
+			monitor.start();
+		});
+		this.menuPanel.add(startButton);
+		
+		emergencyStop = new MonitorButton("STOP", m -> m.getStatus() == SubsystemStatus.RUNNING);
+		emergencyStop.addActionListener(a -> monitor.stop());
+		emergencyStop.setBounds(120,20,80,20);
+		emergencyStop.setFocusable(false);
+		this.menuPanel.add(emergencyStop);
+		
+		errorFixedButton = new MonitorButton("error fixed", m -> m.getStatus() == SubsystemStatus.BROKEN);
+		errorFixedButton.setBounds(220,20,120,20);
+		errorFixedButton.addActionListener(a -> monitor.setStatus(SubsystemStatus.STOPPED));
+		errorFixedButton.setFocusable(false);
+		this.menuPanel.add(errorFixedButton);
 		
 		this.contentPane.add(menuPanel, BorderLayout.LINE_END);
 	}
@@ -121,6 +130,19 @@ class UserInterface implements Stoppable {
 		this.menuPanel.setCurrentSubSystem(subsystem);
 	}
 
+	class MonitorButton extends JButton {
+		private Predicate<MonitoringInterface> enableCondition;
 
+		public MonitorButton(String label, Predicate<MonitoringInterface> enableCondition) {
+			super(label);
+			this.enableCondition = enableCondition;
+		}
 
+		@Override
+		public boolean isEnabled() {
+			if (enableCondition == null || UserInterface.this.monitor == null)
+				return false;
+			return enableCondition.test(UserInterface.this.monitor);
+		}
+	}
 }

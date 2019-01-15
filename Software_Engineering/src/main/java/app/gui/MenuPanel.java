@@ -9,8 +9,8 @@ import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 class MenuPanel extends GUIPanel {
 	
 	private MonitoringInterface monitor;
-	
 	private SubsystemMenu subsystemMenu;
+
 	
 	public MenuPanel(int fps, MonitoringInterface monitor) {
 		super(fps);
@@ -30,6 +30,5 @@ class MenuPanel extends GUIPanel {
 		this.subsystemMenu = currentSubSystem.getCurrentSubsystemMenu();
 		this.add(subsystemMenu);
 	}
-
 	
 }
