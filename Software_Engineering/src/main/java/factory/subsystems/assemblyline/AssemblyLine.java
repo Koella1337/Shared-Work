@@ -32,9 +32,9 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 	private Material color;
 	
 	
-	public AssemblyLine(Position pos, AL_Subsystem al, int direction, Material color) {
+	public AssemblyLine(Position pos, AL_Subsystem al, int direction, Material c) {
 		position = pos;
-		this.color = color;
+		this.color = c;
 		this.alsubsys = al;
 		this.alsubsys.al[0] = this;
 		Position rpos = position;

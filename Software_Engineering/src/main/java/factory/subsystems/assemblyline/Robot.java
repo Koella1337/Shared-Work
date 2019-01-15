@@ -33,6 +33,7 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 		this.al = al;
 		position.xSize = 50;
 		position.ySize = 50;
+		material = mat;
 	}
 	
 	public void addBox(Container container) {
