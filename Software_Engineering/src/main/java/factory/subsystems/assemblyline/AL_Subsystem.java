@@ -2,43 +2,92 @@ package factory.subsystems.assemblyline;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+
+
+import org.apache.derby.impl.tools.ij.Main;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Element;
 
 import factory.shared.AbstractSubsystem;
 import factory.shared.Container;
+import factory.shared.FactoryEvent;
 import factory.shared.Position;
+import factory.shared.Utils;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
+import factory.subsystems.warehouse.StorageSite;
 
+@SuppressWarnings("unused")
 public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stoppable{
 	public AssemblyLine[] al = new AssemblyLine[6];
 	private int[] task = new int[6]; 
 
-	public AL_Subsystem(MonitoringInterface monitor) {
-		super(monitor);
-		
-		for(int i=0;i<al.length;i++) {
-			Position pos = new Position(new Random().nextInt(1000),new Random().nextInt(1000));
-			al[i] = new AssemblyLine(pos, this);
-		}
-		
-		
-		
-//		try {
-//			Document layoutDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File("resources/factory_layout.xml"));
-//			
-//			Element al1 = (Element) layoutDoc.getElementsByTagName("assemblylines").item(0);
-//			
-//		} catch (SAXException | IOException | ParserConfigurationException e1) {
-//			e1.printStackTrace();
+	
+	//This is a test only for the subsystem
+	//The notify method also has to be overriden for the test
+	
+//	public static void main(String[] args) {
+//		MonitoringInterface test = null;
+//		AL_Subsystem testcase = new AL_Subsystem(test);
+//		for(int i=0;i<testcase.al.length;i++) {
+//			Position pos = new Position(new Random().nextInt(1000),new Random().nextInt(1000));
+//			testcase.al[i] = new AssemblyLine(pos, testcase);
 //		}
+//		testcase.addTask(Material.COLOR_BLACK, 300);
+//		
+//	}
+//	@Override
+//	public void notify(FactoryEvent e) {
+//		System.out.println(e.getKind());
+//	}
+	
+	public AL_Subsystem(MonitoringInterface monitor, Element xmlAL) {
+		super(monitor);
+		Objects.requireNonNull(xmlAL);
 		
-		//TODO
-		//ADD ASSEMBLYLINES
+		NodeList alNodes = xmlAL.getElementsByTagName("assemblyline");
+		for (int i = 0; i < al.length; i++) {
+			Position pos = Utils.xmlGetPositionFromElement((Element) alNodes.item(i));
+			Element asLi = (Element) alNodes.item(i);
+			String direction = asLi.getElementsByTagName("direction").item(0).getTextContent();
+			Material color;
+			switch(i) {
+			case 0:
+				color = Material.COLOR_BLACK;
+				break;
+			case 1:
+				color = Material.COLOR_BLUE;
+				break;
+			case 2:
+				color = Material.COLOR_GRAY;
+				break;
+			case 3:
+				color = Material.COLOR_GREEN;
+				break;
+			case 4:
+				color = Material.COLOR_RED;
+				break;
+			case 5:
+				color = Material.COLOR_WHITE;
+				break;
+			default:
+				color = null;
+				break;
+			}
+			al[i] = new AssemblyLine(pos, this, textToDirection(direction), color);
+		}
+	}
+	
+	private int textToDirection(String dir) {
+		if(dir == "+x") {
+			return 1;
+		} else return -1;
 	}
 
 	/**
@@ -78,15 +127,16 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 			break;
 		default:
 			break;
-			
 		}
+		start();
 	}
 	
 	
 
 	public void draw(Graphics g) {
-		// TODO Auto-generated method stub
-		
+		for(AssemblyLine a: al) {
+			a.draw(g);
+		}
 	}
 
 	@Override
@@ -141,14 +191,12 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 		
 	}
 
-	public void addBox(Container box) {
-		// TODO Auto-generated method stub
-		
+	public void addBox(Container box) { //You can't add a box to the general subsystem
 	}
 	
-	public void fixBroken() { //Everything just got fixed... magically
+	public void restart() { //Everything just got fixed... magically
 		for(AssemblyLine a: al) {
-			a.fixBroken();
+			a.restart();
 		}
 	}
 

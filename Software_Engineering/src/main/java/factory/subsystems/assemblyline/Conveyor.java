@@ -1,6 +1,8 @@
 package factory.subsystems.assemblyline;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.List;
 
 import app.gui.SubsystemMenu;
@@ -17,6 +19,7 @@ import factory.shared.interfaces.Stoppable;
 import factory.subsystems.assemblyline.interfaces.ConveyorMonitorInterface;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
+@SuppressWarnings("unused")
 public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeable, ConveyorMonitorInterface{
 	public double speed;
 	public int lubricant;
@@ -39,7 +42,7 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 	 * 
 	 * @param l how much lubricant is available initially
 	 */
-	public Conveyor(AssemblyLine al, Position pos, int s, int l){
+	public Conveyor(AssemblyLine al, Position pos, int direction, int s, int l){
 		speed = (60/s) / 4; 
 		lubricant = l;
 		this.al = al;
@@ -55,19 +58,15 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 
 	
 	public SubsystemStatus status() {
+		
 		if (status == SubsystemStatus.BROKEN) { //if it's broken
-			FactoryEvent broken = new FactoryEvent(al.getALSys(), EventKind.CONVEYORS_BROKEN, this);
-			this.notify(broken);
 			return SubsystemStatus.BROKEN;
+		} else if (timestamp + speed <= System.currentTimeMillis()) { //Done with last task
+			status = SubsystemStatus.WAITING;
+		} else {
+			return SubsystemStatus.RUNNING;
 		}
-		if (timestamp + speed <= System.currentTimeMillis()) { //Done with last task
-			if(lubricant > 0) { //Ready for new task
-				status = SubsystemStatus.WAITING;
-			} else {
-				status = SubsystemStatus.STOPPED;
-			}
-		}
-		return SubsystemStatus.RUNNING;
+		return status;
 	}
 	
 	public int getMaterials() {
@@ -90,7 +89,6 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 
 	@Override
 	public void start() {
-		
 		if(status() == SubsystemStatus.WAITING) {
 			lubricant -= Math.random();
 			if(lubricant < 10) {
@@ -102,6 +100,8 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 			timestamp = (int) System.currentTimeMillis();
 			if(Math.random() * speed > 25 * lubricant/100) { //Simulation on how speed & lubricant impact chances of breaking
 				status = SubsystemStatus.BROKEN;
+				FactoryEvent broken = new FactoryEvent(al.getALSys(), EventKind.CONVEYORS_BROKEN, this);
+				notify(broken);
 			}
 		}
 	}
@@ -118,8 +118,20 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 
 	@Override
 	public void draw(Graphics g) {
-		// TODO Auto-generated method stub
-		
+		switch(status()) {
+		case BROKEN:
+			g.setColor(Color.RED);
+		case RUNNING:
+			g.setColor(Color.BLUE);
+			break;
+		case STOPPED:
+			g.setColor(Color.ORANGE);
+			break;
+		case WAITING:
+			g.setColor(Color.GREEN);
+			break;
+		}
+		g.drawRect(position.xPos, position.yPos, position.xSize, position.ySize);
 	}
 
 
@@ -141,8 +153,8 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		String s = "Conveyor @ " + position.xPos + " / " + position.yPos;
+		return s;
 	}
 
 
@@ -153,26 +165,23 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 
 	@Override
 	public List<Placeable> getPlaceables() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Placeable> l = new ArrayList<Placeable>();
+		l.add(this);
+		return l;
 	}
 
 	@Override
 	public SubsystemMenu getCurrentSubsystemMenu() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void notify(FactoryEvent event) {
 		al.notify(event);
-		
 	}
 	
-	public void fixBroken() {
-		if(status() == SubsystemStatus.BROKEN) {
-			status = SubsystemStatus.WAITING;
-		}
+	public void restart() {
+		status = SubsystemStatus.WAITING;
 	}
 	
 	
