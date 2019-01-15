@@ -86,28 +86,35 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 			} else if(robot == RobotTypes.INSPECTOR) {
 				if(Math.random() < 0.95) {
 					Material car;
-					switch(material) {
-					case COLOR_BLACK:
+					if(material != null)
+					{
+						switch(material) {
+						case COLOR_BLACK:
+							car = Material.CAR_BLACK;
+							break;
+						case COLOR_BLUE:
+							car = Material.CAR_BLUE;
+							break;
+						case COLOR_GRAY:
+							car = Material.CAR_GRAY;
+							break;
+						case COLOR_GREEN:
+							car = Material.CAR_GREEN;
+							break;
+						case COLOR_RED:
+							car = Material.CAR_RED;
+							break;
+						case COLOR_WHITE:
+							car = Material.CAR_WHITE;
+							break;
+						default:
+							car = Material.CAR_BLACK;
+							break;
+						}
+					}
+					else
+					{
 						car = Material.CAR_BLACK;
-						break;
-					case COLOR_BLUE:
-						car = Material.CAR_BLUE;
-						break;
-					case COLOR_GRAY:
-						car = Material.CAR_GRAY;
-						break;
-					case COLOR_GREEN:
-						car = Material.CAR_GREEN;
-						break;
-					case COLOR_RED:
-						car = Material.CAR_RED;
-						break;
-					case COLOR_WHITE:
-						car = Material.CAR_WHITE;
-						break;
-					default:
-						car = Material.CAR_BLACK;
-						break;
 					}
 					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED, car, this);
 					notify(done);
@@ -131,6 +138,7 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	
 	@Override
 	public void draw(Graphics g) {
+		Color old = g.getColor();
 		switch(status()) {
 		case BROKEN:
 			g.setColor(Color.RED);
@@ -167,7 +175,9 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 			g.setColor(Color.GREEN);
 			break;
 		}
-		g.fillRect(position.xPos, position.yPos, position.xSize, position.ySize);
+		//g.fillRect(position.xPos, position.yPos, position.xSize, position.ySize);
+		g.fillRect(0, 0, position.xSize, position.ySize);
+		g.setColor(old);
 	}
 
 

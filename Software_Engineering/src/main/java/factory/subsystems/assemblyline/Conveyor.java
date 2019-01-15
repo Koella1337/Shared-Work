@@ -130,6 +130,7 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 
 	@Override
 	public void draw(Graphics g) {
+		Color old = g.getColor();
 		switch(status()) {
 		case BROKEN:
 			g.setColor(Color.RED);
@@ -143,7 +144,9 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 			g.setColor(Color.GREEN);
 			break;
 		}
-		g.fillRect(position.xPos, position.yPos, position.xSize, position.ySize);
+		g.fillRect(0, 0, position.xSize, position.ySize);
+		//g.fillRect(position.xPos, position.yPos, position.xSize, position.ySize);
+		g.setColor(old);
 	}
 
 
