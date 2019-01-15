@@ -151,6 +151,7 @@ public class MonitoringSystem implements MonitoringInterface {
 	public void start() {
 		Objects.requireNonNull(this.agvSystem);// TODO @thomas throw exception
 		Objects.requireNonNull(this.warehouseSystem);
+		Objects.requireNonNull(this.alsubsys);
 
 		new Thread(() -> {
 			this.agvSystem.start();
@@ -162,6 +163,7 @@ public class MonitoringSystem implements MonitoringInterface {
 
 		new Thread(() -> {
 			//TODO: this.alsubsys.start();
+//			this.alsubsys.start();
 		}).start();
 
 		this.handler.start();

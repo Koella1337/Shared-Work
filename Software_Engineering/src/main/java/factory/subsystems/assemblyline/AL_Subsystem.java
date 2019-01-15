@@ -186,12 +186,6 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 		
 	}
 
-	public void addBox(Container box) { //You can't add a box to the general subsystem
-		System.out.println("You shouldn't add a box this way");
-		System.out.println("Try adding it to the Compnent itself");
-		System.out.println("The component is always included in the notification");
-		System.out.println("---------- No box has been added ----------");
-	}
 	
 	public void restart() { // This assumes that all technical difficulties have been solved
 		for(AssemblyLine a: al) {
@@ -226,5 +220,30 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 		}
 		return plc;
 	}
+	
+	public List<Placeable> getAGVRobots(){
+		List<Placeable> plc = new ArrayList<Placeable>();
+		for(AssemblyLine a: al) {
+			plc.add((Placeable) a.getAGVRobot());
+		}
+		return plc;
+	}
+	
+	public List<Placeable> getAGVConveyor(){
+		List<Placeable> plc = new ArrayList<Placeable>();
+		for(AssemblyLine a: al) {
+			plc.add((Placeable) a.getAGVConveyor());
+		}
+		return plc;
+	}
+	
+	public List<Placeable> getAGVOutputbox(){
+		List<Placeable> plc = new ArrayList<Placeable>();
+		for(AssemblyLine a: al) {
+			plc.add((Placeable) a.getAGVOutputbox());
+		}
+		return plc;
+	}
+	
 
 }

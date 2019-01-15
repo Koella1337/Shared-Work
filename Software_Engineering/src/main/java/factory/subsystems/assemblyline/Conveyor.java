@@ -173,9 +173,9 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 			break;
 		}
 		g.fillRect(position.xPos, position.yPos, position.xSize, position.ySize);
-		g.setColor(Color.MAGENTA);
+
 		for(Car c: cars) {
-			g.fillRect(c.getPosition().xPos, c.getPosition().yPos, c.getPosition().xSize, c.getPosition().ySize);
+			c.draw(g);
 		}
 	}
 
@@ -212,6 +212,10 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 	public List<Placeable> getPlaceables() {
 		List<Placeable> l = new ArrayList<Placeable>();
 		l.add(this);
+		l.add(outputbox);
+		for(Car c: cars) {
+			l.add(c);
+		}
 		return l;
 	}
 

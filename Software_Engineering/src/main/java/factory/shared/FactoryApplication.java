@@ -49,9 +49,9 @@ public class FactoryApplication implements Stoppable {
 
 		Element assemblyLines = (Element) (factory).getElementsByTagName("assemblylines").item(0);
 		
-//		AL_Subsystem alSystem = new AL_Subsystem(this.monitor, assemblyLines);
-//		this.monitor.setAssemblyLine(alSystem); //TODO check if it works -Max
-		//TODO: agvAccessiblePlacables.add(Robots, Conveyors, Outputboxes)
+		AL_Subsystem alSystem = new AL_Subsystem(this.monitor, assemblyLines);
+		this.monitor.setAssemblyLine(alSystem); //TODO check if it works -Max
+		agvAccessiblePlacables.add(alSystem.getAGVRobots(), alSystem.getAGVConveyor(), alSystem.getAGVOutputbox());
 		
 		addShippingBoxToMonitoring(factory);
 		//		OnlineShopUser user = new OnlineShopUser("thomas");

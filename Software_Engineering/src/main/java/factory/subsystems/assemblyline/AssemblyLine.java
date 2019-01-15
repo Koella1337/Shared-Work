@@ -124,6 +124,7 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 		}
 		conveyor.draw(g);
 	}
+	
 
 	public void start(int q) {
 		double speed = q/10; //Adaptive speed
@@ -287,6 +288,27 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 		return color;
 	}
 	
+	public List<Placeable> getAGVRobot(){
+		List<Placeable> plc = new ArrayList<Placeable>();
+		for(Robot r: robots) {
+			if(r.robot == RobotTypes.PAINTER || r.robot == RobotTypes.SCREWDRIVER) {
+				plc.add(r);
+			}
+		}
+		return plc;
+	}
+	
+	public List<Placeable> getAGVConveyor(){
+		List<Placeable> plc = new ArrayList<Placeable>();
+		plc.add(conveyor);
+		return plc;
+	}
+	
+	public List<Placeable> getAGVOutputbox(){
+		List<Placeable> plc = new ArrayList<Placeable>();
+		plc.add(conveyor.getOutputbox());
+		return plc;
+	}
 
 
 }
