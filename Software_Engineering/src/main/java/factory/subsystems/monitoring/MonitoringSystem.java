@@ -103,12 +103,12 @@ public class MonitoringSystem implements MonitoringInterface {
 					System.out.println("WAREHOUSE_TASK_COMPLETED");
 					WarehouseTask task = (WarehouseTask) event.getAttachment(0);
 					Material mat = task.getMaterial();
-					ContainerSupplier box = (ContainerSupplier) event.getAttachment(1);
+					ContainerSupplier supplier = (ContainerSupplier) event.getAttachment(1);
 					ContainerDemander demander = getWarehouseTaskDemanders().get(task);
 					if (demander == null) {
 						LOGGER.warning("no demander for the warehousetask found");
 					} else {
-						AgvTask agv = new AgvTask(600000, mat, box, demander);
+						AgvTask agv = new AgvTask(600000, mat, supplier, demander);
 						agvSystem.submitTask(agv);
 					}
 					break;

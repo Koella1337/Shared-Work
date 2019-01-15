@@ -147,4 +147,12 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 		status = SubsystemStatus.STOPPED;
 	}
 
+	@Override
+	public List<Placeable> getOutputBoxes() {
+		List<Placeable> boxes = new ArrayList<>();
+		for (StorageSite s : storageSites)
+			boxes.add(s.getOutputbox());
+		return boxes;
+	}
+
 }

@@ -4,7 +4,7 @@ import factory.shared.AbstractSubsystem;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
-public class GUIHandler implements Stoppable{
+public class GUIHandler implements Stoppable {
 
 	private static final int FPS = 30;
 	
