@@ -11,8 +11,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.Utils;
+import factory.shared.enums.EventKind;
 
 public class Pathfinder {
 
@@ -25,9 +27,11 @@ public class Pathfinder {
      */
     private boolean[][] collisionMap;
     private PathingNode[][] nodeMap;
+    private AgvCoordinator coordinator;
 
-    public Pathfinder(Element factory) throws ParserConfigurationException, SAXException, IOException
+    public Pathfinder(AgvCoordinator coordinator, Element factory) throws ParserConfigurationException, SAXException, IOException
     {
+    	this.coordinator = coordinator;
         Position factorySize = Utils.parsePosition(((Element) factory.getElementsByTagName("size").item(0)).getFirstChild().getNodeValue(), null);
         collisionMap = new boolean[factorySize.xPos / 20][factorySize.yPos / 20];
 
@@ -101,6 +105,10 @@ public class Pathfinder {
     public List<Position> getPath(Position start, Position goal)
     {
     	PathingNode end = findPathNodes(start, goal);
+    	if(end == null)
+    	{
+    		return null;
+    	}
     	List<Position> result = new LinkedList<>();
     	
 	    while (end.parent != null)

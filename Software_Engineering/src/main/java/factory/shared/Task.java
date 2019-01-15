@@ -21,4 +21,8 @@ public abstract class Task implements Comparable<Task> {
 		// as long as the time difference is less than ~600h converting to int should be fine
 		return (int) (deadline - other.deadline);
 	}
+	
+	public long getTimeLeft() {
+		return deadline - System.currentTimeMillis();
+	}
 }
