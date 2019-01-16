@@ -47,11 +47,10 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 		this.al = al;
 		position = pos.clone();
 		position.yPos += 60;
-		position.xSize = 320;
+		position.xSize = 310;
 		position.ySize = 40;
-		outputbox = new ResourceBox(al.getALSys(), new Position(position.xPos+320, position.yPos));
+		outputbox = new ResourceBox(al.getALSys(), new Position(position.xPos+position.xSize, position.yPos));
 		box = new Container(al.getMaterial());
-
 	}
 
 	public void addBox(Container container) {
@@ -59,7 +58,6 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 	}
 
 	public SubsystemStatus status() {
-
 		if (status == SubsystemStatus.BROKEN) { // if it's broken
 			return SubsystemStatus.BROKEN;
 		} else if (timestamp + speed <= System.currentTimeMillis()) { // Done with last task

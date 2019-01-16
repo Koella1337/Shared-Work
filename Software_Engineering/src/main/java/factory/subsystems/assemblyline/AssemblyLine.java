@@ -21,7 +21,7 @@ import factory.shared.interfaces.Stoppable;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
 @SuppressWarnings("unused")
-public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Placeable, ContainerDemander {
+public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 	private Robot[] robots = new Robot[4];
 	private Conveyor conveyor;
 	private Position position;
@@ -31,20 +31,21 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 	private Material color;
 
 	public AssemblyLine(Position pos, AL_Subsystem al, Material c) {
-		System.out.println("create assemblyline at position "+pos);
 		position = pos.clone();
 		Utils.assignSize(position, Constants.PlaceableSize.ASSEMBLY_LINE);
 		color = c;
 		alsubsys = al;
 		alstatus = SubsystemStatus.WAITING;
 		Position rpos = position.clone();
+		if (Constants.DEBUG)
+			System.out.println("create assemblyline at position "+position);
 
 		robots[0] = new Robot(this, rpos, RobotTypes.GRABBER, null, 0); // Create 4 robots
-		rpos.xPos += (350 / 4);
+		rpos.xPos += (350 / 4.5);
 		robots[1] = new Robot(this, rpos, RobotTypes.SCREWDRIVER, Material.SCREWS, 100);
-		rpos.xPos += (350 / 4);
+		rpos.xPos += (350 / 4.5);
 		robots[2] = new Robot(this, rpos, RobotTypes.PAINTER, color, 100);
-		rpos.xPos += (350 / 4);
+		rpos.xPos += (350 / 4.5);
 		robots[3] = new Robot(this, rpos, RobotTypes.INSPECTOR, null, 0);
 
 		rpos = position;
@@ -107,6 +108,12 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 		// there is no need to add the robots etc. here
 		g.drawRect(0, 0, position.xSize, position.ySize);
 	}
+	
+	@Override
+	public void start() {
+		alstatus = SubsystemStatus.RUNNING;
+		start(500);
+	}
 
 	public void start(int q) {
 		double speed = q / 10; // Adaptive speed
@@ -115,19 +122,17 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 		else if (speed < 10)
 			speed = 10; // Boundaries for the speed
 		conveyor.setSpeed(speed);
+		
 		while (alstatus == SubsystemStatus.RUNNING) {
-
 			for (Robot r : robots) {
 				r.start();
 			}
 			while (notReady()) { // Waiting for the robots
 			}
-
 			while (conveyor.status() != SubsystemStatus.WAITING) { // Waiting for the conveyor
 			}
 		}
-		FactoryEvent taskDone = new FactoryEvent(this, EventKind.TASK_FINISHED);
-		this.notify(taskDone);
+	
 	}
 
 	private boolean notReady() {
@@ -148,22 +153,6 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 		alstatus = SubsystemStatus.STOPPED;
 	}
 
-	@Override
-	public void receiveContainer(Container box) {
-		for (Robot r : robots) {
-			if (r.material == box.getMaterial())
-				r.addBox(box);
-		}
-		if (box.getMaterial() == Material.LUBRICANT)
-			conveyor.addBox(box);
-	}
-
-	@Override
-	public String getName() {
-		return "Assembly Line with color " + color;
-	}
-
-	@Override
 	public List<Placeable> getPlaceables() {
 		List<Placeable> plc = new ArrayList<Placeable>();
 		for (Robot r : robots) {
@@ -175,16 +164,10 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 		return plc;
 	}
 
-	@Override
-	public SubsystemMenu getCurrentSubsystemMenu() {
-		return null;
-	}
-
 	public void stoppedSys(Object source, FactoryEvent event) {
-		this.notify(new FactoryEvent(this, EventKind.CAR_FINISHED));
+		this.notify(new FactoryEvent(alsubsys, EventKind.CAR_FINISHED));
 	}
 
-	@Override
 	public SubsystemStatus getStatus() { // This should only be used for test cases
 		SubsystemStatus alstatus = SubsystemStatus.WAITING;
 		for (Robot r : robots) {
@@ -201,13 +184,6 @@ public class AssemblyLine implements Monitorable, RobotInterface, Stoppable, Pla
 		return alstatus;
 	}
 
-	@Override
-	public void start() {
-		alstatus = SubsystemStatus.RUNNING;
-		start(0);
-	}
-
-	@Override
 	public void notify(FactoryEvent event) {
 		if (event.getKind() == EventKind.CAR_FINISHED) {
 			finished++;

@@ -92,7 +92,6 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 	}
 
 	/**
-	 * 
 	 * @param color of the cars
 	 * @param quantity of the cars
 	 */
@@ -134,8 +133,6 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 			break;
 		}
 	}
-	
-	
 
 	public void draw(Graphics g) {
 		for(AssemblyLine a: al) {
@@ -145,13 +142,11 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 
 	@Override
 	public void start() {
-		
 		for(int i = 0; i < 6; i++) {
-			al[i].restart();
-			al[i].start();
+			AssemblyLine line = al[i];
+			new Thread( () -> line.start() ).start();
 		}
 	}
-	
 	
 	public void stopProduction(Material color) {
 		switch (color) {

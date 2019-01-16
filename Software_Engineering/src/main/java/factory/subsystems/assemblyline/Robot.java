@@ -16,7 +16,7 @@ import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
-public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
+public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 	public RobotTypes robot;
 	public Material material;
 	public int materials;
@@ -41,8 +41,6 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 		material = container.getMaterial();
 		materials += container.getAmount();
 	}
-	
-
 	
 	public SubsystemStatus status() {
 		if (status == SubsystemStatus.STOPPED || status == SubsystemStatus.BROKEN) {
@@ -74,7 +72,6 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	@Override
 	public void start() {
 		if(status() == SubsystemStatus.WAITING) {
-			
 			if(robot == RobotTypes.SCREWDRIVER || robot ==  RobotTypes.PAINTER) {
 				
 				materials--;
@@ -83,7 +80,6 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 					FactoryEvent lowmat = new FactoryEvent(al.getALSys(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, this);
 					this.notify(lowmat);
 				}
-				
 			} else if(robot == RobotTypes.INSPECTOR) {
 				if(Math.random() < 0.95) {
 					if(material != null)
@@ -124,11 +120,6 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 			timestamp = System.currentTimeMillis(); //The Robot takes 5 seconds to perform it's task
 		}
 		status();
-		
-	}
-	
-	public void notifyDone() {
-		
 	}
 
 	@Override
@@ -137,8 +128,7 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	}
 	
 	@Override
-	public void draw(Graphics g) {
-		Color old = g.getColor();
+	public synchronized void draw(Graphics g) {
 		switch(status()) {
 		case BROKEN:
 			g.setColor(Color.RED);
@@ -177,12 +167,11 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 		}
 		//g.fillRect(position.xPos, position.yPos, position.xSize, position.ySize);
 		g.fillRect(0, 0, position.xSize, position.ySize);
-		g.setColor(old);
 	}
 
 
 	@Override
-	public void receiveContainer(Container container) {
+	public synchronized void receiveContainer(Container container) {
 		material = container.getMaterial();
 		materials += container.getAmount();
 	}
