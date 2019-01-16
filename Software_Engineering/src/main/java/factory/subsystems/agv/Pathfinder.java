@@ -25,6 +25,7 @@ public class Pathfinder {
      * @throws java.io.IOException
      */
     private boolean[][] collisionMap;
+    public static boolean[][] pausedForklifts;
     private PathingNode[][] nodeMap;
     private AgvCoordinator coordinator;
     public static final int GRANULARITY = 5;
@@ -33,7 +34,8 @@ public class Pathfinder {
     {
     	this.coordinator = coordinator;
         Position factorySize = Utils.parsePosition(((Element) factory.getElementsByTagName("size").item(0)).getFirstChild().getNodeValue(), null);
-        collisionMap = new boolean[factorySize.xPos / GRANULARITY][factorySize.yPos / GRANULARITY];
+        collisionMap = new boolean[factorySize.xPos / GRANULARITY][factorySize.yPos / GRANULARITY];        
+        pausedForklifts = new boolean[factorySize.xPos / GRANULARITY][factorySize.yPos / GRANULARITY];
 
         NodeList storagesites = ((Element) factory.getElementsByTagName("warehouse").item(0)).getElementsByTagName("storagesite");
         NodeList assemblyLines = ((Element) factory.getElementsByTagName("assemblylines").item(0)).getElementsByTagName("assemblyline");
@@ -55,6 +57,17 @@ public class Pathfinder {
         {
             removeFreeParking(p);
         }
+        
+        
+        for (int i = 0; i < collisionMap.length; i++)
+        {
+            for (int j = 0; j < collisionMap[0].length; j++)
+            {
+                System.out.print(collisionMap[j][i] ? "X" : " ");
+            }
+            System.out.println();
+        }
+        
 
         // Generate nodemap
         nodeMap = new PathingNode[collisionMap.length][collisionMap[0].length];

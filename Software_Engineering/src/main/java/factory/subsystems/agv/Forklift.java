@@ -3,6 +3,7 @@ package factory.subsystems.agv;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,9 +21,13 @@ import factory.shared.interfaces.Placeable;
 public class Forklift implements Placeable {
 	private static final double SPEED = 10000000; // distance moved per nanosecond (inverted for easier calculation)
 	private static final double THRESHOLD = 0.001; // maximum distance to a target to have reached it
-	private static final double COLLISION_RADIUS = 10; // minimum distance to all other forklifts to avoid collisions
+	private static final double COLLISION_RADIUS = 3; // minimum distance to all other forklifts to avoid collisions
+	private static final double SAFETY_RADIUS = 10; // minimum distance to all other forklifts to avoid having to reroute
 	private long lastTime; // last time the forklift's position was updated
 	private boolean shutdown;
+	private boolean paused = false;
+	private int pauseTimer = 0;
+	public boolean part1 = false; // part 1 or 2 of the journey?
 
 	public List<Position> path;
 	private Position vec = new Position(0, -1); // this is for drawing, so it mustn't be null even at the start
@@ -69,6 +74,7 @@ public class Forklift implements Placeable {
 			// the monitor doesn't have to know
 			currentTask = newTask;
 			resume();
+			part1 = true;
 		}
 		else
 		{
@@ -107,7 +113,64 @@ public class Forklift implements Placeable {
 					coordinator.notify(new FactoryEvent(coordinator, EventKind.AGV_FORKLIFT_COLLISION, this, f));
 				}
 			}
+			if(Position.length(Position.subtractPosition(f.pos, this.pos)) < SAFETY_RADIUS)
+			{
+				if(f != this)
+				{
+					if(!f.paused)
+					{
+						// handle it before it turns into a collision
+						f.pause();
+					}
+					coordinator.requestReroute(this);
+				}
+			}
 		}
+	}
+	
+	private void evasiveManeuver(Forklift f)
+	{
+		
+	}
+	
+	private void pause()
+	{
+		if(!this.paused)
+		{
+			Pathfinder.pausedForklifts[(this.pos.xPos / Pathfinder.GRANULARITY)][(this.pos.yPos / Pathfinder.GRANULARITY)] = true;
+	        
+	        
+	        for (int i = 0; i < Pathfinder.pausedForklifts.length; i++)
+	        {
+	            for (int j = 0; j < Pathfinder.pausedForklifts[0].length; j++)
+	            {
+	                System.out.print(Pathfinder.pausedForklifts[j][i] ? "X" : " ");
+	            }
+	            System.out.println();
+	        }
+		}
+		paused = true;
+	}
+	
+	private void unpause()
+	{
+		pauseTimer = 0;
+		paused = false;
+//		for(int i = -2; i < 3; i++)
+//		{
+//			for(int j = -2; j < 3; j++)
+//			{
+////				try
+////				{
+//					Pathfinder.pausedForklifts[(this.pos.xPos / Pathfinder.GRANULARITY)+i][(this.pos.yPos / Pathfinder.GRANULARITY)+j] = false;
+////				}
+////				catch(ArrayOutOfBoundsException e)
+////				{
+////					
+////				}
+//			}
+//		}
+		Pathfinder.pausedForklifts[(this.pos.xPos / Pathfinder.GRANULARITY)][(this.pos.yPos / Pathfinder.GRANULARITY)] = false;
 	}
 
 	final TimerTask move = new TimerTask() {
@@ -117,6 +180,15 @@ public class Forklift implements Placeable {
 			long timeElapsed = newTime - lastTime;
 			lastTime = newTime;
 			if (shutdown) {
+				return;
+			}
+			if(paused)
+			{
+				pauseTimer += timeElapsed;
+				if(pauseTimer > 2000000000) // 2 seconds
+				{
+					unpause();
+				}
 				return;
 			}
 			checkForCollision();
@@ -148,6 +220,7 @@ public class Forklift implements Placeable {
 				if (currentTask != null) {
 					if (targetReached(currentTask.getPickup().getPosition())) {
 						carriedBox = currentTask.getPickup().deliverContainer(currentTask.getMaterial());
+						part1 = false;
 					}
 					if (targetReached(currentTask.getDropoff().getPosition())) {
 						currentTask.getDropoff().receiveContainer(carriedBox);
@@ -160,7 +233,7 @@ public class Forklift implements Placeable {
 			}
 		}
 	};
-
+	
 	@Override
 	public void draw(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;
