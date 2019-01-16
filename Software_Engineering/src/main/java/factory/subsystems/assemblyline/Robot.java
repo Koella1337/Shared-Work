@@ -27,7 +27,6 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 	private AssemblyLine al;
 	private Material car;
 	
-	
 	public Robot(AssemblyLine al, Position pos, RobotTypes r, Material mat, int mats) {
 		robot = r;
 		materials = mats;
@@ -75,10 +74,10 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 		if(status() == SubsystemStatus.WAITING) {
 			if(robot == RobotTypes.SCREWDRIVER || robot ==  RobotTypes.PAINTER) {
 				
-				materials--;
+				materials -= 5;
 				
 				if(materials < 10) {
-					FactoryEvent lowmat = new FactoryEvent(al.getALSys(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, this);
+					FactoryEvent lowmat = new FactoryEvent(al.getALSys(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, material, this);
 					this.notify(lowmat);
 				}
 			} else if(robot == RobotTypes.INSPECTOR) {
@@ -113,7 +112,7 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 					{
 						car = Material.CAR_BLACK;
 					}
-					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED, car, this);
+					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED, car, al.getConveyor().getOutputbox());
 					notify(done);
 				}
 			}

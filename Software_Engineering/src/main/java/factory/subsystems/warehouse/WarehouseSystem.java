@@ -41,7 +41,6 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 			placeables.add(newSite);
 			placeables.addAll(newSite.getPlaceables());
 		}
-		
 
 		//database init
 		this.dbTable = new TransactionsTable();
@@ -122,11 +121,6 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 	@Override
 	public List<Placeable> getPlaceables() {
 		return placeables;
-	}
-
-	@Override
-	public String getName() {
-		return this.getClass().getSimpleName();
 	}
 
 	@Override

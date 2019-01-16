@@ -23,6 +23,7 @@ import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
 @SuppressWarnings("unused")
 public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
+	
 	private Robot[] robots = new Robot[4];
 	private Conveyor conveyor;
 	private Position position;
@@ -41,13 +42,14 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 		if (Constants.DEBUG)
 			System.out.println("create assemblyline at position "+position);
 
-		robots[0] = new Robot(this, rpos, RobotTypes.GRABBER, null, 0); // Create 4 robots
+		// Create 4 robots with some initial materials
+		robots[0] = new Robot(this, rpos, RobotTypes.GRABBER, Material.BODIES, 5); 
 		rpos.xPos += (350 / 4.5);
-		robots[1] = new Robot(this, rpos, RobotTypes.SCREWDRIVER, Material.SCREWS, 100);
+		robots[1] = new Robot(this, rpos, RobotTypes.SCREWDRIVER, Material.SCREWS, 5);
 		rpos.xPos += (350 / 4.5);
-		robots[2] = new Robot(this, rpos, RobotTypes.PAINTER, color, 100);
+		robots[2] = new Robot(this, rpos, RobotTypes.PAINTER, color, 5);
 		rpos.xPos += (350 / 4.5);
-		robots[3] = new Robot(this, rpos, RobotTypes.INSPECTOR, null, 0);
+		robots[3] = new Robot(this, rpos, RobotTypes.INSPECTOR, color, 0);
 
 		rpos = position;
 		conveyor = new Conveyor(this, pos.clone(), 20, 100); // Create conveyor
@@ -226,6 +228,7 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 			if (conveyor.getOutputbox().getFullness() == MaterialStatus.BAD) {
 				FactoryEvent full = new FactoryEvent(getALSys(), EventKind.RESOURCEBOX_ALMOST_FULL, car,
 						conveyor.getOutputbox());
+				alsubsys.notify(full);
 			}
 		}
 		alsubsys.notify(event);

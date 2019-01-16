@@ -12,12 +12,12 @@ public abstract class AbstractSubsystem implements Monitorable {
 	private MonitoringInterface monitor;
 
 	public AbstractSubsystem(MonitoringInterface monitor) {
-		this(Objects.requireNonNull(monitor), "-no name-");
+		this(Objects.requireNonNull(monitor), null);
 	}
 	
 	public AbstractSubsystem(MonitoringInterface monitor, String name) {
 		this.monitor = Objects.requireNonNull(monitor);
-		this.name = Objects.requireNonNull(name);
+		this.name = name;
 	}
 	
 	@Override
@@ -27,7 +27,10 @@ public abstract class AbstractSubsystem implements Monitorable {
 	
 	@Override
 	public String getName() {
-		return this.name;
+		if (name != null)
+			return name;
+		else
+			return this.getClass().getSimpleName();
 	}
 
 	@Override

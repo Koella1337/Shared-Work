@@ -130,6 +130,7 @@ class UserInterface implements Stoppable {
 		this.menuPanel.setCurrentSubSystem(subsystem);
 	}
 
+	@SuppressWarnings("serial")
 	class MonitorButton extends JButton {
 		private Predicate<MonitoringInterface> enableCondition;
 

@@ -1,17 +1,17 @@
 package factory.shared.enums;
 
 public enum Material {
-	BODIES				(200),
-	WHEELS				(300),
-	SCREWS				(500),
-	LUBRICANT			(100),
+	BODIES				(20),
+	WHEELS				(30),
+	SCREWS				(50),
+	LUBRICANT			(15),
 	
-	COLOR_RED			(300),
-	COLOR_GREEN			(300),
-	COLOR_BLUE			(300),
-	COLOR_WHITE			(300),
-	COLOR_BLACK			(300),
-	COLOR_GRAY			(300),
+	COLOR_RED			(15),
+	COLOR_GREEN			(15),
+	COLOR_BLUE			(15),
+	COLOR_WHITE			(15),
+	COLOR_BLACK			(15),
+	COLOR_GRAY			(15),
 	
 	CAR_RED 			(1),
 	CAR_GREEN 			(1),

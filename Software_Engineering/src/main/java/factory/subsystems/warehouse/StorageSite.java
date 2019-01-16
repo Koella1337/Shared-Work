@@ -31,7 +31,7 @@ import factory.shared.interfaces.Placeable;
 public class StorageSite implements Placeable {
 	
 	/** If task.getTimeLeft() >= this the Task will be delayed. */
-	private static final long IGNORE_DEADLINE_THRESHOLD = 50000;
+	private static final long IGNORE_DEADLINE_THRESHOLD = 70000;
 	
 	/** If above this threshold the StorageSite will always choose to do a Task. */
 	private static final int TASK_AMOUNT_THRESHOLD = 3;
