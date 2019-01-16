@@ -3,6 +3,7 @@ package factory.subsystems.agv;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -109,7 +110,8 @@ public class Forklift implements Placeable {
 			{
 				if(f != this)
 				{
-					coordinator.notify(new FactoryEvent(coordinator, EventKind.AGV_FORKLIFT_COLLISION, this, f));
+					// begone, vile crash producer
+					// coordinator.notify(new FactoryEvent(coordinator, EventKind.AGV_FORKLIFT_COLLISION, this, f));
 				}
 			}
 			if(Position.length(Position.subtractPosition(f.pos, this.pos)) < SAFETY_RADIUS)
@@ -140,6 +142,10 @@ public class Forklift implements Placeable {
 //		vec = Position.divide(vec, (int)Position.length(vec));
 		vec = Position.addPosition(pos,vec);
 		Position goal = part1?currentTask.getPickup().getPosition():currentTask.getDropoff().getPosition();
+		if(path == null)
+		{
+			path = new LinkedList<Position>();
+		}
 		for(int i = 0; i < 5; i++)
 		{
 			if(!path.isEmpty() && !path.get(0).equals(goal))
