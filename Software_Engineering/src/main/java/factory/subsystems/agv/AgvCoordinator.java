@@ -29,7 +29,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	private final List<Forklift> forklifts = new LinkedList<>();
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private List<AgvTask> tasks = new LinkedList<>();
-	private Pathfinder pathfinder;
+	public Pathfinder pathfinder;
 	private Queue<AgvTask> outstandingTasks = new PriorityQueue<AgvTask>();
 	
 	public AgvCoordinator(MonitoringInterface mon, Element factory, List<Placeable> accessiblePlaceables)

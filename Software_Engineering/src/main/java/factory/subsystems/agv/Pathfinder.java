@@ -24,7 +24,7 @@ public class Pathfinder {
      * @throws org.xml.sax.SAXException
      * @throws java.io.IOException
      */
-    private boolean[][] collisionMap;
+    public boolean[][] collisionMap;
     public static boolean[][] pausedForklifts;
     private PathingNode[][] nodeMap;
 //    private AgvCoordinator coordinator;
