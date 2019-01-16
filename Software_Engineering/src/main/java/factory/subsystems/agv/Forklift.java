@@ -20,7 +20,7 @@ public class Forklift implements Placeable {
 	private static final double SPEED = 10000000; // distance moved per nanosecond (inverted for easier calculation)
 	private static final double THRESHOLD = 0.001; // maximum distance to a target to have reached it
 	private static final double COLLISION_RADIUS = 3; // minimum distance to all other forklifts to avoid collisions
-	private static final double SAFETY_RADIUS = 10; // minimum distance to all other forklifts to avoid having to reroute
+	private static final double SAFETY_RADIUS = 20; // minimum distance to all other forklifts to avoid having to reroute
 	private long lastTime; // last time the forklift's position was updated
 	private boolean shutdown;
 	private boolean paused = false;
@@ -136,8 +136,8 @@ public class Forklift implements Placeable {
 	{
 		evading = true;
 		Position vec = Position.subtractPosition(f.pos, pos);
-		vec = Position.divide(vec, (int)Position.length(vec));
-		vec = Position.multiply(vec, 10);
+		vec = Position.multiply(vec, -2);
+//		vec = Position.divide(vec, (int)Position.length(vec));
 		vec = Position.addPosition(pos,vec);
 		path.add(0, vec);
 	}
