@@ -3,7 +3,6 @@ package factory.subsystems.agv;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -14,7 +13,6 @@ import factory.shared.Constants;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
-import factory.shared.ResourceBox;
 import factory.shared.enums.EventKind;
 import factory.shared.interfaces.Placeable;
 
@@ -28,6 +26,7 @@ public class Forklift implements Placeable {
 	private boolean paused = false;
 	private int pauseTimer = 0;
 	public boolean part1 = false; // part 1 or 2 of the journey?
+	private boolean evading = false;
 
 	public List<Position> path;
 	private Position vec = new Position(0, -1); // this is for drawing, so it mustn't be null even at the start
@@ -117,12 +116,17 @@ public class Forklift implements Placeable {
 			{
 				if(f != this)
 				{
-					if(!f.paused)
+//					if(!f.paused)
+//					{
+//						// handle it before it turns into a collision
+//						f.pause();
+//					}
+//					coordinator.requestReroute(this);
+					if(!evading || !f.evading)
 					{
-						// handle it before it turns into a collision
-						f.pause();
+						evasiveManeuver(f);
+						f.evasiveManeuver(this);
 					}
-					coordinator.requestReroute(this);
 				}
 			}
 		}
@@ -130,7 +134,12 @@ public class Forklift implements Placeable {
 	
 	private void evasiveManeuver(Forklift f)
 	{
-		
+		evading = true;
+		Position vec = Position.subtractPosition(f.pos, pos);
+		vec = Position.divide(vec, (int)Position.length(vec));
+		vec = Position.multiply(vec, 10);
+		vec = Position.addPosition(pos,vec);
+		path.add(0, vec);
 	}
 	
 	private void pause()
@@ -216,9 +225,10 @@ public class Forklift implements Placeable {
 				// due to floating point numbers we use a small range
 				if (targetReached(path.get(0))) {
 					path.remove(0);
+					evading = false;
 				}
 				if (currentTask != null) {
-					if (targetReached(currentTask.getPickup().getPosition())) {
+					if (targetReached(currentTask.getPickup().getPosition()) && part1) {
 						carriedBox = currentTask.getPickup().deliverContainer(currentTask.getMaterial());
 						part1 = false;
 					}

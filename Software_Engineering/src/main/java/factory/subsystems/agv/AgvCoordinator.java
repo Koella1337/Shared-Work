@@ -58,16 +58,16 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			addForklift(f);
 		}
 		
-		ResourceBox a = new ResourceBox(this, new Position(20, 20));
-		a.receiveContainer(new Container(Material.BODIES));
-		a.receiveContainer(new Container(Material.BODIES));
-		a.receiveContainer(new Container(Material.BODIES));
-		a.receiveContainer(new Container(Material.BODIES));
-		a.receiveContainer(new Container(Material.BODIES));
-		ResourceBox b = new ResourceBox(this, new Position(500, 500));
-		submitTask(new AgvTask(600, Material.BODIES, a, b));
-		submitTask(new AgvTask(600, Material.BODIES, a, b));
-		submitTask(new AgvTask(600, Material.BODIES, a, b));
+//		ResourceBox a = new ResourceBox(this, new Position(20, 20));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		ResourceBox b = new ResourceBox(this, new Position(500, 500));
+//		submitTask(new AgvTask(600, Material.BODIES, a, b));
+//		submitTask(new AgvTask(600, Material.BODIES, a, b));
+//		submitTask(new AgvTask(600, Material.BODIES, a, b));
 	}
 	
 	public void addForklift(Forklift forklift)
