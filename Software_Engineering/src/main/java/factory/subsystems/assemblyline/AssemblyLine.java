@@ -43,11 +43,11 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 			System.out.println("create assemblyline at position "+position);
 
 		// Create 4 robots with some initial materials
-		robots[0] = new Robot(this, rpos, RobotTypes.GRABBER, Material.BODIES, 5); 
+		robots[0] = new Robot(this, rpos, RobotTypes.GRABBER, Material.BODIES, 30); 
 		rpos.xPos += (350 / 4.5);
-		robots[1] = new Robot(this, rpos, RobotTypes.SCREWDRIVER, Material.SCREWS, 5);
+		robots[1] = new Robot(this, rpos, RobotTypes.SCREWDRIVER, Material.SCREWS, 10);
 		rpos.xPos += (350 / 4.5);
-		robots[2] = new Robot(this, rpos, RobotTypes.PAINTER, color, 5);
+		robots[2] = new Robot(this, rpos, RobotTypes.PAINTER, color, 20);
 		rpos.xPos += (350 / 4.5);
 		robots[3] = new Robot(this, rpos, RobotTypes.INSPECTOR, color, 0);
 
@@ -128,8 +128,8 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 		
 		try {
 			Random rng = new Random();
-			int sim_mintime = 300;
-			int sim_bound = 2200;
+			int sim_mintime = 1000;
+			int sim_bound = 6000;
 			
 			while (alstatus == SubsystemStatus.RUNNING) {
 				for (Robot r : robots) {

@@ -95,11 +95,14 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Contain
 		return position;
 	}
 
+	private long lastLackOfMaterialSent = 0;
+	
 	@Override
 	public void start() {
 		if (status() == SubsystemStatus.WAITING) {
 			lubricant -= Math.random() * 5;
-			if (lubricant < 10) {
+			if (lubricant < 10 && (System.currentTimeMillis() - lastLackOfMaterialSent) > 50000) {
+				lastLackOfMaterialSent = System.currentTimeMillis();
 				FactoryEvent event = new FactoryEvent(al.getALSys(), EventKind.CONVEYORS_LACK_OF_OIL, this);
 				notify(event);
 			}

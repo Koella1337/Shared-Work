@@ -40,7 +40,7 @@ public class StorageSiteTable extends DatabaseTable {
 				continue;
 			
 			try {
-				this.addMaterial(mat, rng.nextInt(Constants.RESOURCE_BOX_MAX_CONTAINERS / 2) + 5);
+				this.addMaterial(mat, rng.nextInt(Constants.RESOURCE_BOX_MAX_CONTAINERS / 2) + 10);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

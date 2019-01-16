@@ -15,7 +15,6 @@ import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.enums.EventKind;
 import factory.shared.interfaces.Placeable;
-import factory.subsystems.assemblyline.Robot;
 
 public class Forklift implements Placeable {
 	private static final double SPEED = 10000000; // distance moved per nanosecond (inverted for easier calculation)

@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import app.gui.SubsystemMenu;
 import factory.shared.Constants;
@@ -39,7 +40,7 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 	
 	@Override
 	public void receiveContainer(Container container) {
-		materials += container.getAmount();
+		materials += Objects.requireNonNull(container).getAmount();
 	}
 	
 	public void addBox(Container container) {
@@ -73,6 +74,8 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 		return position;
 	}
 	
+	private long lastLackOfMaterialSent = 0;
+	
 	@Override
 	public void start() {
 		if(status() == SubsystemStatus.WAITING) {
@@ -80,7 +83,8 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 				
 				materials -= 5;
 				
-				if(materials < 10) {
+				if(materials < 10 && (System.currentTimeMillis() - lastLackOfMaterialSent) > 50000) {
+					lastLackOfMaterialSent = System.currentTimeMillis();
 					FactoryEvent lowmat = new FactoryEvent(al.getALSys(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, material, this);
 					this.notify(lowmat);
 				}
