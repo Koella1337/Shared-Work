@@ -27,7 +27,8 @@ public class PathingNode {
         if (x > 0)
         {
             PathingNode n = nodeMap[x - 1][y];
-            if (!n.wall)
+            boolean forkliftObstacle = Pathfinder.pausedForklifts[x - 1][y];
+            if (!n.wall && !forkliftObstacle)
             {
                 result.add(n);
             }
@@ -35,7 +36,8 @@ public class PathingNode {
         if (x < nodeMap.length-1)
         {
             PathingNode n = nodeMap[x + 1][y];
-            if (!n.wall)
+            boolean forkliftObstacle = Pathfinder.pausedForklifts[x + 1][y];
+            if (!n.wall && !forkliftObstacle)
             {
                 result.add(n);
             }
@@ -43,7 +45,8 @@ public class PathingNode {
         if (y > 0)
         {
             PathingNode n = nodeMap[x][y - 1];
-            if (!n.wall)
+            boolean forkliftObstacle = Pathfinder.pausedForklifts[x][y - 1];
+            if (!n.wall && !forkliftObstacle)
             {
                 result.add(n);
             }
@@ -51,7 +54,8 @@ public class PathingNode {
         if (y <  nodeMap[0].length-1)
         {
             PathingNode n = nodeMap[x][y + 1];
-            if (!n.wall)
+            boolean forkliftObstacle = Pathfinder.pausedForklifts[x][y + 1];
+            if (!n.wall && !forkliftObstacle)
             {
                 result.add(n);
             }

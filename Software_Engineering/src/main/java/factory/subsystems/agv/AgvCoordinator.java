@@ -15,6 +15,7 @@ import org.xml.sax.SAXException;
 
 import app.gui.SubsystemMenu;
 import factory.shared.AbstractSubsystem;
+import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
@@ -38,8 +39,14 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	{
 		super(mon);
 		status = SubsystemStatus.RUNNING;
-		
-		// TODO: Read map and construct factory
+
+		try {
+			pathfinder = new Pathfinder(this, factory, accessiblePlaceables);
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			// BAD THINGS HAVE HAPPENED WHILE I READ THE XML FILE
+			System.out.println("AGV PATHFINDER DID BAD THINGS TO THE XML FILE");
+			e.printStackTrace();
+		}
 		Element forks = (Element) factory.getElementsByTagName("forklifts").item(0);
 		NodeList forkliftElements = forks.getElementsByTagName("forklift");
 		for(int i = 0; i < forkliftElements.getLength(); i++)
@@ -50,20 +57,17 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			Forklift f = new Forklift(p, this);
 			addForklift(f);
 		}
-		try {
-			pathfinder = new Pathfinder(this, factory, accessiblePlaceables);
-		} catch (ParserConfigurationException | SAXException | IOException e) {
-			// BAD THINGS HAVE HAPPENED WHILE I READ THE XML FILE
-			System.out.println("AGV PATHFINDER DID BAD THINGS TO THE XML FILE");
-			e.printStackTrace();
-		}
 		
-//		submitTask(new AgvTask(600, Material.BODIES, new ResourceBox(this, new Position(20, 20)), new ResourceBox(this, new Position(500, 500))));
-//		submitTask(new AgvTask(600, Material.BODIES, new ResourceBox(this, new Position(20, 40)), new ResourceBox(this, new Position(500, 400))));
-//		submitTask(new AgvTask(600, Material.BODIES, new ResourceBox(this, new Position(20, 60)), new ResourceBox(this, new Position(400, 500))));
-//		submitTask(new AgvTask(600, Material.BODIES, new ResourceBox(this, new Position(20, 80)), new ResourceBox(this, new Position(400, 400))));
-//		submitTask(new AgvTask(600000, Material.BODIES, new ResourceBox(this, new Position(20, 100)), new ResourceBox(this, new Position(300, 500))));
-//		submitTask(new AgvTask(600000, Material.BODIES, new ResourceBox(this, new Position(20, 100)), new ResourceBox(this, new Position(500, 300))));
+//		ResourceBox a = new ResourceBox(this, new Position(20, 20));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		ResourceBox b = new ResourceBox(this, new Position(500, 500));
+//		submitTask(new AgvTask(600, Material.BODIES, a, b));
+//		submitTask(new AgvTask(600, Material.BODIES, a, b));
+//		submitTask(new AgvTask(600, Material.BODIES, a, b));
 	}
 	
 	public void addForklift(Forklift forklift)
@@ -104,6 +108,47 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			outstandingTasks.add(task);
 		}
 		
+	}
+
+	public void requestReroute(Forklift f) {
+			// recalculate the Path
+			List<Position> pathThere = null;
+			List<Position> pathBack = null;
+			try
+			{
+			if(f.part1)
+			{
+				pathThere = pathfinder.getPath(f.getPosition(), f.getCurrentTask().getPickup().getPosition());
+			}
+			pathBack = pathfinder.getPath(f.getCurrentTask().getPickup().getPosition(), f.getCurrentTask().getDropoff().getPosition());
+			}
+			catch(NullPointerException e)
+			{
+				System.out.println("HI");
+			}
+			if(f.part1)
+			{
+				if(pathThere != null && pathBack != null)
+				{
+					f.setPath(pathThere);
+					f.path.addAll(pathBack);
+				}
+				else
+				{
+		        	notify(new FactoryEvent(this, EventKind.AGV_PATHING_IMPOSSIBLE, f.getCurrentTask()));
+				}
+			}
+			else
+			{
+				if(pathBack != null)
+				{
+					f.setPath(pathBack);
+				}
+				else
+				{
+		        	notify(new FactoryEvent(this, EventKind.AGV_PATHING_IMPOSSIBLE, f.getCurrentTask()));
+				}
+			}
 	}
 
 	@Override

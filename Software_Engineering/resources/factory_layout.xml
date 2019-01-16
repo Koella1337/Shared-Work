@@ -66,13 +66,13 @@
 			<position>400,700</position>
 		</forklift>
 		<forklift>
-			<position>420,700</position>
+			<position>450,700</position>
 		</forklift>
 		<forklift>
-			<position>440,700</position>
+			<position>400,750</position>
 		</forklift>
 		<forklift>
-			<position>460,700</position>
+			<position>450,750</position>
 		</forklift>
 	</forklifts>
 </factory>
