@@ -30,12 +30,10 @@ public enum EventKind {
 	ROBOTARMS_BROKEN				(EventSeverity.IMPORTANT, 	Robot.class),
 	
 	//------------------------------- Conveyors Notifications -------------------------------
-	CONVEYORS_LACK_OF_OIL			(EventSeverity.IMPORTANT, 	Conveyor.class),
-	CONVEYOR_PICK_UP_BOX			(EventSeverity.NORMAL, Material.class, Conveyor.class),
+	CONVEYORS_LACK_OF_OIL			(EventSeverity.IMPORTANT, 	ContainerDemander.class),
 	
 	//---------------------------------- Conveyors Errors -----------------------------------
-	CONVEYORS_BROKEN				(EventSeverity.IMPORTANT, 	Conveyor.class),
-	
+	CONVEYORS_BROKEN				(EventSeverity.ERROR, 		Conveyor.class),
 	
 	//------------------------------- Warehouse Notifications -------------------------------
 	WAREHOUSE_TASK_COMPLETED		(EventSeverity.NORMAL,		WarehouseTask.class, ContainerSupplier.class),

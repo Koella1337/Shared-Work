@@ -131,7 +131,6 @@ public class MonitoringSystem implements MonitoringInterface {
 				}
 				break;
 			case NORMAL:
-				// handleNormalEvent(event);
 				switch (event.getKind()) {
 				case AGV_CONTAINER_DELIVERED:
 					if (Constants.DEBUG)
@@ -175,18 +174,18 @@ public class MonitoringSystem implements MonitoringInterface {
 	}
 
 	private void handleCarFinishedEvent(FactoryEvent event) {
-		System.out.println("CAR_FINISHED");
+		if (Constants.DEBUG)
+			System.out.println("CAR_FINISHED");
 		Material material = (Material) event.getAttachment(0);
 		ContainerSupplier supplier = (ContainerSupplier) event.getAttachment(1);
 		
 		AgvTask agvtask = new AgvTask(NORMAL_SEVERITY_DEADLINE, material, supplier, shippingBox);
-		System.out.println("SUBMITTING" + agvtask);
 		agvSystem.submitTask(agvtask);
 	}
 
 	@Override
 	public void start() {
-		Objects.requireNonNull(this.agvSystem);// TODO @thomas throw exception
+		Objects.requireNonNull(this.agvSystem);
 		Objects.requireNonNull(this.warehouseSystem);
 		Objects.requireNonNull(this.alsubsys);
 

@@ -37,8 +37,12 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 		material = mat;
 	}
 	
+	@Override
+	public void receiveContainer(Container container) {
+		materials += container.getAmount();
+	}
+	
 	public void addBox(Container container) {
-		material = container.getMaterial();
 		materials += container.getAmount();
 	}
 	
@@ -167,13 +171,6 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 		g.drawRect(0, 0, position.xSize, position.ySize);
 	}
 
-
-	@Override
-	public void receiveContainer(Container container) {
-		material = container.getMaterial();
-		materials += container.getAmount();
-	}
-
 	@Override
 	public String getName() {
 		String s = "Robot Type " + robot + " @ " + position.xPos + " / " + position.yPos;
@@ -186,7 +183,7 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 	}
 
 	@Override
-	public synchronized SubsystemStatus getStatus() {
+	public SubsystemStatus getStatus() {
 		return status();
 	}
 

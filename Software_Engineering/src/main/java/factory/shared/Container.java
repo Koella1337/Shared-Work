@@ -23,5 +23,9 @@ public class Container {
 		return material.containerAmount;
 	}
 	
+	@Override
+	public String toString() {
+		return "(Container: " + material + ")";
+	}
 	
 }

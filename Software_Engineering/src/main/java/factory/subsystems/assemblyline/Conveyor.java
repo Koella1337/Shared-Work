@@ -13,6 +13,7 @@ import factory.shared.Position;
 import factory.shared.ResourceBox;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.SubsystemStatus;
+import factory.shared.interfaces.ContainerDemander;
 import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
@@ -20,7 +21,8 @@ import factory.subsystems.assemblyline.interfaces.ConveyorMonitorInterface;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
 @SuppressWarnings("unused")
-public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeable, ConveyorMonitorInterface {
+public class Conveyor implements Monitorable, RobotInterface, Stoppable, ContainerDemander, ConveyorMonitorInterface {
+	
 	public double speed;
 	public int lubricant;
 	private SubsystemStatus status = SubsystemStatus.WAITING;
@@ -54,6 +56,11 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 		box = new Container(al.getMaterial());
 	}
 
+	@Override
+	public void receiveContainer(Container container) {
+		this.addBox(container);
+	}
+	
 	public void addBox(Container container) {
 		lubricant += container.getAmount();
 	}
@@ -91,7 +98,7 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 	@Override
 	public void start() {
 		if (status() == SubsystemStatus.WAITING) {
-			lubricant -= Math.random();
+			lubricant -= Math.random() * 5;
 			if (lubricant < 10) {
 				FactoryEvent event = new FactoryEvent(al.getALSys(), EventKind.CONVEYORS_LACK_OF_OIL, this);
 				notify(event);

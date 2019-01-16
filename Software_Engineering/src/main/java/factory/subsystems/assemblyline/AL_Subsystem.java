@@ -1,10 +1,10 @@
 package factory.subsystems.assemblyline;
+
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-
 
 import org.apache.derby.impl.tools.ij.Main;
 import org.w3c.dom.NodeList;
@@ -194,8 +194,6 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 		return status;
 	}
 
-
-
 	@Override
 	public List<Placeable> getPlaceables() {
 		List<Placeable> plc = new ArrayList<Placeable>();
@@ -210,31 +208,9 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 	
 	public List<Placeable> getAGVAll(){
 		List<Placeable> plc = new ArrayList<Placeable>();
-		plc.addAll(getAGVRobots());
-		plc.addAll(getAGVConveyor());
-		plc.addAll(getAGVOutputbox());
-		return plc;
-	}
-	
-	public List<Placeable> getAGVRobots(){
-		List<Placeable> plc = new ArrayList<Placeable>();
-		for(AssemblyLine a: al) {
+		for (AssemblyLine a : al) {
 			plc.addAll(a.getAGVRobot());
-		}
-		return plc;
-	}
-	
-	public List<Placeable> getAGVConveyor(){
-		List<Placeable> plc = new ArrayList<Placeable>();
-		for(AssemblyLine a: al) {
 			plc.addAll(a.getAGVConveyor());
-		}
-		return plc;
-	}
-	
-	public List<Placeable> getAGVOutputbox(){
-		List<Placeable> plc = new ArrayList<Placeable>();
-		for(AssemblyLine a: al) {
 			plc.addAll(a.getAGVOutputbox());
 		}
 		return plc;
