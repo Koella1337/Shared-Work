@@ -130,8 +130,6 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 	@Override
 	public void draw(Graphics g) {
 		switch(status) {
-		case BROKEN:
-			g.setColor(Color.RED);
 		case RUNNING:
 			if(robot == RobotTypes.PAINTER) {
 				switch(material) {
@@ -157,13 +155,11 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 					g.setColor(Color.LIGHT_GRAY);
 					break;
 				}
-			} else	g.setColor(Color.LIGHT_GRAY);
+			} else	
+				g.setColor(Color.LIGHT_GRAY);
 			break;
-		case STOPPED:
-			g.setColor(Color.ORANGE);
-			break;
-		case WAITING:
-			g.setColor(Color.GREEN);
+		default:
+			g.setColor(Color.LIGHT_GRAY);
 			break;
 		}
 		g.fillRect(1, 1, position.xSize - 1, position.ySize - 1);
@@ -173,7 +169,7 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 
 
 	@Override
-	public synchronized void receiveContainer(Container container) {
+	public void receiveContainer(Container container) {
 		material = container.getMaterial();
 		materials += container.getAmount();
 	}

@@ -153,6 +153,9 @@ public class MonitoringSystem implements MonitoringInterface {
 						agvSystem.submitTask(newTask);
 					}
 					break;
+				case WAREHOUSE_NEW_TRANSACTION:
+					LOGGER.info("Transaction happened: " + event.getAttachment(0));
+					break;
 				case CAR_FINISHED: // Created new EventKind if the Box is full -Max
 					handleCarFinishedEvent(event);
 					break;
