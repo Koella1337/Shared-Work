@@ -3,6 +3,7 @@ package factory.subsystems.assemblyline;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import app.gui.SubsystemMenu;
 import factory.shared.Constants;
@@ -124,15 +125,19 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 		conveyor.setSpeed(speed);
 		
 		try {
+			Random rng = new Random();
+			int sim_mintime = 300;
+			int sim_bound = 2200;
+			
 			while (alstatus == SubsystemStatus.RUNNING) {
 				for (Robot r : robots) {
 					r.start();
 				}
 				while (notReady()) { // Waiting for the robots
-					Thread.sleep(600);
+					Thread.sleep(rng.nextInt(sim_bound) + sim_mintime);
 				}
 				while (conveyor.status() != SubsystemStatus.WAITING) { // Waiting for the conveyor
-					Thread.sleep(600);
+					Thread.sleep(rng.nextInt(sim_bound) + sim_mintime);
 				}
 			}
 		} catch (InterruptedException e) {
