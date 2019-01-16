@@ -123,14 +123,20 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 			speed = 10; // Boundaries for the speed
 		conveyor.setSpeed(speed);
 		
-		while (alstatus == SubsystemStatus.RUNNING) {
-			for (Robot r : robots) {
-				r.start();
+		try {
+			while (alstatus == SubsystemStatus.RUNNING) {
+				for (Robot r : robots) {
+					r.start();
+				}
+				while (notReady()) { // Waiting for the robots
+					Thread.sleep(600);
+				}
+				while (conveyor.status() != SubsystemStatus.WAITING) { // Waiting for the conveyor
+					Thread.sleep(600);
+				}
 			}
-			while (notReady()) { // Waiting for the robots
-			}
-			while (conveyor.status() != SubsystemStatus.WAITING) { // Waiting for the conveyor
-			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	
 	}

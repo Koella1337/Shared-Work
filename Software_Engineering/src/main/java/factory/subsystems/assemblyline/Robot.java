@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.gui.SubsystemMenu;
+import factory.shared.Constants;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
@@ -128,8 +129,8 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 	}
 	
 	@Override
-	public synchronized void draw(Graphics g) {
-		switch(status()) {
+	public void draw(Graphics g) {
+		switch(status) {
 		case BROKEN:
 			g.setColor(Color.RED);
 		case RUNNING:
@@ -154,9 +155,10 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 					g.setColor(Color.WHITE);
 					break;
 				default:
+					g.setColor(Color.LIGHT_GRAY);
 					break;
 				}
-			} else	g.setColor(Color.BLUE);
+			} else	g.setColor(Color.LIGHT_GRAY);
 			break;
 		case STOPPED:
 			g.setColor(Color.ORANGE);
@@ -165,8 +167,9 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 			g.setColor(Color.GREEN);
 			break;
 		}
-		//g.fillRect(position.xPos, position.yPos, position.xSize, position.ySize);
-		g.fillRect(0, 0, position.xSize, position.ySize);
+		g.fillRect(1, 1, position.xSize - 1, position.ySize - 1);
+		g.setColor(Constants.UI_BORDER_COLOR);
+		g.drawRect(0, 0, position.xSize, position.ySize);
 	}
 
 
@@ -188,7 +191,7 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 	}
 
 	@Override
-	public SubsystemStatus getStatus() {
+	public synchronized SubsystemStatus getStatus() {
 		return status();
 	}
 

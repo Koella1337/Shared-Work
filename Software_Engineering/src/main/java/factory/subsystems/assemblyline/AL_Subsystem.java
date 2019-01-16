@@ -134,12 +134,6 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 		}
 	}
 
-	public void draw(Graphics g) {
-		for(AssemblyLine a: al) {
-			a.draw(g);
-		}
-	}
-
 	@Override
 	public void start() {
 		for(int i = 0; i < 6; i++) {

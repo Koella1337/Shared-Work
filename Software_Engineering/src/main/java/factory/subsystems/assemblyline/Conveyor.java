@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.gui.SubsystemMenu;
+import factory.shared.Constants;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
@@ -119,22 +120,10 @@ public class Conveyor implements Monitorable, RobotInterface, Stoppable, Placeab
 
 	@Override
 	public void draw(Graphics g) {
-		Color old = g.getColor();
-		switch (status()) {
-		case BROKEN:
-			g.setColor(Color.RED);
-		case RUNNING:
-			g.setColor(Color.YELLOW);
-			break;
-		case STOPPED:
-			g.setColor(Color.ORANGE);
-			break;
-		case WAITING:
-			g.setColor(Color.GRAY);
-			break;
-		}
-		g.fillRect(0, 0, position.xSize, position.ySize);
-		g.setColor(old);
+		g.setColor(Color.LIGHT_GRAY);
+		g.fillRect(1, 1, position.xSize - 1, position.ySize - 1);
+		g.setColor(Constants.UI_BORDER_COLOR);
+		g.drawRect(0, 0, position.xSize, position.ySize);
 	}
 
 	public ResourceBox getInputbox() {
