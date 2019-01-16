@@ -30,7 +30,6 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	
 	private final List<Forklift> forklifts = new LinkedList<>();
 	private SubsystemStatus status = SubsystemStatus.WAITING;
-	private boolean ready = false;
 	private List<AgvTask> tasks = new LinkedList<>();
 	private Pathfinder pathfinder;
 	private Queue<AgvTask> outstandingTasks = new PriorityQueue<AgvTask>();
@@ -39,7 +38,6 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	{
 		super(mon);
 		status = SubsystemStatus.RUNNING;
-		ready = true;
 		
 		// TODO: Read map and construct factory
 		Element forks = (Element) factory.getElementsByTagName("forklifts").item(0);
@@ -53,7 +51,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			addForklift(f);
 		}
 		try {
-			pathfinder = new Pathfinder(this, factory);
+			pathfinder = new Pathfinder(this, factory, accessiblePlaceables);
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			// BAD THINGS HAVE HAPPENED WHILE I READ THE XML FILE
 			System.out.println("AGV PATHFINDER DID BAD THINGS TO THE XML FILE");

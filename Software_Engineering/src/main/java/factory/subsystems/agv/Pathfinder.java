@@ -11,10 +11,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.Utils;
-import factory.shared.enums.EventKind;
+import factory.shared.interfaces.Placeable;
 
 public class Pathfinder {
 
@@ -28,12 +27,13 @@ public class Pathfinder {
     private boolean[][] collisionMap;
     private PathingNode[][] nodeMap;
     private AgvCoordinator coordinator;
+    public static final int GRANULARITY = 5;
 
-    public Pathfinder(AgvCoordinator coordinator, Element factory) throws ParserConfigurationException, SAXException, IOException
+    public Pathfinder(AgvCoordinator coordinator, Element factory, List<Placeable> freeParking) throws ParserConfigurationException, SAXException, IOException
     {
     	this.coordinator = coordinator;
         Position factorySize = Utils.parsePosition(((Element) factory.getElementsByTagName("size").item(0)).getFirstChild().getNodeValue(), null);
-        collisionMap = new boolean[factorySize.xPos / 20][factorySize.yPos / 20];
+        collisionMap = new boolean[factorySize.xPos / GRANULARITY][factorySize.yPos / GRANULARITY];
 
         NodeList storagesites = ((Element) factory.getElementsByTagName("warehouse").item(0)).getElementsByTagName("storagesite");
         NodeList assemblyLines = ((Element) factory.getElementsByTagName("assemblylines").item(0)).getElementsByTagName("assemblyline");
@@ -50,6 +50,11 @@ public class Pathfinder {
             // String direction = ((Element)((Element) assemblyLines.item(i)).getElementsByTagName("direction").item(0)).getNodeValue();
             addAssemblyLine(Utils.xmlGetPositionFromElement((Element) assemblyLines.item(i)));
         }
+        // remove free parking spaces!
+        for (Placeable p : freeParking)
+        {
+            removeFreeParking(p);
+        }
 
         // Generate nodemap
         nodeMap = new PathingNode[collisionMap.length][collisionMap[0].length];
@@ -57,7 +62,7 @@ public class Pathfinder {
         {
             for (int j = 0; j < collisionMap[0].length; j++)
             {
-                nodeMap[i][j] = new PathingNode(new Position(i * 20, j * 20), collisionMap[i][j], nodeMap);
+                nodeMap[i][j] = new PathingNode(new Position(i * GRANULARITY, j * GRANULARITY), collisionMap[i][j], nodeMap);
             }
         }
 //
@@ -67,11 +72,11 @@ public class Pathfinder {
 //        while (path.parent != null)
 //        {
 //            System.out.println(path.p);	
-//            pathMap[path.p.xPos/20][path.p.yPos/20] = true;
+//            pathMap[path.p.xPos/GRANULARITY][path.p.yPos/GRANULARITY] = true;
 //            path = path.parent;
 //        }
 //        System.out.println(path.p);
-//        pathMap[path.p.xPos/20][path.p.yPos/20] = true;
+//        pathMap[path.p.xPos/GRANULARITY][path.p.yPos/GRANULARITY] = true;
 //
 //        for (int i = 0; i < collisionMap.length; i++)
 //        {
@@ -83,14 +88,44 @@ public class Pathfinder {
 //        }
     }
 
-    private void addObstacle(Position p)
+    private void removeFreeParking(Placeable pl) 
     {
-        for (int x = 0; x < p.xSize; x = x + 20)
+    	Position p = pl.getPosition();
+        for (int x = 0; x < p.xSize; x = x + GRANULARITY)
         {
-            for (int y = 0; y < p.ySize; y = y + 20)
+            for (int y = 0; y < p.ySize; y = y + GRANULARITY)
             {
-                collisionMap[(x + p.xPos) / 20][(y + p.yPos) / 20] = true;
+                collisionMap[(x + p.xPos) / GRANULARITY][(y + p.yPos) / GRANULARITY] = false;
             }
+        }
+	}
+
+	private void addObstacle(Position p)
+    {
+		int x = 0;
+		int y = 0;
+        for (x = 0; x < p.xSize; x = x + GRANULARITY)
+        {
+            for (y = 0; y < p.ySize; y = y + GRANULARITY)
+            {
+                collisionMap[(x + p.xPos) / GRANULARITY][(y + p.yPos) / GRANULARITY] = true;
+            }
+            try
+            {
+            	collisionMap[(x + p.xPos) / GRANULARITY][(y + p.yPos) / GRANULARITY] = true;
+            }
+            catch(ArrayIndexOutOfBoundsException e) // an diesem punkt isses mir wurscht
+            {
+            	
+            }
+        }
+        try
+        {
+        	collisionMap[(x + p.xPos) / GRANULARITY][(y + p.yPos) / GRANULARITY] = true;
+        }
+        catch(ArrayIndexOutOfBoundsException e) // an diesem punkt isses mir wurscht
+        {
+        	
         }
     }
 
@@ -178,6 +213,6 @@ public class Pathfinder {
 
     private PathingNode getNodeFromPos(Position p)
     {
-        return nodeMap[p.xPos / 20][p.yPos / 20];
+        return nodeMap[p.xPos / GRANULARITY][p.yPos / GRANULARITY];
     }
 }
