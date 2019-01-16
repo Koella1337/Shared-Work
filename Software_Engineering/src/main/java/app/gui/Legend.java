@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("serial")
 public class Legend extends GUIPanel{
 
 	private List<LegendEntry> legend;
@@ -12,8 +13,9 @@ public class Legend extends GUIPanel{
 	protected Legend(int fps) {
 		super(fps);
 		this.legend = new ArrayList<>();
-		this.legend.add(new LegendEntry(Color.red, "Storagesite"));
-		this.legend.add(new LegendEntry(Color.green, "Forklift"));
+		this.legend.add(new LegendEntry(Color.red, "Status: Terrible"));
+		this.legend.add(new LegendEntry(Color.YELLOW, "Status: Average"));
+		this.legend.add(new LegendEntry(Color.green, "Status: Perfect"));
 	}
 	
 	

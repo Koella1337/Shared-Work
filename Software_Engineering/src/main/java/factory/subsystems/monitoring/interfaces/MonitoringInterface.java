@@ -12,7 +12,6 @@ import factory.shared.interfaces.Stoppable;
 import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.agv.interfaces.AgvMonitorInterface;
 import factory.subsystems.assemblyline.AL_Subsystem;
-import factory.subsystems.assemblyline.AssemblyLine;
 import factory.subsystems.monitoring.InvalidOrderException;
 import factory.subsystems.monitoring.onlineshop.OnlineShopUser;
 import factory.subsystems.monitoring.onlineshop.Order;

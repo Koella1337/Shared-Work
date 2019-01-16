@@ -2,7 +2,6 @@ package factory.subsystems.agv.interfaces;
 
 import java.util.List;
 
-import factory.shared.Task;
 import factory.shared.interfaces.Monitorable;
 import factory.subsystems.agv.AgvTask;
 import factory.subsystems.agv.Forklift;

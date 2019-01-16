@@ -12,10 +12,7 @@ import javax.swing.ImageIcon;
 
 import factory.shared.Constants;
 import factory.shared.Container;
-import factory.shared.FactoryEvent;
 import factory.shared.Position;
-import factory.shared.ResourceBox;
-import factory.shared.enums.EventKind;
 import factory.shared.interfaces.Placeable;
 
 public class Forklift implements Placeable {
@@ -127,14 +124,20 @@ public class Forklift implements Placeable {
 //					coordinator.requestReroute(this);
 					if(!evading || !f.evading)
 					{
+<<<<<<< HEAD
 //						evasiveManeuver(f);
 //						f.evasiveManeuver(this);
+=======
+						//evasiveManeuver(f);
+						//f.evasiveManeuver(this);
+>>>>>>> Software_Engineering
 					}
 				}
 			}
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void evasiveManeuver(Forklift f)
 	{
 		evading = true;
@@ -157,6 +160,7 @@ public class Forklift implements Placeable {
 		path.add(0, vec);
 	}
 	
+	@SuppressWarnings("unused")
 	private void pause()
 	{
 		if(!this.paused)
@@ -258,14 +262,20 @@ public class Forklift implements Placeable {
 						}
 					}
 					if (targetReached(currentTask.getDropoff().getPosition())) {
+<<<<<<< HEAD
 						if(currentTask.getDropoff() instanceof ResourceBox)
 						{
 							System.out.println("AAAAAAAAAAAAAAAAAA");
 						}
 						currentTask.getDropoff().receiveContainer(carriedBox);
 						carriedBox = null;
+=======
+						if (carriedBox != null)
+							currentTask.getDropoff().receiveContainer(carriedBox);
+>>>>>>> Software_Engineering
 						AgvTask saveTask = currentTask;
 						currentTask = null;
+						carriedBox = null;
 						coordinator.finishedTask(saveTask);
 					}
 				}

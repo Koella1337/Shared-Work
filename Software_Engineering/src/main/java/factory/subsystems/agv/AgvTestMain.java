@@ -67,6 +67,7 @@ public class AgvTestMain{
 		return newFrame;
 	}
 	
+	@SuppressWarnings("serial")
 	private static class DrawPanel extends JPanel
 	{
 		private void doDrawing(Graphics g)

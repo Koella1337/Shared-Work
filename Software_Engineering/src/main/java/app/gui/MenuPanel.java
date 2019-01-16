@@ -6,15 +6,13 @@ import java.awt.Graphics;
 import factory.shared.AbstractSubsystem;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
+@SuppressWarnings("serial")
 class MenuPanel extends GUIPanel {
 	
-	private MonitoringInterface monitor;
 	private SubsystemMenu subsystemMenu;
-
 	
 	public MenuPanel(int fps, MonitoringInterface monitor) {
 		super(fps);
-		this.monitor = monitor;
 		this.setBackground(Color.LIGHT_GRAY);
 	}
 

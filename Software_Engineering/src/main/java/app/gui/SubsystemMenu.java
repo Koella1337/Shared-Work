@@ -2,6 +2,7 @@ package app.gui;
 
 import javax.swing.JLabel;
 
+@SuppressWarnings("serial")
 public class SubsystemMenu extends GUIPanel{
 
 	

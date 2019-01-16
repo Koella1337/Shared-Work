@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+@SuppressWarnings("serial")
 class UpdateTimer extends Timer {
 
 	public UpdateTimer(final JPanel panelToUpdate, int fps) {

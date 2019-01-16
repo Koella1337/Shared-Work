@@ -7,6 +7,7 @@ import javax.swing.JTextArea;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 import factory.subsystems.monitoring.onlineshop.Order;
 
+@SuppressWarnings("serial")
 public class OrderListView extends GUIPanel {
 
 	private MonitoringInterface monitor;
