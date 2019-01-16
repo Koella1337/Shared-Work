@@ -95,7 +95,7 @@ public class Pathfinder {
         {
             for (int y = 0; y < p.ySize; y = y + GRANULARITY)
             {
-                //collisionMap[(x + p.xPos) / GRANULARITY][(y + p.yPos) / GRANULARITY] = false;
+                collisionMap[(x + p.xPos) / GRANULARITY][(y + p.yPos) / GRANULARITY] = false;
             }
         }
 	}
