@@ -18,9 +18,9 @@ class WarehouseForklift implements Placeable {
 	
 	private static final int SIM_MOVEMENT_MULTIPLIER = 7;
 	
-	private static final int SIM_DURATION_SORTSHELF = 5000;
-	private static final int SIM_DURATION_GRABCONTAINER = 2500;
-	private static final int SIM_DURATION_DELIVERCONTAINER = 2500;
+	private static final int SIM_DURATION_SORTSHELF = 3000;
+	private static final int SIM_DURATION_GRABCONTAINER = 1500;
+	private static final int SIM_DURATION_DELIVERCONTAINER = 1500;
 	
 	private static final int X_SIZE = PlaceableSize.SHELF.x;
 	private static final int Y_SIZE = X_SIZE;

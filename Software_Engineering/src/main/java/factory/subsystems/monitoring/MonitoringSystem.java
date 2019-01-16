@@ -105,6 +105,7 @@ public class MonitoringSystem implements MonitoringInterface {
 						System.out.println("HANDLEEVENT " + event + " NOT IMPLEMENTED");
 					break;
 				}
+				break;
 			case IMPORTANT:
 				switch (event.getKind()) {
 				case RESOURCEBOX_ALMOST_FULL:
@@ -128,6 +129,7 @@ public class MonitoringSystem implements MonitoringInterface {
 						System.out.println("HANDLEEVENT " + event + " NOT IMPLEMENTED");
 					break;
 				}
+				break;
 			case NORMAL:
 				// handleNormalEvent(event);
 				switch (event.getKind()) {
