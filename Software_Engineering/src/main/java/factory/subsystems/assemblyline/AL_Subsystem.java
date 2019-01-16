@@ -25,6 +25,7 @@ import factory.subsystems.warehouse.StorageSite;
 
 @SuppressWarnings("unused")
 public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stoppable{
+	
 	private AssemblyLine[] al = new AssemblyLine[6];
 	private int[] task = new int[6]; 
 
@@ -92,7 +93,6 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 	}
 
 	/**
-	 * 
 	 * @param color of the cars
 	 * @param quantity of the cars
 	 */
@@ -134,24 +134,14 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 			break;
 		}
 	}
-	
-	
-
-	public void draw(Graphics g) {
-		for(AssemblyLine a: al) {
-			a.draw(g);
-		}
-	}
 
 	@Override
 	public void start() {
-		
 		for(int i = 0; i < 6; i++) {
-			al[i].restart();
-			al[i].start();
+			AssemblyLine line = al[i];
+			new Thread( () -> line.start() ).start();
 		}
 	}
-	
 	
 	public void stopProduction(Material color) {
 		switch (color) {
@@ -181,21 +171,17 @@ public class AL_Subsystem extends AbstractSubsystem implements Monitorable, Stop
 
 	@Override
 	public void stop() { // Stops everything
-		for(int i = 0; i < 6; i++) {
+		//TODO: AssemblyLines can't be stopped currently
+		/*for(int i = 0; i < 6; i++) {
 			((Stoppable) al[i]).stop();
-		}
-		
+		}*/
 	}
-
 	
 	public void restart() { // This assumes that all technical difficulties have been solved
 		for(AssemblyLine a: al) {
 			a.restart();
 		}
 	}
-
-
-
 
 	@Override
 	public SubsystemStatus getStatus() { // Only for debugging reasons

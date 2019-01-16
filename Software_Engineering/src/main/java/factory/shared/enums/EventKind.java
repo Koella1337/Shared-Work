@@ -1,6 +1,7 @@
 package factory.shared.enums;
 
 import factory.shared.interfaces.ContainerSupplier;
+import factory.shared.interfaces.ContainerDemander;
 import factory.shared.Task;
 import factory.shared.ResourceBox;
 import factory.subsystems.agv.AgvTask;
@@ -22,10 +23,8 @@ public enum EventKind {
 	RESOURCEBOX_ALMOST_FULL			(EventSeverity.IMPORTANT, 	ResourceBox.class),
 	
 	//------------------------------- RobotArms Notifications -------------------------------
-	CAR_FINISHED 					(EventSeverity.NORMAL, 		Material.class, Robot.class),
-	TASK_FINISHED 					(EventSeverity.NORMAL),
-	ROBOTARMS_LACK_OF_MATERIAL 		(EventSeverity.NORMAL, 		Material.class, Robot.class),
-	
+	CAR_FINISHED 					(EventSeverity.NORMAL, 		Material.class, ContainerSupplier.class),
+	ROBOTARMS_LACK_OF_MATERIAL 		(EventSeverity.IMPORTANT,	Material.class, ContainerDemander.class),
 	
 	//---------------------------------- RobotArms Errors -----------------------------------
 	ROBOTARMS_BROKEN				(EventSeverity.IMPORTANT, 	Robot.class),

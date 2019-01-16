@@ -15,6 +15,7 @@ import app.gui.GUIHandler;
 import app.gui.OnlineShop;
 import app.gui.UIConfiguration;
 import factory.shared.AbstractSubsystem;
+import factory.shared.Constants;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
@@ -36,7 +37,11 @@ import factory.subsystems.warehouse.WarehouseSystem;
 import factory.subsystems.warehouse.WarehouseTask;
 
 public class MonitoringSystem implements MonitoringInterface {
+	
 	private static final Logger LOGGER = Logger.getLogger(MonitoringSystem.class.getName());
+
+	private static final int NORMAL_SEVERITY_DEADLINE = 80000;
+	private static final int IMPORTANT_SEVERITY_DEADLINE = 30000;
 
 	private final UserHandler userHandler;
 	private final GUIHandler handler;
@@ -75,12 +80,13 @@ public class MonitoringSystem implements MonitoringInterface {
 	@Override
 	public synchronized void handleEvent(FactoryEvent event) {
 		try {
-			System.out.println("handling event: " + event);
-			LOGGER.log(INFO, String.format("handling event %s ...", event));
-
+			if (Constants.DEBUG)
+				System.out.println("-------> handling event: " + event);
+			
 			Monitorable source = event.getSource();
 			EventKind eventKind = event.getKind();
 			EventSeverity severity = eventKind.severity;
+			
 			switch (severity) {
 			case GLOBAL_EROR:
 				this.getErrorHandler().handleGlobalError(event);
@@ -89,47 +95,72 @@ public class MonitoringSystem implements MonitoringInterface {
 			case ERROR:
 				getErrorHandler().handleError(source, eventKind);
 				break;
-			case IMPORTANT:
-				break;
 			case INFO:
-				break;
-			case NORMAL:
-				// handleNormalEvent(event);
 				switch (event.getKind()) {
-				case AGV_CONTAINER_DELIVERED:
-					System.out.println("AGV_CONTAINER_DELIVERED");
-					// do nothing
+				case TASK_NOT_COMPLETED_BEFORE_DEADLINE:
+					LOGGER.info("Did not complete " + event.getAttachment(0) + " before deadline!");
 					break;
-				case WAREHOUSE_TASK_COMPLETED:
-					System.out.println("WAREHOUSE_TASK_COMPLETED");
-					WarehouseTask task = (WarehouseTask) event.getAttachment(0);
-					Material mat = task.getMaterial();
-					ContainerSupplier supplier = (ContainerSupplier) event.getAttachment(1);
-					ContainerDemander demander = getWarehouseTaskDemanders().get(task);
-					if (demander == null) {
-						LOGGER.warning("no demander for the warehousetask found");
-					} else {
-						AgvTask agv = new AgvTask(600000, mat, supplier, demander);
-						agvSystem.submitTask(agv);
-					}
+				default: 
+					if (Constants.DEBUG)
+						System.out.println("HANDLEEVENT " + event + " NOT IMPLEMENTED");
 					break;
-				case CONVEYOR_PICK_UP_BOX: // Created new EventKind if the Box is full -Max
-					handleCarFinishedEvent(event);
+				}
+				break;
+			case IMPORTANT:
+				switch (event.getKind()) {
+				case RESOURCEBOX_ALMOST_FULL:
+					ResourceBox box = (ResourceBox) event.getAttachment(0);
+					LOGGER.warning(box + " is almost full!");
 					break;
 				case ROBOTARMS_LACK_OF_MATERIAL:
 					Material material = (Material) event.getAttachment(0);
 					Robot robot = (Robot) event.getAttachment(1);
 
-					WarehouseTask wht = new WarehouseTask(600000, material);
+					WarehouseTask wht = new WarehouseTask(IMPORTANT_SEVERITY_DEADLINE, material);
 					warehouseTaskDemanders.put(wht, robot);
 					this.warehouseSystem.receiveTask(wht);
-
 					break;
-				default:
-					System.out.println("HANDLEEVENT " + event + "NOT IMPLEMENTED");
+				case AGV_PATHING_IMPOSSIBLE:
+					AgvTask task = (AgvTask) event.getAttachment(0);
+					LOGGER.warning("Could not path from " + task.getPickup() + " to: " + task.getDropoff());
+					break;
+				default: 
+					if (Constants.DEBUG)
+						System.out.println("HANDLEEVENT " + event + " NOT IMPLEMENTED");
 					break;
 				}
-
+				break;
+			case NORMAL:
+				// handleNormalEvent(event);
+				switch (event.getKind()) {
+				case AGV_CONTAINER_DELIVERED:
+					if (Constants.DEBUG)
+						System.out.println("AGV_CONTAINER_DELIVERED");
+					// do nothing
+					break;
+				case WAREHOUSE_TASK_COMPLETED:
+					if (Constants.DEBUG)
+						System.out.println("WAREHOUSE_TASK_COMPLETED");
+					WarehouseTask task = (WarehouseTask) event.getAttachment(0);
+					Material mat = task.getMaterial();
+					ContainerSupplier supplier = (ContainerSupplier) event.getAttachment(1);
+					ContainerDemander demander = getWarehouseTaskDemanders().get(task);
+					
+					if (demander == null) {
+						LOGGER.warning("no demander for the warehousetask found");
+					} else {
+						AgvTask newTask = new AgvTask(IMPORTANT_SEVERITY_DEADLINE, mat, supplier, demander);
+						agvSystem.submitTask(newTask);
+					}
+					break;
+				case CAR_FINISHED: // Created new EventKind if the Box is full -Max
+					handleCarFinishedEvent(event);
+					break;
+				default:
+					if (Constants.DEBUG)
+						System.out.println("HANDLEEVENT " + event + "NOT IMPLEMENTED");
+					break;
+				}
 				break;
 			default:
 				break;
@@ -143,7 +174,10 @@ public class MonitoringSystem implements MonitoringInterface {
 	private void handleCarFinishedEvent(FactoryEvent event) {
 		System.out.println("CAR_FINISHED");
 		Material material = (Material) event.getAttachment(0);
-		AgvTask agvtask = new AgvTask(600000, material, (ContainerSupplier) event.getAttachment(1), shippingBox); // Changed it slightly
+		ContainerSupplier supplier = (ContainerSupplier) event.getAttachment(1);
+		
+		AgvTask agvtask = new AgvTask(NORMAL_SEVERITY_DEADLINE, material, supplier, shippingBox);
+		System.out.println("SUBMITTING" + agvtask);
 		agvSystem.submitTask(agvtask);
 	}
 
@@ -180,6 +214,8 @@ public class MonitoringSystem implements MonitoringInterface {
 				this.agvSystem.stop();
 			if (this.warehouseSystem != null)
 				this.warehouseSystem.stop();
+			if (this.alsubsys != null)
+				this.alsubsys.stop();
 		} catch (Exception ex) {
 			LOGGER.log(SEVERE, ex.toString(), ex);
 		}
@@ -219,7 +255,6 @@ public class MonitoringSystem implements MonitoringInterface {
 
 	@Override
 	public void setStatus(SubsystemStatus status) {
-		LOGGER.log(INFO, String.format("Status set to %s", status));
 		this.status = status;
 	}
 

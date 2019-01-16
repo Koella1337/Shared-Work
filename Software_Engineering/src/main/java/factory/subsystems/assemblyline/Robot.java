@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.gui.SubsystemMenu;
+import factory.shared.Constants;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
@@ -16,7 +17,7 @@ import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
-public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
+public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 	public RobotTypes robot;
 	public Material material;
 	public int materials;
@@ -25,7 +26,6 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	private long timestamp = 0;
 	private AssemblyLine al;
 	private Material car;
-	
 	
 	public Robot(AssemblyLine al, Position pos, RobotTypes r, Material mat, int mats) {
 		robot = r;
@@ -41,8 +41,6 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 		material = container.getMaterial();
 		materials += container.getAmount();
 	}
-	
-
 	
 	public SubsystemStatus status() {
 		if (status == SubsystemStatus.STOPPED || status == SubsystemStatus.BROKEN) {
@@ -74,16 +72,14 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	@Override
 	public void start() {
 		if(status() == SubsystemStatus.WAITING) {
-			
 			if(robot == RobotTypes.SCREWDRIVER || robot ==  RobotTypes.PAINTER) {
 				
-				materials--;
+				materials -= 5;
 				
 				if(materials < 10) {
-					FactoryEvent lowmat = new FactoryEvent(al.getALSys(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, this);
+					FactoryEvent lowmat = new FactoryEvent(al.getALSys(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, material, this);
 					this.notify(lowmat);
 				}
-				
 			} else if(robot == RobotTypes.INSPECTOR) {
 				if(Math.random() < 0.95) {
 					if(material != null)
@@ -116,7 +112,7 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 					{
 						car = Material.CAR_BLACK;
 					}
-					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED, car, this);
+					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED, car, al.getConveyor().getOutputbox());
 					notify(done);
 				}
 			}
@@ -124,11 +120,6 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 			timestamp = System.currentTimeMillis(); //The Robot takes 5 seconds to perform it's task
 		}
 		status();
-		
-	}
-	
-	public void notifyDone() {
-		
 	}
 
 	@Override
@@ -138,8 +129,7 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	
 	@Override
 	public void draw(Graphics g) {
-		Color old = g.getColor();
-		switch(status()) {
+		switch(status) {
 		case BROKEN:
 			g.setColor(Color.RED);
 		case RUNNING:
@@ -164,9 +154,10 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 					g.setColor(Color.WHITE);
 					break;
 				default:
+					g.setColor(Color.LIGHT_GRAY);
 					break;
 				}
-			} else	g.setColor(Color.BLUE);
+			} else	g.setColor(Color.LIGHT_GRAY);
 			break;
 		case STOPPED:
 			g.setColor(Color.ORANGE);
@@ -175,14 +166,14 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 			g.setColor(Color.GREEN);
 			break;
 		}
-		//g.fillRect(position.xPos, position.yPos, position.xSize, position.ySize);
-		g.fillRect(0, 0, position.xSize, position.ySize);
-		g.setColor(old);
+		g.fillRect(1, 1, position.xSize - 1, position.ySize - 1);
+		g.setColor(Constants.UI_BORDER_COLOR);
+		g.drawRect(0, 0, position.xSize, position.ySize);
 	}
 
 
 	@Override
-	public void receiveContainer(Container container) {
+	public synchronized void receiveContainer(Container container) {
 		material = container.getMaterial();
 		materials += container.getAmount();
 	}
@@ -199,7 +190,7 @@ public class Robot implements Monitorable, RobotInterface,  ContainerDemander{
 	}
 
 	@Override
-	public SubsystemStatus getStatus() {
+	public synchronized SubsystemStatus getStatus() {
 		return status();
 	}
 
