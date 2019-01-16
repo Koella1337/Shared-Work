@@ -22,8 +22,8 @@ public class PathingNode {
     public List<PathingNode> neighbours()
     {
         List<PathingNode> result = new LinkedList<>();
-        int x = p.xPos / 20;
-        int y = p.yPos / 20;
+        int x = p.xPos / Pathfinder.GRANULARITY;
+        int y = p.yPos / Pathfinder.GRANULARITY;
         if (x > 0)
         {
             PathingNode n = nodeMap[x - 1][y];
