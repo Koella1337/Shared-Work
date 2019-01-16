@@ -14,6 +14,7 @@ import factory.shared.Constants;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
+import factory.shared.ResourceBox;
 import factory.shared.enums.EventKind;
 import factory.shared.interfaces.Placeable;
 
@@ -126,8 +127,8 @@ public class Forklift implements Placeable {
 //					coordinator.requestReroute(this);
 					if(!evading || !f.evading)
 					{
-						evasiveManeuver(f);
-						f.evasiveManeuver(this);
+//						evasiveManeuver(f);
+//						f.evasiveManeuver(this);
 					}
 				}
 			}
@@ -199,6 +200,8 @@ public class Forklift implements Placeable {
 	final TimerTask move = new TimerTask() {
 		// this is periodically called to update the forklift's position
 		public void run() {
+			System.out.println(path);
+			System.out.println(carriedBox);
 			long newTime = System.nanoTime();
 			long timeElapsed = newTime - lastTime;
 			lastTime = newTime;
@@ -245,8 +248,20 @@ public class Forklift implements Placeable {
 					if (targetReached(currentTask.getPickup().getPosition()) && part1) {
 						carriedBox = currentTask.getPickup().deliverContainer(currentTask.getMaterial());
 						part1 = false;
+						if(carriedBox == null)
+						{
+							System.out.println("ASDIAJDA");
+						}
+						if(carriedBox.getMaterial() == null)
+						{
+							System.out.println("asdasdas");
+						}
 					}
 					if (targetReached(currentTask.getDropoff().getPosition())) {
+						if(currentTask.getDropoff() instanceof ResourceBox)
+						{
+							System.out.println("AAAAAAAAAAAAAAAAAA");
+						}
 						currentTask.getDropoff().receiveContainer(carriedBox);
 						carriedBox = null;
 						AgvTask saveTask = currentTask;

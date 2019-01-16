@@ -41,6 +41,7 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 	@Override
 	public void receiveContainer(Container container) {
 		materials += Objects.requireNonNull(container).getAmount();
+		System.out.println(materials);
 	}
 	
 	public void addBox(Container container) {

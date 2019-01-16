@@ -18,7 +18,15 @@ public class MaterialStorageMap {
 	}
 	
 	public void add(Container container) {
-		this.add(Objects.requireNonNull(container).getMaterial());
+		//this.add(Objects.requireNonNull(container).getMaterial());
+		if(container == null || container.getMaterial() == null)
+		{
+			System.out.println("AOAOAOOAOAOAOAOAOAO");
+		}
+		else
+		{
+			this.add(Objects.requireNonNull(container).getMaterial());
+		}
 	}
 
 	public void add(Material material) {
