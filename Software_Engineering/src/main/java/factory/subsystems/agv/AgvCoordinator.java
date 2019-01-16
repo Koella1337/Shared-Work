@@ -25,6 +25,7 @@ import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
 import factory.subsystems.agv.interfaces.AgvMonitorInterface;
+import factory.subsystems.assemblyline.Robot;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInterface{
@@ -89,9 +90,11 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 		if(free != null)
 		{
 			// calculate the Path
-			List<Position> pathThere = pathfinder.getPath(free.getPosition(), task.getPickup().getPosition());
-			List<Position> pathBack = pathfinder.getPath(task.getPickup().getPosition(), task.getDropoff().getPosition());
-			
+			List<Position> pathThere = pathfinder.getPath(free.getPosition(), task.getPickup().getPosition().getMiddlePoint());
+			List<Position> pathBack = pathfinder.getPath(task.getPickup().getPosition(), task.getDropoff().getPosition().getMiddlePoint());
+
+			pathThere.add(task.getPickup().getPosition().getMiddlePoint());
+			pathBack.add(task.getDropoff().getPosition().getMiddlePoint());
 			if(pathThere != null && pathBack != null)
 			{
 				free.setPath(pathThere);
