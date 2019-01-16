@@ -15,6 +15,7 @@ import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.enums.EventKind;
 import factory.shared.interfaces.Placeable;
+import factory.subsystems.assemblyline.Robot;
 
 public class Forklift implements Placeable {
 	private static final double SPEED = 10000000; // distance moved per nanosecond (inverted for easier calculation)
@@ -98,7 +99,7 @@ public class Forklift implements Placeable {
 	
 	private boolean targetReached(Position target)
 	{
-		return Position.length(Position.subtractPosition(pos, target)) < THRESHOLD;
+		return Position.length(Position.subtractPosition(pos, target.getMiddlePoint())) < THRESHOLD;
 	}
 	
 	private void checkForCollision()	
@@ -139,6 +140,14 @@ public class Forklift implements Placeable {
 		vec = Position.multiply(vec, -2);
 //		vec = Position.divide(vec, (int)Position.length(vec));
 		vec = Position.addPosition(pos,vec);
+		Position goal = part1?currentTask.getPickup().getPosition():currentTask.getDropoff().getPosition();
+		for(int i = 0; i < 5; i++)
+		{
+			if(!path.isEmpty() && !path.get(0).equals(goal))
+			{
+				path.remove(0);
+			}
+		}
 		path.add(0, vec);
 	}
 	

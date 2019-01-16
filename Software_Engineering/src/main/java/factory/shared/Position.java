@@ -67,6 +67,11 @@ public class Position implements Cloneable {
 		return new Position(pos.xPos / div, pos.yPos / div);
 	}
 	
+	public Position getMiddlePoint() {
+		return new Position(xPos+xSize/2, yPos+ySize/2);
+	}
+	
+	
 	/**
 	 * @return Euclidean distance of Position (xPos and yPos)
 	 */
