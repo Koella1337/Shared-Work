@@ -87,6 +87,7 @@ public class OnlineShop implements Stoppable {
 	}
 
 	private void submitOffer() {
+		@SuppressWarnings("deprecation")
 		OnlineShopUser user = new OnlineShopUser(username.getText(), password.getText());
 		Order order = new Order(user, (int) amount.getValue(), (Material) color.getSelectedItem());
 		

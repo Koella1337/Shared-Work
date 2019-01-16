@@ -18,7 +18,6 @@ import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.assemblyline.AL_Subsystem;
-import factory.subsystems.assemblyline.AssemblyLine;
 import factory.subsystems.monitoring.MonitoringSystem;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 import factory.subsystems.warehouse.WarehouseSystem;
@@ -53,7 +52,6 @@ public class FactoryApplication implements Stoppable {
 		this.monitor.setAssemblyLine(alSystem); //TODO check if it works -Max
 		agvAccessiblePlaceables.addAll(alSystem.getAGVAll());
 		
-		addShippingBoxToMonitoring(factory);
 		//		OnlineShopUser user = new OnlineShopUser("thomas");
 		//		Order order = new Order(user, 4);
 		//		this.monitor.addOrder(order);
@@ -71,10 +69,6 @@ public class FactoryApplication implements Stoppable {
 		
 		UIConfiguration config = new UIConfiguration(size[0],size[1]);
 		return config;
-	}
-	
-	private void addShippingBoxToMonitoring(Element factory) {
-		Position shippingBoxPosition = Utils.xmlGetPositionFromFirstChild(factory, "shippingbox");
 	}
 	
 	public void start() {

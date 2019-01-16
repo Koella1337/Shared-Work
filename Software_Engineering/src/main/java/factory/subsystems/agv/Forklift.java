@@ -12,9 +12,7 @@ import javax.swing.ImageIcon;
 
 import factory.shared.Constants;
 import factory.shared.Container;
-import factory.shared.FactoryEvent;
 import factory.shared.Position;
-import factory.shared.enums.EventKind;
 import factory.shared.interfaces.Placeable;
 
 public class Forklift implements Placeable {
@@ -126,14 +124,15 @@ public class Forklift implements Placeable {
 //					coordinator.requestReroute(this);
 					if(!evading || !f.evading)
 					{
-						evasiveManeuver(f);
-						f.evasiveManeuver(this);
+						//evasiveManeuver(f);
+						//f.evasiveManeuver(this);
 					}
 				}
 			}
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void evasiveManeuver(Forklift f)
 	{
 		evading = true;
@@ -156,6 +155,7 @@ public class Forklift implements Placeable {
 		path.add(0, vec);
 	}
 	
+	@SuppressWarnings("unused")
 	private void pause()
 	{
 		if(!this.paused)
@@ -247,10 +247,11 @@ public class Forklift implements Placeable {
 						part1 = false;
 					}
 					if (targetReached(currentTask.getDropoff().getPosition())) {
-						currentTask.getDropoff().receiveContainer(carriedBox);
-						carriedBox = null;
+						if (carriedBox != null)
+							currentTask.getDropoff().receiveContainer(carriedBox);
 						AgvTask saveTask = currentTask;
 						currentTask = null;
+						carriedBox = null;
 						coordinator.finishedTask(saveTask);
 					}
 				}

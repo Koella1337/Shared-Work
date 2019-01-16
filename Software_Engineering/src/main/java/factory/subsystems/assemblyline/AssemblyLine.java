@@ -135,6 +135,7 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 				for (Robot r : robots) {
 					r.start();
 				}
+				Thread.sleep(rng.nextInt(sim_bound) + sim_mintime);
 				while (notReady()) { // Waiting for the robots
 					Thread.sleep(rng.nextInt(sim_bound) + sim_mintime);
 				}

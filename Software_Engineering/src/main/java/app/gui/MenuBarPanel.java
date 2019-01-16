@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import factory.shared.enums.SubsystemStatus;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
+@SuppressWarnings("serial")
 class MenuBarPanel extends GUIPanel {
 
 	private MonitoringInterface monitor;

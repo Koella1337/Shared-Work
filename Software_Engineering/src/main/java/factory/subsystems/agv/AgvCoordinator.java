@@ -15,17 +15,13 @@ import org.xml.sax.SAXException;
 
 import app.gui.SubsystemMenu;
 import factory.shared.AbstractSubsystem;
-import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
-import factory.shared.ResourceBox;
 import factory.shared.Utils;
 import factory.shared.enums.EventKind;
-import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
 import factory.subsystems.agv.interfaces.AgvMonitorInterface;
-import factory.subsystems.assemblyline.Robot;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInterface{

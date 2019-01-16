@@ -27,12 +27,12 @@ public class Pathfinder {
     private boolean[][] collisionMap;
     public static boolean[][] pausedForklifts;
     private PathingNode[][] nodeMap;
-    private AgvCoordinator coordinator;
+//    private AgvCoordinator coordinator;
     public static final int GRANULARITY = 5;
 
     public Pathfinder(AgvCoordinator coordinator, Element factory, List<Placeable> freeParking) throws ParserConfigurationException, SAXException, IOException
     {
-    	this.coordinator = coordinator;
+//    	this.coordinator = coordinator;
         Position factorySize = Utils.parsePosition(((Element) factory.getElementsByTagName("size").item(0)).getFirstChild().getNodeValue(), null);
         collisionMap = new boolean[factorySize.xPos / GRANULARITY][factorySize.yPos / GRANULARITY];        
         pausedForklifts = new boolean[factorySize.xPos / GRANULARITY][factorySize.yPos / GRANULARITY];
