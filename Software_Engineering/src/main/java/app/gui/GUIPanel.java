@@ -18,12 +18,6 @@ public class GUIPanel extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		addDebuggingInformation(g);
-	}
-
-	private void addDebuggingInformation(Graphics g) {
-		g.drawString(getClass().getSimpleName(), getWidth() - 100, getHeight() - 130);
-		g.drawString(getWidth() + " / " + getHeight(), getWidth() - 100, getHeight() - 110);
 	}
 
 }

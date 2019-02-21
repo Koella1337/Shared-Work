@@ -114,7 +114,7 @@ public class AssemblyLine implements Placeable {
 	
 	private AssemblyLineDirection determineDirection(Element xmlAssemblyLineElem) {
 		String direction = xmlAssemblyLineElem.getElementsByTagName("direction").item(0).getTextContent();
-		switch (direction) {
+		switch (direction.trim()) {
 			case "+x": return AssemblyLineDirection.PLUS_X;
 			case "-x": return AssemblyLineDirection.MINUS_X;
 			default:

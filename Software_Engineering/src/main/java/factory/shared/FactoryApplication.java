@@ -26,11 +26,8 @@ public class FactoryApplication implements Stoppable {
 
 	private MonitoringInterface monitor;
 
-	public FactoryApplication() throws SAXException, IOException, ParserConfigurationException {
-		
-		Document layoutDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-				.parse(new File("resources/factory_layout.xml"));
-		
+	public FactoryApplication(File xmlLayoutFile) throws SAXException, IOException, ParserConfigurationException {
+		Document layoutDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlLayoutFile);
 		initFactoryFromXML(layoutDoc);
 	}
 
@@ -65,7 +62,7 @@ public class FactoryApplication implements Stoppable {
 
 	private UIConfiguration getUiConfigFromFactoryElement(Element factory) {
 		Element sizeElem = (Element) factory.getElementsByTagName("size").item(0);
-		int[] size = Arrays.stream(sizeElem.getTextContent().split(",")).mapToInt(Integer::parseInt).toArray();
+		int[] size = Arrays.stream(sizeElem.getTextContent().split(",")).mapToInt(str -> Integer.parseInt(str.trim())).toArray();
 		
 		UIConfiguration config = new UIConfiguration(size[0],size[1]);
 		return config;

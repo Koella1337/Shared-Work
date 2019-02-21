@@ -60,11 +60,11 @@ public class Utils {
 	public static Position parsePosition(String posString, String sizeString) {
 		Objects.requireNonNull(posString);
 		
-		int[] pos = Arrays.stream(posString.split(",")).mapToInt(Integer::parseInt).toArray();
+		int[] pos = Arrays.stream(posString.split(",")).mapToInt(str -> Integer.parseInt(str.trim())).toArray();
 		Position retVal = new Position(pos[0], pos[1]);
 		
 		if (sizeString != null) {
-			int[] size = Arrays.stream(sizeString.split(",")).mapToInt(Integer::parseInt).toArray();
+			int[] size = Arrays.stream(sizeString.split(",")).mapToInt(str -> Integer.parseInt(str.trim())).toArray();
 			retVal.xSize = size[0];
 			retVal.ySize = size[1];
 		}
