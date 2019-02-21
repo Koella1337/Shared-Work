@@ -38,6 +38,7 @@ public class Robot implements RobotInterface, ContainerDemander {
 	@Override
 	public void receiveContainer(Container container) {
 		materialAmount += Objects.requireNonNull(container).getAmount();
+		materials += Objects.requireNonNull(container).getAmount();
 	}
 	
 	public void addBox(Container container) {

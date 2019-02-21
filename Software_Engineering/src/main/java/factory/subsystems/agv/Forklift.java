@@ -19,7 +19,7 @@ public class Forklift implements Placeable {
 	private static final double SPEED = 10000000; // distance moved per nanosecond (inverted for easier calculation)
 	private static final double THRESHOLD = 0.001; // maximum distance to a target to have reached it
 	private static final double COLLISION_RADIUS = 3; // minimum distance to all other forklifts to avoid collisions
-	private static final double SAFETY_RADIUS = 20; // minimum distance to all other forklifts to avoid having to reroute
+	private static final double SAFETY_RADIUS = 30; // minimum distance to all other forklifts to avoid having to reroute
 	private long lastTime; // last time the forklift's position was updated
 	private boolean shutdown;
 	private boolean paused = false;
@@ -133,26 +133,38 @@ public class Forklift implements Placeable {
 	}
 	
 	@SuppressWarnings("unused")
-	private void evasiveManeuver(Forklift f)
+	private synchronized void evasiveManeuver(Forklift f)
 	{
 		evading = true;
 		Position vec = Position.subtractPosition(f.pos, pos);
 		vec = Position.multiply(vec, -2);
 //		vec = Position.divide(vec, (int)Position.length(vec));
-		vec = Position.addPosition(pos,vec);
+		Position endVec = Position.addPosition(pos,vec);;
+		try
+		{
+			while(coordinator.pathfinder.collisionMap[endVec.xPos/Pathfinder.GRANULARITY][endVec.yPos/Pathfinder.GRANULARITY])
+			{
+				vec = Position.divide(vec, 2);
+				endVec = Position.addPosition(pos,vec);
+			}
+		}
+		catch(ArrayIndexOutOfBoundsException e)
+		{
+			
+		}
 		Position goal = part1?currentTask.getPickup().getPosition():currentTask.getDropoff().getPosition();
 		if(path == null)
 		{
 			path = new LinkedList<Position>();
 		}
-		for(int i = 0; i < 5; i++)
+		for(int i = 0; i < 10; i++)
 		{
 			if(!path.isEmpty() && !path.get(0).equals(goal))
 			{
 				path.remove(0);
 			}
 		}
-		path.add(0, vec);
+		path.add(0, endVec);
 	}
 	
 	@SuppressWarnings("unused")
@@ -199,6 +211,8 @@ public class Forklift implements Placeable {
 	final TimerTask move = new TimerTask() {
 		// this is periodically called to update the forklift's position
 		public void run() {
+//			System.out.println(path);
+//			System.out.println(carriedBox);
 			long newTime = System.nanoTime();
 			long timeElapsed = newTime - lastTime;
 			lastTime = newTime;
@@ -245,10 +259,20 @@ public class Forklift implements Placeable {
 					if (targetReached(currentTask.getPickup().getPosition()) && part1) {
 						carriedBox = currentTask.getPickup().deliverContainer(currentTask.getMaterial());
 						part1 = false;
+						if(carriedBox == null)
+						{
+							System.out.println("ASDIAJDA");
+						}
+						if(carriedBox.getMaterial() == null)
+						{
+							System.out.println("asdasdas");
+						}
 					}
 					if (targetReached(currentTask.getDropoff().getPosition())) {
 						if (carriedBox != null)
+						{
 							currentTask.getDropoff().receiveContainer(carriedBox);
+						}
 						AgvTask saveTask = currentTask;
 						currentTask = null;
 						carriedBox = null;

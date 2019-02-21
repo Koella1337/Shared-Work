@@ -69,14 +69,14 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 	}
 
 	@Override
-	public synchronized Container deliverContainer(Material material) {
+	public Container deliverContainer(Material material) {
 		if (content.get(material) == null)
 			throw new IllegalArgumentException("Could not deliver \"" + material + "\" since it isn't stored in this " + this.toString());
 		return new Container(content.remove(material));
 	}
 
 	@Override
-	public synchronized void receiveContainer(Container container) {
+	public void receiveContainer(Container container) {
 		content.add(container);
 		
 		if (getContainerAmount() == Constants.RESOURCE_BOX_MAX_CONTAINERS)
