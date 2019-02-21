@@ -11,7 +11,7 @@ import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.agv.interfaces.AgvMonitorInterface;
-import factory.subsystems.assemblyline.AL_Subsystem;
+import factory.subsystems.assemblyline.AssemblyLineSystem;
 import factory.subsystems.monitoring.InvalidOrderException;
 import factory.subsystems.monitoring.onlineshop.OnlineShopUser;
 import factory.subsystems.monitoring.onlineshop.Order;
@@ -49,9 +49,9 @@ public interface MonitoringInterface extends Stoppable {
 
 	void setShippingBox(Position shippingBoxPosition);
 
-	AL_Subsystem getALSubsys();
+	AssemblyLineSystem getALSubsys();
 
-	void setAssemblyLine(AL_Subsystem alSystem);
+	void setAssemblyLine(AssemblyLineSystem alSystem);
 
 	Map<OnlineShopUser, List<Order>> getOrderMap();
 

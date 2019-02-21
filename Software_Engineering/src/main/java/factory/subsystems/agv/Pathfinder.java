@@ -59,14 +59,14 @@ public class Pathfinder {
         }
         
         
-        for (int i = 0; i < collisionMap.length; i++)
-        {
-            for (int j = 0; j < collisionMap[0].length; j++)
-            {
-                System.out.print(collisionMap[j][i] ? "X" : " ");
-            }
-            System.out.println();
-        }
+//        for (int i = 0; i < collisionMap.length; i++)
+//        {
+//            for (int j = 0; j < collisionMap[0].length; j++)
+//            {
+//                System.out.print(collisionMap[j][i] ? "X" : " ");
+//            }
+//            System.out.println();
+//        }
         
 
         // Generate nodemap

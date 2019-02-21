@@ -28,7 +28,7 @@ import factory.shared.interfaces.ContainerSupplier;
 import factory.shared.interfaces.Monitorable;
 import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.agv.AgvTask;
-import factory.subsystems.assemblyline.AL_Subsystem;
+import factory.subsystems.assemblyline.AssemblyLineSystem;
 import factory.subsystems.assemblyline.Robot;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 import factory.subsystems.monitoring.onlineshop.OnlineShopUser;
@@ -52,7 +52,7 @@ public class MonitoringSystem implements MonitoringInterface {
 	private SubsystemStatus status;
 	private AgvCoordinator agvSystem;
 	private WarehouseSystem warehouseSystem;
-	private AL_Subsystem alsubsys;
+	private AssemblyLineSystem alsubsys;
 	private OnlineShop onlineShop;
 
 	private ResourceBox shippingBox;
@@ -81,7 +81,7 @@ public class MonitoringSystem implements MonitoringInterface {
 	public synchronized void handleEvent(FactoryEvent event) {
 		try {
 			if (Constants.DEBUG)
-				System.out.println("-------> handling event: " + event);
+				System.out.println("-------- handling event: " + event);
 			
 			Monitorable source = event.getSource();
 			EventKind eventKind = event.getKind();
@@ -300,12 +300,12 @@ public class MonitoringSystem implements MonitoringInterface {
 	}
 
 	@Override
-	public AL_Subsystem getALSubsys() {
+	public AssemblyLineSystem getALSubsys() {
 		return alsubsys;
 	}
 
 	@Override
-	public void setAssemblyLine(AL_Subsystem assemblyLine) {
+	public void setAssemblyLine(AssemblyLineSystem assemblyLine) {
 		this.handler.addToFactoryPanel(assemblyLine);
 		this.alsubsys = assemblyLine;
 	}

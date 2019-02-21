@@ -30,7 +30,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 	private boolean wasSubsystemAlreadyStarted;
 
 	public WarehouseSystem(MonitoringInterface monitor, Element xmlWarehouseElem) {
-		super(monitor);
+		super(monitor, WarehouseSystem.class.getSimpleName());
 		Objects.requireNonNull(xmlWarehouseElem);
 		
 		//xml init
@@ -127,7 +127,7 @@ public class WarehouseSystem extends AbstractSubsystem implements WarehouseMonit
 	public void start() {
 		if (!wasSubsystemAlreadyStarted) {
 			for (StorageSite s : storageSites) {
-				Thread thread = new Thread(() -> s.start());
+				Thread thread = new Thread(() -> s.start(), "StorageSite_" + s.getId());
 				thread.setDaemon(true);
 				thread.start();
 			}

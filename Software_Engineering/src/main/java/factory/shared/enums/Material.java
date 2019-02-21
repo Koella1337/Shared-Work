@@ -1,17 +1,19 @@
 package factory.shared.enums;
 
+import java.awt.Color;
+
 public enum Material {
-	BODIES				(20),
-	WHEELS				(30),
-	SCREWS				(50),
-	LUBRICANT			(15),
+	BODIES				(15),
+	WHEELS				(20),
+	SCREWS				(100),
+	LUBRICANT			(50),
 	
-	COLOR_RED			(15),
-	COLOR_GREEN			(15),
-	COLOR_BLUE			(15),
-	COLOR_WHITE			(15),
-	COLOR_BLACK			(15),
-	COLOR_GRAY			(15),
+	COLOR_RED			(50),
+	COLOR_GREEN			(50),
+	COLOR_BLUE			(50),
+	COLOR_WHITE			(50),
+	COLOR_BLACK			(50),
+	COLOR_GRAY			(50),
 	
 	CAR_RED 			(1),
 	CAR_GREEN 			(1),
@@ -31,5 +33,21 @@ public enum Material {
 	@Override
 	public String toString() {
 		return this.name();
+	}
+	
+	/**
+	 * @return the corresponding java.awt.Color if this Material is a color. <b>null</b> otherwise.
+	 */
+	public Color toColor() {
+		switch(this) {
+			case COLOR_BLACK: 	return Color.BLACK;
+			case COLOR_GRAY: 	return Color.GRAY;
+			case COLOR_RED: 	return Color.RED;
+			case COLOR_GREEN: 	return Color.GREEN;
+			case COLOR_BLUE:	return Color.BLUE;
+			case COLOR_WHITE: 	return Color.WHITE;
+			default:
+				return null;
+		}
 	}
 }

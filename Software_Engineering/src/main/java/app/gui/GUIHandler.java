@@ -6,7 +6,7 @@ import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 public class GUIHandler implements Stoppable {
 
-	private static final int FPS = 30;
+	private static final int FPS = 20;
 	
 	private MonitoringInterface monitor;
 	private UserInterface ui;

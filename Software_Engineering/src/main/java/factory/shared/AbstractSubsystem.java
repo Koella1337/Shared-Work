@@ -8,11 +8,11 @@ import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 public abstract class AbstractSubsystem implements Monitorable {
 
-	private String name;
-	private MonitoringInterface monitor;
+	private final String name;
+	private final MonitoringInterface monitor;
 
 	public AbstractSubsystem(MonitoringInterface monitor) {
-		this(Objects.requireNonNull(monitor), null);
+		this(monitor, null);
 	}
 	
 	public AbstractSubsystem(MonitoringInterface monitor, String name) {
@@ -23,6 +23,11 @@ public abstract class AbstractSubsystem implements Monitorable {
 	@Override
 	public void notify(FactoryEvent event) {
 		monitor.handleEvent(event);
+	}
+	
+	@Override
+	public MonitoringInterface getMonitor() {
+		return monitor;
 	}
 	
 	@Override
@@ -42,10 +47,5 @@ public abstract class AbstractSubsystem implements Monitorable {
 	public SubsystemMenu getCurrentSubsystemMenu() {
 		return new SubsystemMenu(30, "Subsystem: "+getName());
 	}
-
-	public MonitoringInterface getMonitor() {
-		return monitor;
-	}
-	
 	
 }

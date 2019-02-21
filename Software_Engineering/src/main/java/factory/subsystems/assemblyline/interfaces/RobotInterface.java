@@ -18,5 +18,7 @@ public interface RobotInterface{
 	int getMaterials();
 	
 	SubsystemStatus status();
+
+	void start();
 	
 }

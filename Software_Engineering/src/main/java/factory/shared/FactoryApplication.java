@@ -17,7 +17,7 @@ import app.gui.UIConfiguration;
 import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.Stoppable;
 import factory.subsystems.agv.AgvCoordinator;
-import factory.subsystems.assemblyline.AL_Subsystem;
+import factory.subsystems.assemblyline.AssemblyLineSystem;
 import factory.subsystems.monitoring.MonitoringSystem;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 import factory.subsystems.warehouse.WarehouseSystem;
@@ -48,9 +48,9 @@ public class FactoryApplication implements Stoppable {
 
 		Element assemblyLines = (Element) (factory).getElementsByTagName("assemblylines").item(0);
 		
-		AL_Subsystem alSystem = new AL_Subsystem(this.monitor, assemblyLines);
+		AssemblyLineSystem alSystem = new AssemblyLineSystem(this.monitor, assemblyLines);
 		this.monitor.setAssemblyLine(alSystem); //TODO check if it works -Max
-		agvAccessiblePlaceables.addAll(alSystem.getAGVAll());
+		agvAccessiblePlaceables.addAll(alSystem.getPlaceables());
 		
 		//		OnlineShopUser user = new OnlineShopUser("thomas");
 		//		Order order = new Order(user, 4);

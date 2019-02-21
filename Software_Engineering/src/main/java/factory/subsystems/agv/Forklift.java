@@ -52,7 +52,7 @@ public class Forklift implements Placeable {
 		this.coordinator = coordinator;
 
 		lastTime = System.nanoTime();
-		Timer scheduler = new Timer();
+		Timer scheduler = new Timer("Forklift_" + Thread.currentThread().getId());
 		scheduler.scheduleAtFixedRate(move, 50l, 50l); // update every half-second
 		
 		forkliftImage = new ImageIcon("resources/Forklift-v3.png").getImage();
@@ -124,8 +124,8 @@ public class Forklift implements Placeable {
 //					coordinator.requestReroute(this);
 					if(!evading || !f.evading)
 					{
-						//evasiveManeuver(f);
-						//f.evasiveManeuver(this);
+						evasiveManeuver(f);
+						f.evasiveManeuver(this);
 					}
 				}
 			}

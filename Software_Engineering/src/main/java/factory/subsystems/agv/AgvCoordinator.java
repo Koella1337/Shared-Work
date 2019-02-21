@@ -123,7 +123,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			}
 			catch(NullPointerException e)
 			{
-				System.out.println("HI");
+				e.printStackTrace();
 			}
 			if(f.part1)
 			{

@@ -25,8 +25,9 @@ class WarehouseForklift implements Placeable {
 	private static final int X_SIZE = PlaceableSize.SHELF.x;
 	private static final int Y_SIZE = X_SIZE;
 	
+	private static final Color IDLE_COLOR = Color.PINK;
 	private static final Color WORKING_COLOR = Color.MAGENTA;
-	private static final Color TRAVELLING_COLOR = Color.PINK;
+	private static final Color TRAVELLING_COLOR = Color.YELLOW;
 	
 	private final StorageSite storageSite;
 	
@@ -44,7 +45,10 @@ class WarehouseForklift implements Placeable {
 		int moveDuration = (int) (Position.length(Position.subtractPosition(goal, this.pos)) * SIM_MOVEMENT_MULTIPLIER);
 		Thread.sleep(moveDuration);
 		this.pos = goal;
-		this.color = WORKING_COLOR;
+		if (goal.xPos == storageSite.getPosition().xPos && goal.yPos == storageSite.getPosition().yPos)
+			this.color = IDLE_COLOR;
+		else
+			this.color = WORKING_COLOR;
 	}
 	
 	protected void moveTo(Shelf shelf) throws InterruptedException {

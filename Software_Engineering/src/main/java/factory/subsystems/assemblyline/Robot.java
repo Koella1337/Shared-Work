@@ -1,11 +1,9 @@
 package factory.subsystems.assemblyline;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-import app.gui.SubsystemMenu;
 import factory.shared.Constants;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
@@ -14,44 +12,43 @@ import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.ContainerDemander;
-import factory.shared.interfaces.Monitorable;
-import factory.shared.interfaces.Placeable;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
-public class Robot implements Monitorable, RobotInterface, ContainerDemander {
-	public RobotTypes robot;
-	public Material material;
-	public int materials;
+public class Robot implements RobotInterface, ContainerDemander {
+	
+	public RobotType type;
+	
+	public Material materialType;
+	public int materialAmount;
+	
 	public final Position position;
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private long timestamp = 0;
-	private AssemblyLine al;
+	private AssemblyLine assemblyLine;
 	private Material car;
 	
-	public Robot(AssemblyLine al, Position pos, RobotTypes r, Material mat, int mats) {
-		robot = r;
-		materials = mats;
-		position = pos.clone();
-		this.al = al;
-		position.xSize = 50;
-		position.ySize = 50;
-		material = mat;
+	public Robot(AssemblyLine assemblyLine, Position pos, RobotType type, Material materialType, int initialMaterialAmount) {
+		this.assemblyLine = assemblyLine;
+		this.type = type;
+		this.materialType = materialType;
+		this.materialAmount = initialMaterialAmount;
+		this.position = pos;
 	}
 	
 	@Override
 	public void receiveContainer(Container container) {
-		materials += Objects.requireNonNull(container).getAmount();
+		materialAmount += Objects.requireNonNull(container).getAmount();
 	}
 	
 	public void addBox(Container container) {
-		materials += container.getAmount();
+		materialAmount += container.getAmount();
 	}
 	
 	public SubsystemStatus status() {
 		if (status == SubsystemStatus.STOPPED || status == SubsystemStatus.BROKEN) {
 			if(status== SubsystemStatus.BROKEN) {
-				FactoryEvent broken = new FactoryEvent(al.getALSys(), EventKind.ROBOTARMS_BROKEN, this);
-				this.notify(broken);
+				FactoryEvent broken = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.ROBOTARMS_BROKEN, this);
+				assemblyLine.notifySubsystem(broken);
 			}
 			return status;
 		}
@@ -66,7 +63,7 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 	}
 	
 	public int getMaterials() {
-		return materials;
+		return materialAmount;
 	}
 
 	@Override
@@ -79,20 +76,20 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 	@Override
 	public void start() {
 		if(status() == SubsystemStatus.WAITING) {
-			if(robot == RobotTypes.SCREWDRIVER || robot ==  RobotTypes.PAINTER) {
+			if(type == RobotType.SCREWDRIVER || type ==  RobotType.PAINTER) {
 				
-				materials -= 5;
+				materialAmount -= 5;
 				
-				if(materials < 10 && (System.currentTimeMillis() - lastLackOfMaterialSent) > 50000) {
+				if(materialAmount < 10 && (System.currentTimeMillis() - lastLackOfMaterialSent) > 50000) {
 					lastLackOfMaterialSent = System.currentTimeMillis();
-					FactoryEvent lowmat = new FactoryEvent(al.getALSys(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, material, this);
-					this.notify(lowmat);
+					FactoryEvent lowmat = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, materialType, this);
+					assemblyLine.notifySubsystem(lowmat);
 				}
-			} else if(robot == RobotTypes.INSPECTOR) {
+			} else if(type == RobotType.INSPECTOR) {
 				if(Math.random() < 0.95) {
-					if(material != null)
+					if(materialType != null)
 					{
-						switch(material) {
+						switch(materialType) {
 						case COLOR_BLACK:
 							car = Material.CAR_BLACK;
 							break;
@@ -120,8 +117,8 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 					{
 						car = Material.CAR_BLACK;
 					}
-					FactoryEvent done = new FactoryEvent(al.getALSys(), EventKind.CAR_FINISHED, car, al.getConveyor().getOutputbox());
-					notify(done);
+					FactoryEvent done = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.CAR_FINISHED, car, assemblyLine.getOutputBox());
+					assemblyLine.notifySubsystem(done);
 				}
 			}
 			
@@ -129,84 +126,36 @@ public class Robot implements Monitorable, RobotInterface, ContainerDemander {
 		}
 		status();
 	}
-
-	@Override
-	public void stop() {
-		status = SubsystemStatus.STOPPED;
-	}
 	
 	@Override
-	public void draw(Graphics g) {
-		switch(status) {
-		case RUNNING:
-			if(robot == RobotTypes.PAINTER) {
-				switch(material) {
-				case COLOR_BLACK:
-					g.setColor(Color.BLACK);
-					break;
-				case COLOR_BLUE:
-					g.setColor(Color.BLUE);
-					break;
-				case COLOR_GRAY:
-					g.setColor(Color.GRAY);
-					break;
-				case COLOR_GREEN:
-					g.setColor(Color.GREEN);
-					break;
-				case COLOR_RED:
-					g.setColor(Color.RED);
-					break;
-				case COLOR_WHITE:
-					g.setColor(Color.WHITE);
-					break;
-				default:
-					g.setColor(Color.LIGHT_GRAY);
-					break;
-				}
-			} else	
-				g.setColor(Color.LIGHT_GRAY);
-			break;
-		default:
+	public void draw(Graphics g) {		
+		//draw border
+		if (type == RobotType.PAINTER)
+			g.setColor(materialType.toColor());
+		else
 			g.setColor(Color.LIGHT_GRAY);
-			break;
-		}
 		g.fillRect(1, 1, position.xSize - 1, position.ySize - 1);
 		g.setColor(Constants.UI_BORDER_COLOR);
 		g.drawRect(0, 0, position.xSize, position.ySize);
+		
+		//draw text
+		if (type == RobotType.PAINTER && materialType == Material.COLOR_WHITE)
+			g.setColor(Color.BLACK);
+		else
+			g.setColor(Color.WHITE);
+		
+		Font prevFont = g.getFont();
+		g.setFont(prevFont.deriveFont(9f));
+		g.drawString(type.displayName, 1, position.ySize/4);
+		
+		g.setFont(prevFont);
+		if (type != RobotType.INSPECTOR)
+			g.drawString(""+materialAmount, position.xSize/3, (int) (position.ySize/1.5f));
 	}
 
 	@Override
-	public String getName() {
-		String s = "Robot Type " + robot + " @ " + position.xPos + " / " + position.yPos;
-		return s;
-	}
-
-	@Override
-	public void notify(FactoryEvent event) {
-		al.notify(event);
-	}
-
-	@Override
-	public SubsystemStatus getStatus() {
-		return status();
-	}
-
-	@Override
-	public List<Placeable> getPlaceables() {
-		List<Placeable> l = new ArrayList<Placeable>();
-		l.add(this);
-		return l;
-	}
-
-	@Override
-	public SubsystemMenu getCurrentSubsystemMenu() {
-		return null;
+	public String toString() {
+		return String.format("(Robot \"%s\" at %s)", type.displayName, position.toString());
 	}
 	
-	public void restart() {
-		status = SubsystemStatus.WAITING;
-	}
-
-
-
 }

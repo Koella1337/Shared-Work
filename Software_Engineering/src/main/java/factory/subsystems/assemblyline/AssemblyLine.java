@@ -5,63 +5,134 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import app.gui.SubsystemMenu;
+import org.w3c.dom.Element;
+
 import factory.shared.Constants;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
+import factory.shared.ResourceBox;
 import factory.shared.Utils;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
 import factory.shared.enums.MaterialStatus;
 import factory.shared.enums.SubsystemStatus;
-import factory.shared.interfaces.ContainerDemander;
-import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
-import factory.shared.interfaces.Stoppable;
-import factory.subsystems.assemblyline.interfaces.RobotInterface;
+import factory.subsystems.warehouse.AssemblyLineDirection;
 
-@SuppressWarnings("unused")
-public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
+public class AssemblyLine implements Placeable {
 	
-	private Robot[] robots = new Robot[4];
-	private Conveyor conveyor;
-	private Position position;
-	private AL_Subsystem alsubsys;
-	private int finished;
-	private SubsystemStatus alstatus;
-	private Material color;
-
-	public AssemblyLine(Position pos, AL_Subsystem al, Material c) {
-		position = pos.clone();
+	private final int id;
+	private final AssemblyLineSystem subsystem;
+	
+	private final Robot robotGrabber;
+	private final Robot robotScrewDriver;
+	private final Robot robotPainter;
+	private final Robot robotInspector;
+	
+	private final List<Placeable> placeables = new ArrayList<>();
+	private final List<Robot> robots = new ArrayList<>();
+	private final Conveyor conveyor;
+	private final ResourceBox outputBox;
+	
+	private final Position position;
+	private final AssemblyLineDirection direction;
+	private final Material color;
+	
+	public AssemblyLine(int id, AssemblyLineSystem subsystem, Material color, Element xmlAssemblyLineElem) {
+		this.id = id;
+		
+		//general init
+		this.color = color;
+		this.subsystem = subsystem;
+		
+		this.position = Utils.xmlGetPositionFromElement(xmlAssemblyLineElem);
 		Utils.assignSize(position, Constants.PlaceableSize.ASSEMBLY_LINE);
-		color = c;
-		alsubsys = al;
-		alstatus = SubsystemStatus.WAITING;
-		Position rpos = position.clone();
+		this.direction = determineDirection(xmlAssemblyLineElem);
+		
 		if (Constants.DEBUG)
-			System.out.println("create assemblyline at position "+position);
+			System.out.println("Building AssemblyLine at " + position);
 
-		// Create 4 robots with some initial materials
-		robots[0] = new Robot(this, rpos, RobotTypes.GRABBER, Material.BODIES, 30); 
-		rpos.xPos += (350 / 4.5);
-		robots[1] = new Robot(this, rpos, RobotTypes.SCREWDRIVER, Material.SCREWS, 10);
-		rpos.xPos += (350 / 4.5);
-		robots[2] = new Robot(this, rpos, RobotTypes.PAINTER, color, 20);
-		rpos.xPos += (350 / 4.5);
-		robots[3] = new Robot(this, rpos, RobotTypes.INSPECTOR, color, 0);
-
-		rpos = position;
-		conveyor = new Conveyor(this, pos.clone(), 20, 100); // Create conveyor
+		//set up assembly line "building"
+		Position robotPos = position.clone();
+		Utils.assignSize(robotPos, Constants.PlaceableSize.ROBOT);
+		
+		int robotOffset = (int) (Constants.PlaceableSize.ASSEMBLY_LINE.x / 4.5);
+		if (direction == AssemblyLineDirection.MINUS_X) {
+			robotOffset *= -1;
+			robotPos.xPos += (position.xSize - robotPos.xSize);
+		}
+		
+		Position conveyorPos = position.clone();
+		Utils.assignSize(conveyorPos, Constants.PlaceableSize.CONVEYOR);
+		
+		Position outputboxPos = position.clone();
+		Utils.assignSize(outputboxPos, Constants.PlaceableSize.RESOURCE_BOX);
+		
+		//build robots
+		robotGrabber = new Robot(this, robotPos, RobotType.GRABBER, Material.BODIES, 30);
+		robots.add(robotGrabber);
+		if (Constants.DEBUG) System.out.println("--> Built " + robotGrabber);
+		
+		robotPos = robotPos.clone();
+		robotPos.xPos += robotOffset;
+		robotScrewDriver = new Robot(this, robotPos, RobotType.SCREWDRIVER, Material.SCREWS, 10);
+		robots.add(robotScrewDriver);
+		if (Constants.DEBUG) System.out.println("--> Built " + robotScrewDriver);
+		
+		robotPos = robotPos.clone();
+		robotPos.xPos += robotOffset;
+		robotPainter = new Robot(this, robotPos, RobotType.PAINTER, color, 20);
+		robots.add(robotPainter);
+		if (Constants.DEBUG) System.out.println("--> Built " + robotPainter);
+		
+		robotPos = robotPos.clone();
+		robotPos.xPos += robotOffset;
+		robotInspector = new Robot(this, robotPos, RobotType.INSPECTOR, color, 0);
+		robots.add(robotInspector);
+		if (Constants.DEBUG) System.out.println("--> Built " + robotInspector);
+		
+		//build conveyor
+		conveyorPos.yPos += (position.ySize - conveyorPos.ySize);
+		if (direction == AssemblyLineDirection.MINUS_X)
+			conveyorPos.xPos += outputboxPos.xSize;
+		conveyor = new Conveyor(this, conveyorPos, 100);
+		if (Constants.DEBUG) System.out.println("--> Built " + conveyor);
+		
+		//build outputbox
+		outputboxPos.yPos += (position.ySize - outputboxPos.ySize);
+		if (direction == AssemblyLineDirection.PLUS_X)
+			outputboxPos.xPos += conveyorPos.xSize;
+		outputBox = new ResourceBox(subsystem, outputboxPos);
+		if (Constants.DEBUG) System.out.println("--> Built " + outputBox);
+		
+		//setup placeables list
+		placeables.addAll(robots);
+		placeables.add(conveyor);
+		placeables.add(outputBox);
+	}
+	
+	private AssemblyLineDirection determineDirection(Element xmlAssemblyLineElem) {
+		String direction = xmlAssemblyLineElem.getElementsByTagName("direction").item(0).getTextContent();
+		switch (direction) {
+			case "+x": return AssemblyLineDirection.PLUS_X;
+			case "-x": return AssemblyLineDirection.MINUS_X;
+			default:
+				return AssemblyLineDirection.PLUS_X;	//default in case of invalid xml-textcontent
+		}
+	}
+	
+	protected AssemblyLineSystem getSubsystem() {
+		return subsystem;
 	}
 
-	public Robot[] getRobots() {
-		return robots;
+	public int getId() {
+		return id;
 	}
 
 	public void addBox(Container box) { // Adds the box to the matching robot/conveyor
 		for (Robot r : robots) {
-			if (r.material == box.getMaterial())
+			if (r.materialType == box.getMaterial())
 				r.addBox(box);
 		}
 		if (box.getMaterial() == Material.LUBRICANT)
@@ -69,69 +140,35 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 	}
 
 	@Override
-	public int getMaterials() {
-		return -1;
-	}
-
-	@Override
-	public SubsystemStatus status() {
-		SubsystemStatus status = SubsystemStatus.WAITING;
-		for (Robot r : robots) {
-			if (r.status() == SubsystemStatus.RUNNING && status == SubsystemStatus.WAITING) {
-				status = r.status();
-			}
-			if (r.status() == SubsystemStatus.STOPPED && status != SubsystemStatus.BROKEN) {
-				status = r.status();
-			}
-			if (r.status() == SubsystemStatus.BROKEN) {
-				status = r.status();
-			}
-			System.out.println(r.status());
-		}
-		if (conveyor.status() == SubsystemStatus.RUNNING && status == SubsystemStatus.WAITING) {
-			status = conveyor.status();
-		}
-		if (conveyor.status() == SubsystemStatus.STOPPED && status != SubsystemStatus.BROKEN) {
-			status = conveyor.status();
-		}
-		if (conveyor.status() == SubsystemStatus.BROKEN) {
-			status = conveyor.status();
-		}
-
-		return status;
-	}
-
-	@Override
 	public Position getPosition() {
 		return position;
+	}
+	
+	public AssemblyLineDirection getDirection() {
+		return direction;
+	}
+	
+	public ResourceBox getOutputBox() {
+		return outputBox;
 	}
 
 	@Override
 	public void draw(Graphics g) {
-		// there is no need to add the robots etc. here
 		g.drawRect(0, 0, position.xSize, position.ySize);
 	}
 	
-	@Override
-	public void start() {
-		alstatus = SubsystemStatus.RUNNING;
-		start(500);
-	}
-
-	public void start(int q) {
-		double speed = q / 10; // Adaptive speed
-		if (speed > 30)
-			speed = 30;
-		else if (speed < 10)
-			speed = 10; // Boundaries for the speed
-		conveyor.setSpeed(speed);
-		
+	protected void start() {
 		try {
 			Random rng = new Random();
 			int sim_mintime = 1000;
 			int sim_bound = 6000;
 			
-			while (alstatus == SubsystemStatus.RUNNING) {
+			while (true) {
+				if (subsystem.getStatus() != SubsystemStatus.RUNNING) {
+					Thread.sleep(1000);
+					continue;
+				}
+				
 				for (Robot r : robots) {
 					r.start();
 				}
@@ -146,7 +183,10 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	
+	}
+
+	public void produceDifferentColoredCars(Material color, int quantity) {
+		//TODO: implement
 	}
 
 	private boolean notReady() {
@@ -158,28 +198,8 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 		return false;
 	}
 
-	@Override
-	public void stop() {
-		for (Robot r : robots) {
-			r.stop();
-		}
-		conveyor.stop();
-		alstatus = SubsystemStatus.STOPPED;
-	}
-
 	public List<Placeable> getPlaceables() {
-		List<Placeable> plc = new ArrayList<Placeable>();
-		for (Robot r : robots) {
-			plc.add(r);
-		}
-		plc.add(conveyor);
-		plc.addAll(conveyor.getPlaceables());
-		plc.add(this);
-		return plc;
-	}
-
-	public void stoppedSys(Object source, FactoryEvent event) {
-		this.notify(new FactoryEvent(alsubsys, EventKind.CAR_FINISHED));
+		return placeables;
 	}
 
 	public SubsystemStatus getStatus() { // This should only be used for test cases
@@ -198,9 +218,8 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 		return alstatus;
 	}
 
-	public void notify(FactoryEvent event) {
+	public void notifySubsystem(FactoryEvent event) {
 		if (event.getKind() == EventKind.CAR_FINISHED) {
-			finished++;
 			Material car;
 			switch (color) {
 			case COLOR_BLACK:
@@ -225,56 +244,23 @@ public class AssemblyLine implements RobotInterface, Stoppable, Placeable {
 				car = Material.CAR_BLACK;
 				break;
 			}
-			conveyor.getOutputbox().receiveContainer(new Container(car));
-			if (conveyor.getOutputbox().getFullness() == MaterialStatus.BAD) {
-				FactoryEvent full = new FactoryEvent(getALSys(), EventKind.RESOURCEBOX_ALMOST_FULL, car,
-						conveyor.getOutputbox());
-				alsubsys.notify(full);
+			outputBox.receiveContainer(new Container(car));
+			
+			MaterialStatus fullness = outputBox.getFullness();
+			if (fullness == MaterialStatus.BAD || fullness == MaterialStatus.TERRIBLE) {
+				FactoryEvent full = new FactoryEvent(subsystem, EventKind.RESOURCEBOX_ALMOST_FULL, car, outputBox);
+				subsystem.notify(full);
 			}
 		}
-		alsubsys.notify(event);
-	}
-
-	public AL_Subsystem getALSys() {
-		return alsubsys;
-	}
-
-	public void restart() {
-		for (Robot r : robots) {
-			r.restart();
-		}
-		conveyor.restart();
-		start();
+		subsystem.notify(event);
 	}
 
 	public Conveyor getConveyor() {
 		return conveyor;
 	}
 
-	public Material getMaterial() {
+	public Material getColor() {
 		return color;
-	}
-
-	public List<Placeable> getAGVRobot() {
-		List<Placeable> plc = new ArrayList<Placeable>();
-		for (Robot r : robots) {
-			if (r.robot == RobotTypes.PAINTER || r.robot == RobotTypes.SCREWDRIVER) {
-				plc.add(r);
-			}
-		}
-		return plc;
-	}
-
-	public List<Placeable> getAGVConveyor() {
-		List<Placeable> plc = new ArrayList<Placeable>();
-		plc.add(conveyor);
-		return plc;
-	}
-
-	public List<Placeable> getAGVOutputbox() {
-		List<Placeable> plc = new ArrayList<Placeable>();
-		plc.add(conveyor.getOutputbox());
-		return plc;
 	}
 
 }

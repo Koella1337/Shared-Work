@@ -12,7 +12,9 @@ public class Constants {
 		
 		FORKLIFT			( 20, 20),
 		
-		ASSEMBLY_LINE		(350,100);
+		ROBOT				( 50, 50),
+		CONVEYOR			/* 310,  40 */	(310, RESOURCE_BOX.y),
+		ASSEMBLY_LINE		/* 350, 100 */	((CONVEYOR.x + RESOURCE_BOX.x), (ROBOT.y + 10 + CONVEYOR.y));
 		
 		public final int x, y;
 		

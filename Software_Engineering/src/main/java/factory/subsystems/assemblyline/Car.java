@@ -24,16 +24,16 @@ public class Car implements Placeable{
 		return position;
 	}
 	
-	public RobotTypes infront() {
+	public RobotType infront() {
 		switch(pos) {
 		case 0:
-			return RobotTypes.GRABBER;
+			return RobotType.GRABBER;
 		case 1:
-			return RobotTypes.SCREWDRIVER;
+			return RobotType.SCREWDRIVER;
 		case 2:
-			return RobotTypes.PAINTER;
+			return RobotType.PAINTER;
 		case 3:
-			return RobotTypes.INSPECTOR;
+			return RobotType.INSPECTOR;
 		default:
 			return null;
 		}

@@ -22,6 +22,7 @@ import factory.shared.enums.EventKind;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Monitorable;
 import factory.shared.interfaces.Placeable;
+import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 import factory.subsystems.warehouse.WarehouseSystem;
 
 /*
@@ -144,6 +145,12 @@ public class Test implements Monitorable {
 
 	@Override
 	public SubsystemMenu getCurrentSubsystemMenu() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MonitoringInterface getMonitor() {
 		// TODO Auto-generated method stub
 		return null;
 	}
