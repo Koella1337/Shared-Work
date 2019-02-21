@@ -25,7 +25,6 @@ public class Robot implements RobotInterface, ContainerDemander {
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private long timestamp = 0;
 	private AssemblyLine assemblyLine;
-	private Material car;
 	
 	public Robot(AssemblyLine assemblyLine, Position pos, RobotType type, Material materialType, int initialMaterialAmount) {
 		this.assemblyLine = assemblyLine;
@@ -38,11 +37,6 @@ public class Robot implements RobotInterface, ContainerDemander {
 	@Override
 	public void receiveContainer(Container container) {
 		materialAmount += Objects.requireNonNull(container).getAmount();
-		materials += Objects.requireNonNull(container).getAmount();
-	}
-	
-	public void addBox(Container container) {
-		materialAmount += container.getAmount();
 	}
 	
 	public SubsystemStatus status() {
@@ -77,7 +71,7 @@ public class Robot implements RobotInterface, ContainerDemander {
 	@Override
 	public void start() {
 		if(status() == SubsystemStatus.WAITING) {
-			if(type == RobotType.SCREWDRIVER || type ==  RobotType.PAINTER) {
+			if(type != RobotType.INSPECTOR) {
 				
 				materialAmount -= 5;
 				
@@ -86,11 +80,11 @@ public class Robot implements RobotInterface, ContainerDemander {
 					FactoryEvent lowmat = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, materialType, this);
 					assemblyLine.notifySubsystem(lowmat);
 				}
-			} else if(type == RobotType.INSPECTOR) {
+			} 
+			else {
 				if(Math.random() < 0.95) {
-					if(materialType != null)
-					{
-						switch(materialType) {
+					Material car;
+					switch (materialType) {
 						case COLOR_BLACK:
 							car = Material.CAR_BLACK;
 							break;
@@ -112,17 +106,11 @@ public class Robot implements RobotInterface, ContainerDemander {
 						default:
 							car = Material.CAR_BLACK;
 							break;
-						}
-					}
-					else
-					{
-						car = Material.CAR_BLACK;
 					}
 					FactoryEvent done = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.CAR_FINISHED, car, assemblyLine.getOutputBox());
 					assemblyLine.notifySubsystem(done);
 				}
 			}
-			
 			timestamp = System.currentTimeMillis(); //The Robot takes 5 seconds to perform it's task
 		}
 		status();

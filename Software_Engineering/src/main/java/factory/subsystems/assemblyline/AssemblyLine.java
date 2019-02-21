@@ -130,15 +130,6 @@ public class AssemblyLine implements Placeable {
 		return id;
 	}
 
-	public void addBox(Container box) { // Adds the box to the matching robot/conveyor
-		for (Robot r : robots) {
-			if (r.materialType == box.getMaterial())
-				r.addBox(box);
-		}
-		if (box.getMaterial() == Material.LUBRICANT)
-			conveyor.addBox(box);
-	}
-
 	@Override
 	public Position getPosition() {
 		return position;

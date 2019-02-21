@@ -31,7 +31,7 @@ public class Conveyor implements ConveyorInterface, ContainerDemander {
 	 */
 	private double speed = 1;
 	
-	public int lubricant;
+	public int lubricantAmount;
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private long timestamp;
 	
@@ -48,7 +48,7 @@ public class Conveyor implements ConveyorInterface, ContainerDemander {
 	 *          how much lubricant is available initially
 	 */
 	public Conveyor(AssemblyLine assemblyLine, Position position, int initialLubricant) {
-		this.lubricant = initialLubricant;
+		this.lubricantAmount = initialLubricant;
 		this.assemblyLine = assemblyLine;
 		this.position = position;
 	}
@@ -59,7 +59,7 @@ public class Conveyor implements ConveyorInterface, ContainerDemander {
 	}
 	
 	public void addBox(Container container) {
-		lubricant += container.getAmount();
+		lubricantAmount += container.getAmount();
 	}
 
 	public SubsystemStatus status() {
@@ -74,7 +74,7 @@ public class Conveyor implements ConveyorInterface, ContainerDemander {
 	}
 
 	public int getMaterials() {
-		return lubricant;
+		return lubricantAmount;
 	}
 
 	/**
@@ -101,8 +101,8 @@ public class Conveyor implements ConveyorInterface, ContainerDemander {
 	@Override
 	public void start() {
 		if (status() == SubsystemStatus.WAITING) {
-			lubricant -= Math.random() * 5;
-			if (lubricant < 10 && (System.currentTimeMillis() - lastLackOfMaterialSent) > 50000) {
+			lubricantAmount -= Math.random() * 5;
+			if (lubricantAmount < 10 && (System.currentTimeMillis() - lastLackOfMaterialSent) > 50000) {
 				lastLackOfMaterialSent = System.currentTimeMillis();
 				FactoryEvent event = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.CONVEYORS_LACK_OF_OIL, this);
 				assemblyLine.notifySubsystem(event);
@@ -110,7 +110,7 @@ public class Conveyor implements ConveyorInterface, ContainerDemander {
 			// Performs task
 			status = SubsystemStatus.RUNNING;
 			timestamp = (int) System.currentTimeMillis();
-			if (Math.random() * speed > 25 * lubricant / 100) { // Simulation on how speed & lubricant impact chances of breaking
+			if (Math.random() * speed > 25 * lubricantAmount / 100) { // Simulation on how speed & lubricant impact chances of breaking
 				status = SubsystemStatus.BROKEN;
 				FactoryEvent broken = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.CONVEYORS_BROKEN, this);
 				assemblyLine.notifySubsystem(broken);
@@ -139,8 +139,11 @@ public class Conveyor implements ConveyorInterface, ContainerDemander {
 		
 		Font prevFont = g.getFont();
 		g.setFont(new Font("TimesNewRoman", Font.BOLD, 32));
-		g.drawString(directionString, 5, (int) (position.ySize / 1.3f));
+		g.drawString(directionString, 5, (int) (position.ySize / 1.6f));
+		
 		g.setFont(prevFont);
+		g.setColor(Color.WHITE);
+		g.drawString(""+lubricantAmount, (position.xSize / 2) - 20, position.ySize - 5);
 	}
 
 	public ResourceBox getInputbox() {
