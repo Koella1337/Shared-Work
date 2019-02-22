@@ -20,6 +20,7 @@ public class Robot implements RobotInterface, ContainerDemander {
 	
 	public Material materialType;
 	public int materialAmount;
+	private boolean enoughMats = true;
 	
 	public final Position position;
 	private SubsystemStatus status = SubsystemStatus.WAITING;
@@ -47,6 +48,11 @@ public class Robot implements RobotInterface, ContainerDemander {
 			}
 			return status;
 		}
+		//If there are no materials, the Robot says it is stopped
+		//This means: this.status == Waiting -but- this.status() == Stopped
+		if(!enoughMats) {
+			return SubsystemStatus.STOPPED;
+		}
 		
 		if(timestamp+5000 <= System.currentTimeMillis()) { //Finished with task
 			status = SubsystemStatus.WAITING;
@@ -70,8 +76,8 @@ public class Robot implements RobotInterface, ContainerDemander {
 	
 	@Override
 	public void start() {
-		if(status() == SubsystemStatus.WAITING) {
-			if(type != RobotType.INSPECTOR) {
+		if(status() == SubsystemStatus.WAITING && enoughMaterials(5)) {
+			if(type != RobotType.INSPECTOR || type != RobotType.GRABBER) {
 				
 				materialAmount -= 5;
 				
@@ -80,8 +86,7 @@ public class Robot implements RobotInterface, ContainerDemander {
 					FactoryEvent lowmat = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, materialType, this);
 					assemblyLine.notifySubsystem(lowmat);
 				}
-			} 
-			else {
+			}  else if (type == RobotType.INSPECTOR) { //This only applies to the Inspector type robot
 				if(Math.random() < 0.95) {
 					Material car;
 					switch (materialType) {
@@ -110,10 +115,26 @@ public class Robot implements RobotInterface, ContainerDemander {
 					FactoryEvent done = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.CAR_FINISHED, car, assemblyLine.getOutputBox());
 					assemblyLine.notifySubsystem(done);
 				}
+			} else if (materialAmount <= 5) {
+				FactoryEvent lowmat = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, materialType, this);
+				assemblyLine.notifySubsystem(lowmat);
 			}
+			
 			timestamp = System.currentTimeMillis(); //The Robot takes 5 seconds to perform it's task
 		}
 		status();
+	}
+	
+	private boolean enoughMaterials(int i) {
+		if(type != RobotType.INSPECTOR || type != RobotType.GRABBER) {
+			if(materialAmount < i) {
+				enoughMats = false;
+				return false;
+			} else {
+				enoughMats = true;
+				return true;
+			}
+		} else return true;
 	}
 	
 	@Override
