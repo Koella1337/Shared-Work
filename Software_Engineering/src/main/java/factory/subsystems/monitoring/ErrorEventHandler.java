@@ -5,8 +5,10 @@ import java.util.logging.Logger;
 
 import factory.shared.FactoryEvent;
 import factory.shared.enums.EventKind;
+import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Monitorable;
 import factory.subsystems.monitoring.interfaces.ErrorHandlerInterface;
+import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 /**
  * This class will handle all events of type Error and Global Error
@@ -14,27 +16,35 @@ import factory.subsystems.monitoring.interfaces.ErrorHandlerInterface;
  * @author Sallaberger
  */
 public class ErrorEventHandler implements ErrorHandlerInterface {
-	private static final Logger LOGGER = Logger.getLogger(ErrorEventHandler.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(MonitoringSystem.class.getName());
 	
-	private final MonitoringSystem monitor;
+	private final MonitoringInterface monitor;
 
-	public ErrorEventHandler(MonitoringSystem monitor) {
+	public ErrorEventHandler(MonitoringInterface monitor) {
 		super();
 		this.monitor = monitor;
 	}
 
+	/**
+	 * Stop the whole system.
+	 */
 	@Override
 	public void handleGlobalError(FactoryEvent event) {
-		LOGGER.log(Level.WARNING, String.format("handling global error %s ...",event));
+		LOGGER.log(Level.WARNING, "[GLOBAL ERROR] " + event);
+		this.monitor.setStatus(SubsystemStatus.BROKEN);
 		this.monitor.stop();
 	}
 
+	/**
+	 * Only stop affected subsystem.
+	 */
 	@Override
 	public void handleError(Monitorable source, EventKind eventKind) {
+		LOGGER.log(Level.WARNING, "[ERROR] " + eventKind);
 		source.stop();
 	}
 
-	public MonitoringSystem getMonitor() {
+	public MonitoringInterface getMonitor() {
 		return monitor;
 	}
 

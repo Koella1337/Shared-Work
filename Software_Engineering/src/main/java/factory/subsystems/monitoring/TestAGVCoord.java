@@ -27,7 +27,7 @@ public class TestAGVCoord extends AgvCoordinator {
 	}
 
 	@Override
-	public void submitTask(AgvTask task) {
+	public void receiveTask(AgvTask task) {
 		System.out.println("TestAGVCoord SUBMIT AGV TASK");
 		Container container = task.getPickup().deliverContainer(task.getMaterial());
 		

@@ -47,7 +47,7 @@ public class MonitoringSystemTest {
 	public void beforeMethod() {
 		MockitoAnnotations.initMocks(this);
 		this.errorEventHandler = Mockito.spy(new ErrorEventHandler(monitor));
-		Mockito.doReturn(this.errorEventHandler).when(monitor).getErrorHandler();
+//		Mockito.doReturn(this.errorEventHandler).when(monitor).getErrorHandler();
 
 		this.monitor.setWarehouseSystem(warehouseSystem);
 		this.monitor.setAgvSystem(agvSystem);
@@ -105,14 +105,14 @@ public class MonitoringSystemTest {
 		Robot robot  = Mockito.mock(Robot.class);
 		HashMap<WarehouseTask, ContainerDemander> map = new HashMap<>(Collections.singletonMap(wht, robot));
 		map.put(wht, robot);
-		Mockito.doReturn(map).when(this.monitor).getWarehouseTaskDemanders();
+//		Mockito.doReturn(map).when(this.monitor).getWarehouseTaskDemanders();
 		
 		FactoryEvent event = new FactoryEvent(this.warehouseSystem, EventKind.WAREHOUSE_TASK_COMPLETED, wht,
 				storageSite);
 		this.monitor.handleEvent(event);
 
 		ArgumentCaptor<AgvTask> argument = ArgumentCaptor.forClass(AgvTask.class);
-		Mockito.verify(this.agvSystem, Mockito.times(1)).submitTask(argument.capture());
+		Mockito.verify(this.agvSystem, Mockito.times(1)).receiveTask(argument.capture());
 
 		AgvTask param = argument.getValue();
 		assertEquals(param.getDropoff(), robot);
@@ -129,9 +129,9 @@ public class MonitoringSystemTest {
 
 		FactoryEvent event = new FactoryEvent(this.warehouseSystem, EventKind.ROBOTARMS_LACK_OF_MATERIAL, Material.BODIES,
 				robot);
-		WarehouseTask wht = new WarehouseTask(600000, Material.BODIES);
-		HashMap<WarehouseTask, ContainerDemander> map = new HashMap<>(Collections.singletonMap(wht, robot));
-		Mockito.doReturn(map).when(this.monitor).getWarehouseTaskDemanders();
+//		WarehouseTask wht = new WarehouseTask(600000, Material.BODIES);
+//		HashMap<WarehouseTask, ContainerDemander> map = new HashMap<>(Collections.singletonMap(wht, robot));
+//		Mockito.doReturn(map).when(this.monitor).getWarehouseTaskDemanders();
 		
 		this.monitor.handleEvent(event);
 

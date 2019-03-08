@@ -1,15 +1,16 @@
 package factory.shared;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public abstract class Task implements Comparable<Task> {
 	
-	private static int currentId = 1;	//TODO remove ?
+	private static AtomicInteger currentId = new AtomicInteger();
 	
 	private final int id;
 	private final long deadline;
 	
 	public Task(long timeframe) {
-		this.id = currentId;
-		currentId++;
+		this.id = currentId.getAndIncrement();
 		deadline = timeframe + System.currentTimeMillis();
 	}
 	

@@ -8,7 +8,7 @@ import factory.subsystems.agv.Forklift;
 
 public interface AgvMonitorInterface extends Monitorable{
 
-	void submitTask(AgvTask task);	
+	void receiveTask(AgvTask task);	
 	
 	/**
 	 * returns a list of all forklifts

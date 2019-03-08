@@ -7,9 +7,10 @@ import factory.shared.interfaces.ContainerSupplier;
 
 public class AgvTask extends Task {
 
-	private final ContainerSupplier pickup;
-	private final ContainerDemander dropoff;
 	private final Material material;
+	
+	private ContainerSupplier pickup;
+	private ContainerDemander dropoff;
 
 	public AgvTask(long timeframe, Material material,  ContainerSupplier pickup, ContainerDemander dropoff) {
 		super(timeframe);
@@ -30,7 +31,12 @@ public class AgvTask extends Task {
 		return material;
 	}
 
+	public void setPickup(ContainerSupplier pickup) {
+		this.pickup = pickup;
+	}
 
-	
+	public void setDropoff(ContainerDemander dropoff) {
+		this.dropoff = dropoff;
+	}
 	
 }

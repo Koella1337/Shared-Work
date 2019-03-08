@@ -73,7 +73,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	}
 
 	@Override
-	public void submitTask(AgvTask task) {
+	public void receiveTask(AgvTask task) {
 		Forklift free = null;
 		for(Forklift f : forklifts)
 		{
@@ -209,7 +209,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 		if(!outstandingTasks.isEmpty())
 		{
 			AgvTask nextTask = outstandingTasks.poll();
-			submitTask(nextTask);
+			receiveTask(nextTask);
 		}
 	}
 }

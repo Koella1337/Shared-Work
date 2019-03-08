@@ -55,7 +55,7 @@ public enum EventKind {
 	
 	;
 	
-	public enum EventSeverity{
+	public enum EventSeverity {
 		/** a non important info */
 		INFO, 
 		/** a normal event, e.g. task finished */
