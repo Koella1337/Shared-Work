@@ -2,6 +2,7 @@ package factory.subsystems.assemblyline;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -14,6 +15,7 @@ import factory.shared.AbstractSubsystem;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
+import factory.shared.ResourceBox;
 import factory.shared.Utils;
 import factory.shared.enums.Material;
 import factory.shared.enums.SubsystemStatus;
@@ -115,6 +117,18 @@ public class AssemblyLineSystem extends AbstractSubsystem implements AssemblyLin
 	@Override
 	public List<Placeable> getPlaceables() {
 		return placeables;
+	}
+
+	public List<Placeable> getAgvAccessiblePlaceables() {
+		List<Placeable> accessiblePlaceables = new LinkedList<>();
+		for(Placeable p : getPlaceables())
+		{
+			if(p instanceof ResourceBox || p instanceof Robot)
+			{
+				accessiblePlaceables.add(p);
+			}
+		}
+		return accessiblePlaceables;
 	}
 
 }

@@ -29,6 +29,19 @@ public class Pathfinder {
     private PathingNode[][] nodeMap;
 //    private AgvCoordinator coordinator;
     public static final int GRANULARITY = 5;
+    
+    private void printCollisionMap()
+    {
+    	for(int i = 0; i < collisionMap.length; i++)
+    	{
+    		for(int j = 0; j < collisionMap[0].length; j++)
+    		{
+    			System.out.print(collisionMap[j][i]?"W":" ");
+    		}
+    		System.out.println();
+    	}
+		System.out.println();
+    }
 
     public Pathfinder(AgvCoordinator coordinator, Element factory, List<Placeable> freeParking) throws ParserConfigurationException, SAXException, IOException
     {
