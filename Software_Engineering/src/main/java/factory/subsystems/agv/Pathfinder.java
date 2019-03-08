@@ -150,7 +150,7 @@ public class Pathfinder {
         addObstacle(p);
     }
     
-    public List<Position> getPath(Position start, Position goal)
+    public synchronized List<Position> getPath(Position start, Position goal)
     {
     	PathingNode end = findPathNodes(start, goal);
     	if(end == null)

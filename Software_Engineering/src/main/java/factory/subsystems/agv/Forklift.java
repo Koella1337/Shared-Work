@@ -12,12 +12,15 @@ import javax.swing.ImageIcon;
 
 import factory.shared.Constants;
 import factory.shared.Container;
+import factory.shared.FactoryEvent;
 import factory.shared.Position;
+import factory.shared.enums.EventKind;
 import factory.shared.interfaces.Placeable;
 
 public class Forklift implements Placeable {
 	private static final double SPEED = 10000000; // distance moved per nanosecond (inverted for easier calculation)
 	private static final double THRESHOLD = 0.001; // maximum distance to a target to have reached it
+	private static final double THRESHOLDGOAL = 0.01; // maximum distance to a final target to have reached it
 	private static final double COLLISION_RADIUS = 3; // minimum distance to all other forklifts to avoid collisions
 	private static final double SAFETY_RADIUS = 30; // minimum distance to all other forklifts to avoid having to reroute
 	private long lastTime; // last time the forklift's position was updated
@@ -100,6 +103,11 @@ public class Forklift implements Placeable {
 		return Position.length(Position.subtractPosition(pos, target.getMiddlePoint())) < THRESHOLD;
 	}
 	
+	private boolean targetReachedFinal(Position target)
+	{
+		return Position.length(Position.subtractPosition(pos, target.getMiddlePoint())) < THRESHOLDGOAL;
+	}
+	
 	private void checkForCollision()	
 	{
 		for(Forklift f : coordinator.getForklifts())
@@ -124,8 +132,8 @@ public class Forklift implements Placeable {
 //					coordinator.requestReroute(this);
 					if(!evading || !f.evading)
 					{
-						evasiveManeuver(f);
-						f.evasiveManeuver(this);
+//						evasiveManeuver(f);
+//						f.evasiveManeuver(this);
 					}
 				}
 			}
@@ -229,6 +237,30 @@ public class Forklift implements Placeable {
 				return;
 			}
 			checkForCollision();
+			if((path == null || path.isEmpty()) && currentTask != null)
+			{
+				// recalculate the path if the bug occurs where the path is empty
+				// TODO: this is stupid, I should fix it properly, if I ever find the source of the bug
+				// the bug that makes it so a forklifts path is empty even though it's not done with the route
+				List<Position> pathThere = coordinator.pathfinder.getPath(getPosition(), currentTask.getPickup().getPosition().getMiddlePoint());
+				List<Position> pathBack = coordinator.pathfinder.getPath(currentTask.getPickup().getPosition(), currentTask.getDropoff().getPosition().getMiddlePoint());
+
+				pathThere.add(currentTask.getPickup().getPosition().getMiddlePoint());
+				pathBack.add(currentTask.getDropoff().getPosition().getMiddlePoint());
+				if(pathThere != null && pathBack != null)
+				{
+					setPath(pathThere);
+					path.addAll(pathBack);
+				}
+				else
+				{
+		        	coordinator.notify(new FactoryEvent(coordinator, EventKind.AGV_PATHING_IMPOSSIBLE, currentTask));
+				}
+				if(path == null || path.isEmpty())
+				{
+					System.out.println("Something went really wrong");
+				}
+			}
 			if (path != null && !path.isEmpty()) // no target means no moving
 			{
 				// Vector to next target along path
@@ -256,7 +288,7 @@ public class Forklift implements Placeable {
 					evading = false;
 				}
 				if (currentTask != null) {
-					if (targetReached(currentTask.getPickup().getPosition()) && part1) {
+					if (targetReachedFinal(currentTask.getPickup().getPosition()) && part1) {
 						carriedBox = currentTask.getPickup().deliverContainer(currentTask.getMaterial());
 						part1 = false;
 						if(carriedBox == null)
@@ -268,7 +300,7 @@ public class Forklift implements Placeable {
 							System.out.println("asdasdas");
 						}
 					}
-					if (targetReached(currentTask.getDropoff().getPosition())) {
+					if (targetReachedFinal(currentTask.getDropoff().getPosition())) {
 						if (carriedBox != null)
 						{
 							currentTask.getDropoff().receiveContainer(carriedBox);
