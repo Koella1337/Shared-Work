@@ -47,7 +47,7 @@ public class FactoryApplication implements Stoppable {
 		
 		AssemblyLineSystem alSystem = new AssemblyLineSystem(this.monitor, assemblyLines);
 		this.monitor.setAssemblyLine(alSystem); //TODO check if it works -Max
-		agvAccessiblePlaceables.addAll(alSystem.getPlaceables());
+		agvAccessiblePlaceables.addAll(alSystem.getAgvAccessiblePlaceables());
 		
 		//		OnlineShopUser user = new OnlineShopUser("thomas");
 		//		Order order = new Order(user, 4);
