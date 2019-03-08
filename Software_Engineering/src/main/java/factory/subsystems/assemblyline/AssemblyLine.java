@@ -18,6 +18,7 @@ import factory.shared.enums.Material;
 import factory.shared.enums.MaterialStatus;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
+import factory.subsystems.assemblyline.interfaces.RobotInterface;
 import factory.subsystems.warehouse.AssemblyLineDirection;
 
 public class AssemblyLine implements Placeable {
@@ -25,13 +26,13 @@ public class AssemblyLine implements Placeable {
 	private final int id;
 	private final AssemblyLineSystem subsystem;
 	
-	private final Robot robotGrabber;
-	private final Robot robotScrewDriver;
-	private final Robot robotPainter;
-	private final Robot robotInspector;
+	private final RobotInterface robotGrabber;
+	private final RobotInterface robotScrewDriver;
+	private final RobotInterface robotPainter;
+	private final RobotInterface robotInspector;
 	
 	private final List<Placeable> placeables = new ArrayList<>();
-	private final List<Robot> robots = new ArrayList<>();
+	private final List<RobotInterface> robots = new ArrayList<>();
 	private final Conveyor conveyor;
 	private final ResourceBox outputBox;
 	
@@ -70,19 +71,19 @@ public class AssemblyLine implements Placeable {
 		Utils.assignSize(outputboxPos, Constants.PlaceableSize.RESOURCE_BOX);
 		
 		//build robots
-		robotGrabber = new Robot(this, robotPos, RobotType.GRABBER, Material.BODIES, 30);
+		robotGrabber = new Robot(this, robotPos, RobotType.GRABBER, Material.BODIES, 12);
 		robots.add(robotGrabber);
 		if (Constants.DEBUG) System.out.println("--> Built " + robotGrabber);
 		
 		robotPos = robotPos.clone();
 		robotPos.xPos += robotOffset;
-		robotScrewDriver = new Robot(this, robotPos, RobotType.SCREWDRIVER, Material.SCREWS, 10);
+		robotScrewDriver = new Robot(this, robotPos, RobotType.SCREWDRIVER, Material.SCREWS, 55);
 		robots.add(robotScrewDriver);
 		if (Constants.DEBUG) System.out.println("--> Built " + robotScrewDriver);
 		
 		robotPos = robotPos.clone();
 		robotPos.xPos += robotOffset;
-		robotPainter = new Robot(this, robotPos, RobotType.PAINTER, color, 20);
+		robotPainter = new Robot(this, robotPos, RobotType.PAINTER, color, 23);
 		robots.add(robotPainter);
 		if (Constants.DEBUG) System.out.println("--> Built " + robotPainter);
 		
@@ -160,53 +161,40 @@ public class AssemblyLine implements Placeable {
 					continue;
 				}
 				
-				for (Robot r : robots) {
-					r.start();
+				while (!areRobotsReady()) { // Waiting for the robots to be ready
+					Thread.sleep(rng.nextInt(sim_bound) + sim_mintime);
+				}
+				
+				for (RobotInterface robot : robots) {
+					robot.start();
 				}
 				Thread.sleep(rng.nextInt(sim_bound) + sim_mintime);
-				while (notReady()) { // Waiting for the robots
+				
+				while (!conveyor.isReady()) { // Waiting for the conveyor to be ready
 					Thread.sleep(rng.nextInt(sim_bound) + sim_mintime);
 				}
-				while (conveyor.status() != SubsystemStatus.WAITING) { // Waiting for the conveyor
-					Thread.sleep(rng.nextInt(sim_bound) + sim_mintime);
-				}
+				conveyor.start();
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 
+	private boolean areRobotsReady() {
+		for (RobotInterface robot : robots) {
+			if (!robot.isReady()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public void produceDifferentColoredCars(Material color, int quantity) {
 		//TODO: implement
 	}
 
-	private boolean notReady() {
-		for (Robot r : robots) {
-			if (r.status() != SubsystemStatus.WAITING) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public List<Placeable> getPlaceables() {
 		return placeables;
-	}
-
-	public SubsystemStatus getStatus() { // This should only be used for test cases
-		SubsystemStatus alstatus = SubsystemStatus.WAITING;
-		for (Robot r : robots) {
-			if (r.status() == SubsystemStatus.RUNNING && alstatus == SubsystemStatus.WAITING) {
-				alstatus = r.status();
-			}
-			if (r.status() == SubsystemStatus.STOPPED && alstatus != SubsystemStatus.BROKEN) {
-				alstatus = r.status();
-			}
-			if (r.status() == SubsystemStatus.BROKEN) {
-				alstatus = r.status();
-			}
-		}
-		return alstatus;
 	}
 
 	public void notifySubsystem(FactoryEvent event) {

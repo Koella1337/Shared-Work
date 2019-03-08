@@ -1,4 +1,5 @@
 package factory.subsystems.assemblyline;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -10,137 +11,141 @@ import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.enums.EventKind;
 import factory.shared.enums.Material;
-import factory.shared.enums.SubsystemStatus;
-import factory.shared.interfaces.ContainerDemander;
 import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
-public class Robot implements RobotInterface, ContainerDemander {
+class Robot implements RobotInterface {
+
+	/** Time in ms how long the robot takes to perform work. */
+	private static final long SIMULATED_WORK_DURATION = 10000;
 	
-	public RobotType type;
+	private final RobotType robotType;
+	private final Position position;
+	private final AssemblyLine assemblyLine;
 	
-	public Material materialType;
-	public int materialAmount;
-	private boolean enoughMats = true;
+	private Material materialType;
+	private int materialAmount;
 	
-	public final Position position;
-	private SubsystemStatus status = SubsystemStatus.WAITING;
-	private long timestamp = 0;
-	private AssemblyLine assemblyLine;
+	private ComponentStatus status = ComponentStatus.READY;
+	private long lastLackOfMaterialEventSent = 0;
 	
 	public Robot(AssemblyLine assemblyLine, Position pos, RobotType type, Material materialType, int initialMaterialAmount) {
+		this.robotType = type;
+		this.position = pos;
 		this.assemblyLine = assemblyLine;
-		this.type = type;
 		this.materialType = materialType;
 		this.materialAmount = initialMaterialAmount;
-		this.position = pos;
+	}
+
+	@Override
+	public boolean isReady() {
+		return status == ComponentStatus.READY;
+	}
+
+	@Override
+	public void start() {
+		if (!isReady())
+			throw new IllegalArgumentException("Robot started even though it was not ready!");
+		
+		Thread robotWorkThread = new Thread(() -> {
+			try {
+				status = ComponentStatus.WORKING;
+				doWork();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		});
+		robotWorkThread.setDaemon(true);
+		robotWorkThread.start();
+	}
+	
+	private void doWork() throws InterruptedException {
+		if (robotType != RobotType.INSPECTOR) {
+			materialAmount -= robotType.materialsUsed;
+			
+			if (materialAmount < (robotType.materialsUsed * 5) && (System.currentTimeMillis() - lastLackOfMaterialEventSent) > 50000) {
+				lastLackOfMaterialEventSent = System.currentTimeMillis();
+				FactoryEvent lowMaterialsEvent = new FactoryEvent(
+					assemblyLine.getSubsystem(),
+					EventKind.LACK_OF_MATERIAL, 
+					materialType, 
+					this
+				);
+				assemblyLine.notifySubsystem(lowMaterialsEvent);
+			}
+		} else {
+			if (Math.random() < 0.95) {
+				FactoryEvent carFinishedEvent = new FactoryEvent(
+					assemblyLine.getSubsystem(), 
+					EventKind.CAR_FINISHED, 
+					colorToCarMaterial(materialType), 
+					assemblyLine.getOutputBox()
+				);
+				assemblyLine.notifySubsystem(carFinishedEvent);
+			}
+		}
+		Thread.sleep(SIMULATED_WORK_DURATION);
+		
+		if (materialAmount >= robotType.materialsUsed) {
+			status = ComponentStatus.READY;
+		} else {
+			status = ComponentStatus.OUT_OF_MATERIAL;
+		}
+	}
+	
+	/**
+	 * Returns the appropriate "CAR_X" Material for the supplied "COLOR_X" Material.
+	 */
+	private Material colorToCarMaterial(Material color) {
+		switch (materialType) {
+			case COLOR_BLACK:
+				return Material.CAR_BLACK;
+			case COLOR_BLUE:
+				return Material.CAR_BLUE;
+			case COLOR_GRAY:
+				return Material.CAR_GRAY;
+			case COLOR_GREEN:
+				return Material.CAR_GREEN;
+			case COLOR_RED:
+				return Material.CAR_RED;
+			case COLOR_WHITE:
+				return Material.CAR_WHITE;
+			default:
+				return Material.CAR_BLACK;
+		}
 	}
 	
 	@Override
 	public void receiveContainer(Container container) {
 		materialAmount += Objects.requireNonNull(container).getAmount();
-	}
-	
-	public SubsystemStatus status() {
-		if (status == SubsystemStatus.STOPPED || status == SubsystemStatus.BROKEN) {
-			if(status== SubsystemStatus.BROKEN) {
-				FactoryEvent broken = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.ROBOTARMS_BROKEN, this);
-				assemblyLine.notifySubsystem(broken);
-			}
-			return status;
-		}
-		//If there are no materials, the Robot says it is stopped
-		//This means: this.status == Waiting -but- this.status() == Stopped
-		if(!enoughMats) {
-			return SubsystemStatus.STOPPED;
-		}
-		
-		if(timestamp+5000 <= System.currentTimeMillis()) { //Finished with task
-			status = SubsystemStatus.WAITING;
-			return SubsystemStatus.WAITING;
-		} else {
-			status = SubsystemStatus.RUNNING;
-			return SubsystemStatus.RUNNING;
+		if (status == ComponentStatus.OUT_OF_MATERIAL) {
+			status = ComponentStatus.READY;
 		}
 	}
 	
-	public int getMaterials() {
+	@Override
+	public int getMaterialAmount() {
 		return materialAmount;
+	}
+	
+	@Override
+	public Material getMaterialType() {
+		return materialType;
+	}
+
+	@Override
+	public RobotType getRobotType() {
+		return robotType;
 	}
 
 	@Override
 	public Position getPosition() {
 		return position;
 	}
-	
-	private long lastLackOfMaterialSent = 0;
-	
+
 	@Override
-	public void start() {
-		if(status() == SubsystemStatus.WAITING && enoughMaterials(5)) {
-			if(type != RobotType.INSPECTOR || type != RobotType.GRABBER) {
-				
-				materialAmount -= 5;
-				
-				if(materialAmount < 10 && (System.currentTimeMillis() - lastLackOfMaterialSent) > 50000) {
-					lastLackOfMaterialSent = System.currentTimeMillis();
-					FactoryEvent lowmat = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, materialType, this);
-					assemblyLine.notifySubsystem(lowmat);
-				}
-			}  else if (type == RobotType.INSPECTOR) { //This only applies to the Inspector type robot
-				if(Math.random() < 0.95) {
-					Material car;
-					switch (materialType) {
-						case COLOR_BLACK:
-							car = Material.CAR_BLACK;
-							break;
-						case COLOR_BLUE:
-							car = Material.CAR_BLUE;
-							break;
-						case COLOR_GRAY:
-							car = Material.CAR_GRAY;
-							break;
-						case COLOR_GREEN:
-							car = Material.CAR_GREEN;
-							break;
-						case COLOR_RED:
-							car = Material.CAR_RED;
-							break;
-						case COLOR_WHITE:
-							car = Material.CAR_WHITE;
-							break;
-						default:
-							car = Material.CAR_BLACK;
-							break;
-					}
-					FactoryEvent done = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.CAR_FINISHED, car, assemblyLine.getOutputBox());
-					assemblyLine.notifySubsystem(done);
-				}
-			} else if (materialAmount <= 5) {
-				FactoryEvent lowmat = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.ROBOTARMS_LACK_OF_MATERIAL, materialType, this);
-				assemblyLine.notifySubsystem(lowmat);
-			}
-			
-			timestamp = System.currentTimeMillis(); //The Robot takes 5 seconds to perform it's task
-		}
-		status();
-	}
-	
-	private boolean enoughMaterials(int i) {
-		if(type != RobotType.INSPECTOR || type != RobotType.GRABBER) {
-			if(materialAmount < i) {
-				enoughMats = false;
-				return false;
-			} else {
-				enoughMats = true;
-				return true;
-			}
-		} else return true;
-	}
-	
-	@Override
-	public void draw(Graphics g) {		
+	public void draw(Graphics g) {
 		//draw border
-		if (type == RobotType.PAINTER)
+		if (robotType == RobotType.PAINTER)
 			g.setColor(materialType.toColor());
 		else
 			g.setColor(Color.LIGHT_GRAY);
@@ -149,23 +154,18 @@ public class Robot implements RobotInterface, ContainerDemander {
 		g.drawRect(0, 0, position.xSize, position.ySize);
 		
 		//draw text
-		if (type == RobotType.PAINTER && materialType == Material.COLOR_WHITE)
+		if (robotType == RobotType.PAINTER && materialType == Material.COLOR_WHITE)
 			g.setColor(Color.BLACK);
 		else
 			g.setColor(Color.WHITE);
 		
 		Font prevFont = g.getFont();
 		g.setFont(prevFont.deriveFont(9f));
-		g.drawString(type.displayName, 1, position.ySize/4);
+		g.drawString(robotType.displayName, 1, position.ySize/4);
 		
 		g.setFont(prevFont);
-		if (type != RobotType.INSPECTOR)
+		if (robotType != RobotType.INSPECTOR)
 			g.drawString(""+materialAmount, position.xSize/3, (int) (position.ySize/1.5f));
 	}
 
-	@Override
-	public String toString() {
-		return String.format("(Robot \"%s\" at %s)", type.displayName, position.toString());
-	}
-	
 }

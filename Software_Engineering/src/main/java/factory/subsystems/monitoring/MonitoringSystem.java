@@ -15,9 +15,12 @@ import app.gui.GUIHandler;
 import app.gui.OnlineShop;
 import app.gui.UIConfiguration;
 import factory.shared.AbstractSubsystem;
+import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.ResourceBox;
+import factory.shared.enums.Material;
+import factory.shared.enums.MaterialStatus;
 import factory.shared.enums.SubsystemStatus;
 import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.assemblyline.AssemblyLineSystem;
@@ -167,7 +170,29 @@ public class MonitoringSystem implements MonitoringInterface {
 	/** Only call this after WarehouseSystem has been set. */
 	@Override
 	public void setShippingBox(Position shippingBoxPos) {
-		ResourceBox box = new ResourceBox(warehouseSystem, shippingBoxPos);
+		ResourceBox box = new ResourceBox(warehouseSystem, shippingBoxPos) {
+			@Override
+			public void receiveContainer(Container container) {
+				super.receiveContainer(container);
+				
+				//simulate delivery of containers after a certain fullness is reached
+				if (getFullness() == MaterialStatus.BAD) {
+					Material[] storedMaterials = getStoredMaterials();
+					
+					for (Material material : storedMaterials) {
+						try {
+							deliverContainer(material);
+							Thread.sleep(300);	//simulates time to load container into truck
+						} catch (IllegalArgumentException e) {
+							//all Containers of this Material-Type have been delivered.
+							continue;	
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		};
 		this.shippingBox = box;
 	}
 

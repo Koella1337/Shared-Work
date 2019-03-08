@@ -24,13 +24,35 @@ import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.agv.AgvTask;
 import factory.subsystems.agv.Forklift;
 import factory.subsystems.assemblyline.AssemblyLine;
-import factory.subsystems.assemblyline.Conveyor;
-import factory.subsystems.assemblyline.Robot;
+import factory.subsystems.assemblyline.interfaces.ConveyorInterface;
+import factory.subsystems.assemblyline.interfaces.RobotInterface;
 import factory.subsystems.warehouse.WarehouseSystem;
 import factory.subsystems.warehouse.WarehouseTask;
 
 public class MonitoringSystemTest {
 
+	/*
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * TEST IS CURRENTLY NOT FUNCTIONAL !!
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+	
 	@Spy
 	private MonitoringSystem monitor;
 
@@ -88,7 +110,7 @@ public class MonitoringSystemTest {
 	@Test(description = "verifies that the error handler is not used when the event is not of type error or global error")
 	public void handleEventCheckThatErrorEventHandlerIsNotUsed() {
 		AbstractSubsystem subsystem = Mockito.mock(AgvCoordinator.class);
-		FactoryEvent event = new FactoryEvent(subsystem, EventKind.CONVEYORS_LACK_OF_OIL, Mockito.mock(Conveyor.class));
+		FactoryEvent event = new FactoryEvent(subsystem, EventKind.LACK_OF_MATERIAL, Material.LUBRICANT, Mockito.mock(ConveyorInterface.class));
 
 		this.monitor.handleEvent(event);
 		Mockito.verifyZeroInteractions(this.errorEventHandler);
@@ -102,7 +124,7 @@ public class MonitoringSystemTest {
 		Mockito.doReturn(pos).when(storageSite).getPosition();
 
 		WarehouseTask wht = new WarehouseTask(600000, Material.BODIES);
-		Robot robot  = Mockito.mock(Robot.class);
+		RobotInterface robot  = Mockito.mock(RobotInterface.class);
 		HashMap<WarehouseTask, ContainerDemander> map = new HashMap<>(Collections.singletonMap(wht, robot));
 		map.put(wht, robot);
 //		Mockito.doReturn(map).when(this.monitor).getWarehouseTaskDemanders();
@@ -124,10 +146,10 @@ public class MonitoringSystemTest {
 	public void testHandleRobotarmsLackOfMaterialEvent() {
 		Position pos = new Position(2, 2);
 
-		Robot robot  = Mockito.mock(Robot.class);
+		RobotInterface robot  = Mockito.mock(RobotInterface.class);
 		Mockito.doReturn(pos).when(robot).getPosition();
 
-		FactoryEvent event = new FactoryEvent(this.warehouseSystem, EventKind.ROBOTARMS_LACK_OF_MATERIAL, Material.BODIES,
+		FactoryEvent event = new FactoryEvent(this.warehouseSystem, EventKind.LACK_OF_MATERIAL, Material.BODIES,
 				robot);
 //		WarehouseTask wht = new WarehouseTask(600000, Material.BODIES);
 //		HashMap<WarehouseTask, ContainerDemander> map = new HashMap<>(Collections.singletonMap(wht, robot));

@@ -68,6 +68,9 @@ public class ResourceBox implements ContainerDemander, ContainerSupplier {
 		g.drawString(""+getContainerAmount(), pos.xSize/3, pos.ySize/2);
 	}
 
+	/**
+	 * @throws IllegalArgumentException If there is no stored container of the specified material.
+	 */
 	@Override
 	public Container deliverContainer(Material material) {
 		if (content.get(material) == null)

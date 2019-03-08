@@ -8,6 +8,11 @@ public interface ConveyorInterface extends Placeable {
 	
 	double getSpeed();
 
+	boolean isReady();
+	
+	/**
+	 * Makes the conveyor do work. Only call when isReady() == true.
+	 */
 	void start();
 	
 }

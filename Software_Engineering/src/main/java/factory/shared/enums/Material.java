@@ -6,7 +6,7 @@ public enum Material {
 	BODIES				(15),
 	WHEELS				(20),
 	SCREWS				(100),
-	LUBRICANT			(50),
+	LUBRICANT			(200),
 	
 	COLOR_RED			(50),
 	COLOR_GREEN			(50),

@@ -3,40 +3,41 @@ package factory.subsystems.assemblyline;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
-import app.gui.SubsystemMenu;
 import factory.shared.Constants;
 import factory.shared.Container;
 import factory.shared.FactoryEvent;
 import factory.shared.Position;
-import factory.shared.ResourceBox;
 import factory.shared.enums.EventKind;
+import factory.shared.enums.Material;
 import factory.shared.enums.MaterialStatus;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.ContainerDemander;
-import factory.shared.interfaces.Monitorable;
-import factory.shared.interfaces.Placeable;
-import factory.shared.interfaces.Stoppable;
 import factory.subsystems.assemblyline.interfaces.ConveyorInterface;
-import factory.subsystems.assemblyline.interfaces.RobotInterface;
 import factory.subsystems.warehouse.AssemblyLineDirection;
 
-@SuppressWarnings("unused")
-public class Conveyor implements ConveyorInterface, ContainerDemander {
+class Conveyor implements ConveyorInterface, ContainerDemander {
+	
+	/** Time in ms how long the conveyor takes to perform work. */
+	private static final long SIMULATED_WORK_DURATION = 3000;
+	
+	/** How much lubricant is used (at maximum) when the Conveyor is started once. */
+	private static final int MAXIMUM_LUBRICANT_PER_START = 10;
 	
 	/**
 	 * Amount of seconds for 1 conveyor step
 	 */
 	private double speed = 1;
 	
-	public int lubricantAmount;
-	private SubsystemStatus status = SubsystemStatus.WAITING;
-	private long timestamp;
+	private Random lubricantRandomizer = new Random();
+	private int lubricantAmount;
 	
-	private ResourceBox inputbox;
-	private ResourceBox outputbox;
+	/** Timestamp of when the last {@link EventKind#LACK_OF_MATERIAL} event was sent. */
+	private long lastLackOfLubricantEventSent = 0;
+	
+	private ComponentStatus status = ComponentStatus.READY;
 	
 	private AssemblyLine assemblyLine;
 	private Position position;
@@ -55,22 +56,10 @@ public class Conveyor implements ConveyorInterface, ContainerDemander {
 
 	@Override
 	public void receiveContainer(Container container) {
-		this.addBox(container);
-	}
-	
-	public void addBox(Container container) {
-		lubricantAmount += container.getAmount();
-	}
-
-	public SubsystemStatus status() {
-		if (status == SubsystemStatus.BROKEN) { // if it's broken
-			return SubsystemStatus.BROKEN;
-		} else if (timestamp + speed <= System.currentTimeMillis()) { // Done with last task
-			status = SubsystemStatus.WAITING;
-		} else {
-			return SubsystemStatus.RUNNING;
+		lubricantAmount += Objects.requireNonNull(container).getAmount();
+		if (status == ComponentStatus.OUT_OF_MATERIAL) {
+			status = ComponentStatus.READY;
 		}
-		return status;
 	}
 
 	public int getMaterials() {
@@ -95,26 +84,45 @@ public class Conveyor implements ConveyorInterface, ContainerDemander {
 	public Position getPosition() {
 		return position;
 	}
-
-	private long lastLackOfMaterialSent = 0;
+	
+	@Override
+	public boolean isReady() {
+		return status == ComponentStatus.READY;
+	}
 	
 	@Override
 	public void start() {
-		if (status() == SubsystemStatus.WAITING) {
-			lubricantAmount -= Math.random() * 5;
-			if (lubricantAmount < 10 && (System.currentTimeMillis() - lastLackOfMaterialSent) > 50000) {
-				lastLackOfMaterialSent = System.currentTimeMillis();
-				FactoryEvent event = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.CONVEYORS_LACK_OF_OIL, this);
-				assemblyLine.notifySubsystem(event);
-			}
-			// Performs task
-			status = SubsystemStatus.RUNNING;
-			timestamp = (int) System.currentTimeMillis();
-			if (Math.random() * speed > 25 * lubricantAmount / 100) { // Simulation on how speed & lubricant impact chances of breaking
-				status = SubsystemStatus.BROKEN;
-				FactoryEvent broken = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.CONVEYORS_BROKEN, this);
-				assemblyLine.notifySubsystem(broken);
-			}
+		if (!isReady())
+			throw new IllegalArgumentException("Robot started even though it was not ready!");
+		
+		status = ComponentStatus.WORKING;
+		
+		lubricantAmount -= lubricantRandomizer.nextInt(MAXIMUM_LUBRICANT_PER_START + 1);
+		if (lubricantAmount < (MAXIMUM_LUBRICANT_PER_START * 5) && (System.currentTimeMillis() - lastLackOfLubricantEventSent) > 50000) {
+			lastLackOfLubricantEventSent = System.currentTimeMillis();
+			FactoryEvent lackOfLubricantEvent = new FactoryEvent(
+				assemblyLine.getSubsystem(), 
+				EventKind.LACK_OF_MATERIAL, 
+				Material.LUBRICANT, this
+			);
+			assemblyLine.notifySubsystem(lackOfLubricantEvent);
+		}
+		
+		// Performs task
+		if (Math.random() * speed > 25 * lubricantAmount / 100) { // Simulation on how speed & lubricant impact chances of breaking
+			FactoryEvent broken = new FactoryEvent(assemblyLine.getSubsystem(), EventKind.CONVEYOR_BROKEN, this);
+			assemblyLine.notifySubsystem(broken);
+		}
+		try {
+			Thread.sleep(SIMULATED_WORK_DURATION);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		if (lubricantAmount >= MAXIMUM_LUBRICANT_PER_START) {
+			status = ComponentStatus.READY;
+		} else {
+			status = ComponentStatus.OUT_OF_MATERIAL;
 		}
 	}
 
@@ -131,7 +139,7 @@ public class Conveyor implements ConveyorInterface, ContainerDemander {
 		else
 			directionString = "> > > > > > > > > > >";
 		
-		//TODO: maybe change colors on other subsystem/assemblyline stati
+		//TODO: maybe change colors on other status
 		if (assemblyLine.getSubsystem().getStatus() == SubsystemStatus.RUNNING)
 			g.setColor(MaterialStatus.PERFECT.uiColor);
 		else
@@ -145,21 +153,10 @@ public class Conveyor implements ConveyorInterface, ContainerDemander {
 		g.setColor(Color.WHITE);
 		g.drawString(""+lubricantAmount, (position.xSize / 2) - 20, position.ySize - 5);
 	}
-
-	public ResourceBox getInputbox() {
-		return inputbox;
-	}
-
-	public void setInputbox(ResourceBox inputbox) {
-		this.inputbox = inputbox;
-	}
-
-	public void restart() {
-		status = SubsystemStatus.WAITING;
-	}
 	
 	@Override
 	public String toString() {
 		return "(Conveyor at " + position.toString() + ")";
 	}
+	
 }

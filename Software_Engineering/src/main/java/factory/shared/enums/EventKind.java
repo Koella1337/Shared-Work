@@ -6,10 +6,10 @@ import factory.shared.Task;
 import factory.shared.ResourceBox;
 import factory.subsystems.agv.AgvTask;
 import factory.subsystems.agv.Forklift;
-import factory.subsystems.assemblyline.Conveyor;
-import factory.subsystems.assemblyline.Robot;
 import factory.subsystems.warehouse.WarehouseTask;
 import factory.subsystems.warehouse.Transaction;
+import factory.subsystems.assemblyline.interfaces.ConveyorInterface;
+import factory.subsystems.assemblyline.interfaces.RobotInterface;
 
 /**
  * The kind of a FactoryEvent.<br>
@@ -22,18 +22,13 @@ public enum EventKind {
 	RESOURCEBOX_FULL				(EventSeverity.ERROR, 		ResourceBox.class),
 	RESOURCEBOX_ALMOST_FULL			(EventSeverity.IMPORTANT, 	ResourceBox.class),
 	
-	//------------------------------- RobotArms Notifications -------------------------------
+	//------------------------------- AssemblyLine Notifications -------------------------------
 	CAR_FINISHED 					(EventSeverity.NORMAL, 		Material.class, ContainerSupplier.class),
-	ROBOTARMS_LACK_OF_MATERIAL 		(EventSeverity.IMPORTANT,	Material.class, ContainerDemander.class),
+	LACK_OF_MATERIAL 				(EventSeverity.IMPORTANT,	Material.class, ContainerDemander.class),
 	
-	//---------------------------------- RobotArms Errors -----------------------------------
-	ROBOTARMS_BROKEN				(EventSeverity.IMPORTANT, 	Robot.class),
-	
-	//------------------------------- Conveyors Notifications -------------------------------
-	CONVEYORS_LACK_OF_OIL			(EventSeverity.IMPORTANT, 	ContainerDemander.class),
-	
-	//---------------------------------- Conveyors Errors -----------------------------------
-	CONVEYORS_BROKEN				(EventSeverity.ERROR, 		Conveyor.class),
+	//---------------------------------- AssemblyLine Errors -----------------------------------
+	ROBOT_BROKEN					(EventSeverity.IMPORTANT, 	RobotInterface.class),
+	CONVEYOR_BROKEN					(EventSeverity.ERROR, 		ConveyorInterface.class),
 	
 	//------------------------------- Warehouse Notifications -------------------------------
 	WAREHOUSE_TASK_COMPLETED		(EventSeverity.NORMAL,		WarehouseTask.class, ContainerSupplier.class),

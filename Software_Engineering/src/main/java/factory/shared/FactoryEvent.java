@@ -50,7 +50,9 @@ public class FactoryEvent {
 		
 		for (int i = 0; i < attachments.length; i++) {
 			try {
-				types[i].cast(attachments[i]);
+				if (types[i].cast(attachments[i]) == null) {
+					return false;
+				}
 			} catch (ClassCastException e) {
 				return false;
 			}

@@ -21,7 +21,6 @@ import factory.shared.interfaces.ContainerDemander;
 import factory.shared.interfaces.ContainerSupplier;
 import factory.shared.enums.EventKind.EventSeverity;
 import factory.subsystems.agv.AgvTask;
-import factory.subsystems.assemblyline.Robot;
 import factory.subsystems.monitoring.interfaces.ErrorHandlerInterface;
 import factory.subsystems.monitoring.interfaces.EventHandlerInterface;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
@@ -209,9 +208,9 @@ public class AutonomousEventHandler implements EventHandlerInterface {
 			LOGGER.warning(box + " is almost full!");
 		});
 		
-		map.put(ROBOTARMS_LACK_OF_MATERIAL, event -> {
+		map.put(LACK_OF_MATERIAL, event -> {
 			Material material = (Material) event.getAttachment(0);
-			Robot robot = (Robot) event.getAttachment(1);
+			ContainerDemander robot = (ContainerDemander) event.getAttachment(1);
 
 			handleBasicSupplyAndDemand(robot, material, DEADLINE_IMPORTANT, DEADLINE_IMPORTANT);
 		});
