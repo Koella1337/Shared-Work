@@ -300,13 +300,13 @@ public class Forklift implements Placeable {
 							System.out.println("asdasdas");
 						}
 					}
-					if (targetReachedFinal(currentTask.getDropoff().getPosition())) {
+					if (targetReachedFinal(currentTask.getDropoff().getPosition()) && carriedBox != null) {
 						if (carriedBox != null)
 						{
 							currentTask.getDropoff().receiveContainer(carriedBox);
 						}
 						AgvTask saveTask = currentTask;
-						currentTask = null;
+						currentTask = null;	
 						carriedBox = null;
 						coordinator.finishedTask(saveTask);
 					}

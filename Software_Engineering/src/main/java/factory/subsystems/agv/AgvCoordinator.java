@@ -205,7 +205,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			this.notify(new FactoryEvent(this, EventKind.TASK_NOT_COMPLETED_BEFORE_DEADLINE, task));
 		}
 		this.notify(new FactoryEvent(this, EventKind.AGV_CONTAINER_DELIVERED, task));
-//		System.out.println("CONTAINER HAS BEEN DELIVERED");
+//		System.out.println("From " + task.getPickup() + " to " + task.getDropoff());
 		
 		if(!outstandingTasks.isEmpty())
 		{
