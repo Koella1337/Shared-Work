@@ -239,7 +239,7 @@ public class AssemblyLine implements Placeable {
 			
 			MaterialStatus fullness = outputBox.getFullness();
 			if (fullness == MaterialStatus.BAD || fullness == MaterialStatus.TERRIBLE) {
-				FactoryEvent full = new FactoryEvent(subsystem, EventKind.RESOURCEBOX_ALMOST_FULL, car, outputBox);
+				FactoryEvent full = new FactoryEvent(subsystem, EventKind.RESOURCEBOX_ALMOST_FULL, outputBox);
 				subsystem.notify(full);
 			}
 		}

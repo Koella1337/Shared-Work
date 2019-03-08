@@ -85,6 +85,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 		}
 		if(free != null)
 		{
+			// this code has been duplicated in forklift.java, because I am stupid, if changes are made here, check there as well
 			// calculate the Path
 			List<Position> pathThere = pathfinder.getPath(free.getPosition(), task.getPickup().getPosition().getMiddlePoint());
 			List<Position> pathBack = pathfinder.getPath(task.getPickup().getPosition(), task.getDropoff().getPosition().getMiddlePoint());
