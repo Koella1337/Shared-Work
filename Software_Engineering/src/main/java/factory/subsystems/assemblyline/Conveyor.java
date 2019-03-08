@@ -93,7 +93,7 @@ class Conveyor implements ConveyorInterface, ContainerDemander {
 	@Override
 	public void start() {
 		if (!isReady())
-			throw new IllegalArgumentException("Robot started even though it was not ready!");
+			throw new IllegalArgumentException("Conveyor started even though it was not ready!");
 		
 		status = ComponentStatus.WORKING;
 		
