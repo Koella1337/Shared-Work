@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Queue;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Element;
@@ -22,6 +21,7 @@ import factory.shared.enums.EventKind;
 import factory.shared.enums.SubsystemStatus;
 import factory.shared.interfaces.Placeable;
 import factory.subsystems.agv.interfaces.AgvMonitorInterface;
+import factory.subsystems.assemblyline.Conveyor;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
 
 public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInterface{
@@ -30,7 +30,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 	private SubsystemStatus status = SubsystemStatus.WAITING;
 	private List<AgvTask> tasks = new LinkedList<>();
 	public Pathfinder pathfinder;
-	private Queue<AgvTask> outstandingTasks = new PriorityQueue<AgvTask>();
+	private PriorityQueue<AgvTask> outstandingTasks = new PriorityQueue<AgvTask>();
 	
 	public AgvCoordinator(MonitoringInterface mon, Element factory, List<Placeable> accessiblePlaceables)
 	{
@@ -88,10 +88,19 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 			// this code has been duplicated in forklift.java, because I am stupid, if changes are made here, check there as well
 			// calculate the Path
 			List<Position> pathThere = pathfinder.getPath(free.getPosition(), task.getPickup().getPosition().getMiddlePoint());
-			List<Position> pathBack = pathfinder.getPath(task.getPickup().getPosition(), task.getDropoff().getPosition().getMiddlePoint());
-
 			pathThere.add(task.getPickup().getPosition().getMiddlePoint());
-			pathBack.add(task.getDropoff().getPosition().getMiddlePoint());
+			List<Position> pathBack;
+			if(task.getDropoff() instanceof Conveyor)
+			{
+				Position endPosition = ((Conveyor)(task.getDropoff())).getAssemblyLine().getOutputBox().getPosition();
+				pathBack = pathfinder.getPath(task.getPickup().getPosition(), endPosition.getMiddlePoint());
+				pathBack.add(endPosition.getMiddlePoint());
+			}
+			else
+			{
+				pathBack = pathfinder.getPath(task.getPickup().getPosition(), task.getDropoff().getPosition().getMiddlePoint());
+				pathBack.add(task.getDropoff().getPosition().getMiddlePoint());
+			}
 			if(pathThere != null && pathBack != null)
 			{
 				free.setPath(pathThere);
@@ -198,7 +207,7 @@ public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInter
 		return tasks;
 	}
 
-	public void finishedTask(AgvTask task) 
+	public synchronized void finishedTask(AgvTask task) 
 	{
 		if(task.getTimeLeft() < 0)
 		{

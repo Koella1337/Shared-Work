@@ -18,7 +18,7 @@ import factory.shared.interfaces.ContainerDemander;
 import factory.subsystems.assemblyline.interfaces.ConveyorInterface;
 import factory.subsystems.warehouse.AssemblyLineDirection;
 
-class Conveyor implements ConveyorInterface, ContainerDemander {
+public class Conveyor implements ConveyorInterface, ContainerDemander {
 	
 	/** Time in ms how long the conveyor takes to perform work. */
 	private static final long SIMULATED_WORK_DURATION = 3000;
@@ -157,6 +157,10 @@ class Conveyor implements ConveyorInterface, ContainerDemander {
 	@Override
 	public String toString() {
 		return "(Conveyor at " + position.toString() + ")";
+	}
+	
+	public AssemblyLine getAssemblyLine() {
+		return assemblyLine;
 	}
 	
 }

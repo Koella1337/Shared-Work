@@ -16,6 +16,7 @@ import factory.shared.FactoryEvent;
 import factory.shared.Position;
 import factory.shared.enums.EventKind;
 import factory.shared.interfaces.Placeable;
+import factory.subsystems.assemblyline.Conveyor;
 
 public class Forklift implements Placeable {
 	private static final double SPEED = 10000000; // distance moved per nanosecond (inverted for easier calculation)
@@ -243,10 +244,22 @@ public class Forklift implements Placeable {
 				// TODO: this is stupid, I should fix it properly, if I ever find the source of the bug
 				// the bug that makes it so a forklifts path is empty even though it's not done with the route
 				List<Position> pathThere = coordinator.pathfinder.getPath(getPosition(), currentTask.getPickup().getPosition().getMiddlePoint());
-				List<Position> pathBack = coordinator.pathfinder.getPath(currentTask.getPickup().getPosition(), currentTask.getDropoff().getPosition().getMiddlePoint());
-
 				pathThere.add(currentTask.getPickup().getPosition().getMiddlePoint());
-				pathBack.add(currentTask.getDropoff().getPosition().getMiddlePoint());
+				
+				List<Position> pathBack;
+				if(currentTask.getDropoff() instanceof Conveyor)
+				{
+					Position endPosition = ((Conveyor)(currentTask.getDropoff())).getAssemblyLine().getOutputBox().getPosition();
+					pathBack = coordinator.pathfinder.getPath(currentTask.getPickup().getPosition(), endPosition.getMiddlePoint());
+					pathBack.add(endPosition.getMiddlePoint());
+				}
+				else
+				{
+					pathBack = coordinator.pathfinder.getPath(currentTask.getPickup().getPosition(), currentTask.getDropoff().getPosition().getMiddlePoint());
+					pathBack.add(currentTask.getDropoff().getPosition().getMiddlePoint());
+				}
+				
+				
 				if(pathThere != null && pathBack != null)
 				{
 					setPath(pathThere);
@@ -300,7 +313,10 @@ public class Forklift implements Placeable {
 							System.out.println("asdasdas");
 						}
 					}
-					if (targetReachedFinal(currentTask.getDropoff().getPosition()) && carriedBox != null) {
+					if ((targetReachedFinal(currentTask.getDropoff().getPosition()) ||
+							(currentTask.getDropoff() instanceof Conveyor 
+									&& targetReachedFinal(((Conveyor)currentTask.getDropoff()).getAssemblyLine().getOutputBox().getPosition())))
+							&& carriedBox != null) {
 						if (carriedBox != null)
 						{
 							currentTask.getDropoff().receiveContainer(carriedBox);
