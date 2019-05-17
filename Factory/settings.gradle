@@ -1,0 +1,16 @@
+
+rootProject.name = "Factory"
+
+include "Factory.Shared",
+		"Factory.Database",
+		"Factory.MonitoringSystem",
+		"Factory.Assemblylines",
+		"Factory.Agv",
+		"Factory.WarehouseSystem"
+		
+project(":Factory.Shared").projectDir 			= file("../Factory.Shared")
+project(":Factory.Database").projectDir 		= file("../Factory.Database")
+project(":Factory.MonitoringSystem").projectDir = file("../Factory.MonitoringSystem")
+project(":Factory.Assemblylines").projectDir 	= file("../Factory.Assemblylines")
+project(":Factory.Agv").projectDir 				= file("../Factory.Agv")
+project(":Factory.WarehouseSystem").projectDir 	= file("../Factory.WarehouseSystem")

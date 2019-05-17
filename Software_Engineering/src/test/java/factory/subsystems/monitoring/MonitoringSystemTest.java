@@ -1,4 +1,4 @@
-package factory.subsystems.monitoring;
+/*package factory.subsystems.monitoring;
 
 import static org.testng.Assert.assertEquals;
 
@@ -51,7 +51,7 @@ public class MonitoringSystemTest {
 	 * 
 	 * 
 	 * 
-	 */
+	 *
 	
 	@Spy
 	private MonitoringSystem monitor;
@@ -166,4 +166,4 @@ public class MonitoringSystemTest {
 	
 	
 
-}
+}*/

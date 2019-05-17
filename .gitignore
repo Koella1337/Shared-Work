@@ -1,8 +1,16 @@
-# Eclipse project files
+
+##### Eclipse #####
+
 */bin/
 */tmp/
+*/.settings/
+*.project
 
-# Eclipse workspace files
 .metadata/
 .recommenders/
 *.classpath
+
+##### Gradle #####
+
+*/build/
+*/.gradle/
