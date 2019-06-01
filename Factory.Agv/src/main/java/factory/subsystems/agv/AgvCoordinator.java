@@ -1,0 +1,211 @@
+package factory.subsystems.agv;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import factory.shared.AbstractSubsystem;
+import factory.shared.FactoryEvent;
+import factory.shared.Position;
+import factory.shared.Utils;
+import factory.shared.enums.EventKind;
+import factory.shared.enums.SubsystemStatus;
+import factory.shared.interfaces.Monitor;
+import factory.shared.interfaces.Placeable;
+import factory.subsystems.agv.interfaces.AgvMonitorInterface;
+
+public class AgvCoordinator extends AbstractSubsystem implements AgvMonitorInterface{
+	
+	private final List<Forklift> forklifts = new LinkedList<>();
+	private SubsystemStatus status = SubsystemStatus.WAITING;
+	private List<AgvTask> tasks = new LinkedList<>();
+	public Pathfinder pathfinder;
+	private PriorityQueue<AgvTask> outstandingTasks = new PriorityQueue<AgvTask>();
+	
+	public AgvCoordinator(Monitor mon, Element factory, List<Placeable> accessiblePlaceables)
+	{
+		super(mon);
+		status = SubsystemStatus.RUNNING;
+
+		try {
+			pathfinder = new Pathfinder(this, factory, accessiblePlaceables);
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			// BAD THINGS HAVE HAPPENED WHILE I READ THE XML FILE
+			System.out.println("AGV PATHFINDER DID BAD THINGS TO THE XML FILE");
+			e.printStackTrace();
+		}
+		Element forks = (Element) factory.getElementsByTagName("forklifts").item(0);
+		NodeList forkliftElements = forks.getElementsByTagName("forklift");
+		for(int i = 0; i < forkliftElements.getLength(); i++)
+		{
+			Node a = ((Element)forkliftElements.item(i)).getElementsByTagName("position").item(0);
+			String s = a.getFirstChild().getNodeValue();
+			Position p = Utils.parsePosition(s, null);
+			Forklift f = new Forklift(p, this);
+			addForklift(f);
+		}
+		
+//		ResourceBox a = new ResourceBox(this, new Position(20, 20));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		a.receiveContainer(new Container(Material.BODIES));
+//		ResourceBox b = new ResourceBox(this, new Position(500, 500));
+//		submitTask(new AgvTask(600, Material.BODIES, a, b));
+//		submitTask(new AgvTask(600, Material.BODIES, a, b));
+//		submitTask(new AgvTask(600, Material.BODIES, a, b));
+	}
+	
+	public void addForklift(Forklift forklift)
+	{
+		forklifts.add(forklift);
+	}
+
+	@Override
+	public void receiveTask(AgvTask task) {
+		Forklift free = null;
+		for(Forklift f : forklifts)
+		{
+			if(f.getCurrentTask() == null)
+			{
+				free = f;
+				break;
+			}
+		}
+		if(free != null)
+		{
+			// this code has been duplicated in forklift.java, because I am stupid, if changes are made here, check there as well
+			// calculate the Path
+			List<Position> pathThere = pathfinder.getPath(free.getPosition(), task.getPickup().getPosition().getMiddlePoint());
+			pathThere.add(task.getPickup().getPosition().getMiddlePoint());
+			
+			List<Position> pathBack;
+			pathBack = pathfinder.getPath(task.getPickup().getPosition(), task.getDropoff().getPosition().getMiddlePoint());
+			pathBack.add(task.getDropoff().getPosition().getMiddlePoint());
+			
+			if(pathThere != null && pathBack != null)
+			{
+				free.setPath(pathThere);
+				free.path.addAll(pathBack);
+				free.assignTask(task);
+			}
+			else
+			{
+	        	notify(new FactoryEvent(this, EventKind.AGV_PATHING_IMPOSSIBLE, task));
+			}
+		}
+		else
+		{
+			outstandingTasks.add(task);
+		}
+		
+	}
+
+	public void requestReroute(Forklift f) {
+			// recalculate the Path
+			List<Position> pathThere = null;
+			List<Position> pathBack = null;
+			try
+			{
+			if(f.part1)
+			{
+				pathThere = pathfinder.getPath(f.getPosition(), f.getCurrentTask().getPickup().getPosition());
+			}
+			pathBack = pathfinder.getPath(f.getCurrentTask().getPickup().getPosition(), f.getCurrentTask().getDropoff().getPosition());
+			}
+			catch(NullPointerException e)
+			{
+				e.printStackTrace();
+			}
+			if(f.part1)
+			{
+				if(pathThere != null && pathBack != null)
+				{
+					f.setPath(pathThere);
+					f.path.addAll(pathBack);
+				}
+				else
+				{
+		        	notify(new FactoryEvent(this, EventKind.AGV_PATHING_IMPOSSIBLE, f.getCurrentTask()));
+				}
+			}
+			else
+			{
+				if(pathBack != null)
+				{
+					f.setPath(pathBack);
+				}
+				else
+				{
+		        	notify(new FactoryEvent(this, EventKind.AGV_PATHING_IMPOSSIBLE, f.getCurrentTask()));
+				}
+			}
+	}
+
+	@Override
+	public List<Forklift> getForklifts() {
+		return forklifts;
+	}
+
+	@Override
+	public SubsystemStatus getStatus() {
+		return status;
+	}
+
+	@Override
+	public List<Placeable> getPlaceables() {
+		return new ArrayList<>(forklifts);
+	}
+
+	@Override
+	public String getName() {
+		return "AGV System";
+	}
+
+	@Override
+	public void start() {
+		for(Forklift f : forklifts)
+		{
+			f.resume();
+		}
+	}
+
+	@Override
+	public void stop() {
+		for(Forklift f : forklifts)
+		{
+			f.shutdown();
+		}
+	}
+
+	@Override
+	public List<AgvTask> getCurrentTasks() {
+		return tasks;
+	}
+
+	public synchronized void finishedTask(AgvTask task) 
+	{
+		if(task.getTimeLeft() < 0)
+		{
+			this.notify(new FactoryEvent(this, EventKind.TASK_NOT_COMPLETED_BEFORE_DEADLINE, task));
+		}
+		this.notify(new FactoryEvent(this, EventKind.AGV_CONTAINER_DELIVERED, task));
+//		System.out.println("From " + task.getPickup() + " to " + task.getDropoff());
+		
+		if(!outstandingTasks.isEmpty())
+		{
+			AgvTask nextTask = outstandingTasks.poll();
+			receiveTask(nextTask);
+		}
+	}
+}

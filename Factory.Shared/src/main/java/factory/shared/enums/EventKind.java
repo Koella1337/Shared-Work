@@ -1,15 +1,12 @@
 package factory.shared.enums;
 
-import factory.shared.ResourceBox;
 import factory.shared.Task;
-import factory.shared.interfaces.ContainerDemander;
+import factory.shared.ResourceBox;
+import factory.shared.Transaction;
+
+import factory.shared.interfaces.Placeable;
 import factory.shared.interfaces.ContainerSupplier;
-import factory.subsystems.agv.AgvTask;
-import factory.subsystems.agv.Forklift;
-import factory.subsystems.assemblyline.interfaces.ConveyorInterface;
-import factory.subsystems.assemblyline.interfaces.RobotInterface;
-import factory.subsystems.warehouse.Transaction;
-import factory.subsystems.warehouse.WarehouseTask;
+import factory.shared.interfaces.ContainerDemander;
 
 /**
  * The kind of a FactoryEvent.<br>
@@ -27,20 +24,20 @@ public enum EventKind {
 	LACK_OF_MATERIAL 				(EventSeverity.IMPORTANT,	Material.class, ContainerDemander.class),
 	
 	//---------------------------------- AssemblyLine Errors -----------------------------------
-	ROBOT_BROKEN					(EventSeverity.IMPORTANT, 	RobotInterface.class),
-	CONVEYOR_BROKEN					(EventSeverity.ERROR, 		ConveyorInterface.class),
+	ROBOT_BROKEN					(EventSeverity.IMPORTANT, 	ContainerDemander.class),
+	CONVEYOR_BROKEN					(EventSeverity.ERROR, 		Placeable.class),
 	
 	//------------------------------- Warehouse Notifications -------------------------------
-	WAREHOUSE_TASK_COMPLETED		(EventSeverity.NORMAL,		WarehouseTask.class, ContainerSupplier.class),
+	WAREHOUSE_TASK_COMPLETED		(EventSeverity.NORMAL,		Task.class, ContainerSupplier.class),
 	WAREHOUSE_NEW_TRANSACTION		(EventSeverity.NORMAL,		Transaction.class),	
 	
 	//---------------------------------- AGV Notifications ----------------------------------
-	AGV_CONTAINER_DELIVERED 		(EventSeverity.NORMAL,		AgvTask.class),
+	AGV_CONTAINER_DELIVERED 		(EventSeverity.NORMAL,		Task.class),
 	
 	//------------------------------------- AGV Errors --------------------------------------
-	AGV_FORKLIFT_DAMAGED 			(EventSeverity.ERROR,		Forklift.class),
-	AGV_FORKLIFT_COLLISION 			(EventSeverity.GLOBAL_EROR,	Forklift.class, Forklift.class),
-	AGV_PATHING_IMPOSSIBLE			(EventSeverity.IMPORTANT,	AgvTask.class),
+	AGV_FORKLIFT_DAMAGED 			(EventSeverity.ERROR,		Placeable.class),
+	AGV_FORKLIFT_COLLISION 			(EventSeverity.GLOBAL_EROR,	Placeable.class, Placeable.class),
+	AGV_PATHING_IMPOSSIBLE			(EventSeverity.IMPORTANT,	Task.class),
 	
 	
 	//------------------------------- Monitoring Notifications ------------------------------

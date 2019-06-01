@@ -1,0 +1,50 @@
+<factory>
+	<name>Factory</name>
+	<size>700, 700</size>
+	
+	<shippingbox>
+		<position>0,0</position>
+		<size>117,84</size>
+	</shippingbox>
+	<staffquarter>
+		<position>0, 660 </position>
+		<size>175,40</size>
+	</staffquarter>
+
+	<assemblylines>
+		<assemblyline>
+			<position>270 ,50</position>
+			<direction>+x</direction>
+		</assemblyline>
+		<assemblyline>
+			<position>50,430</position>
+			<direction>-x</direction>
+		</assemblyline>
+		<assemblyline>
+			<position>320,590</position>
+			<direction>+x</direction>
+		</assemblyline>
+	</assemblylines>
+
+	<warehouse>
+		<storagesite>
+			<position>250, 200</position>
+			<size>200, 200</size>
+			<inputbox>
+				<position>250,300</position>
+			</inputbox>
+			<outputbox>
+				<position>410, 300</position>
+			</outputbox>
+		</storagesite>
+	</warehouse>
+
+	<forklifts>
+		<forklift>
+			<position>50, 250</position>
+		</forklift>
+		<forklift>
+			<position>600, 350</position>
+		</forklift>
+	</forklifts>
+</factory>

@@ -1,4 +1,4 @@
-package factory.subsystems.warehouse;
+package factory.shared;
 
 import factory.shared.enums.Material;
 

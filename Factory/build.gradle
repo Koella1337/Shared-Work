@@ -1,21 +1,52 @@
+buildscript {
+	repositories {
+		maven {
+			url "https://plugins.gradle.org/m2/"
+		}
+	}
+	dependencies {
+		classpath "org.javamodularity:moduleplugin:1.5.0"
+	}
+}
+
+plugins {
+  id "org.javamodularity.moduleplugin" version "1.5.0"
+}
+
+dependencies {
+	compile project(":Factory.Shared")
+	compile project(":Factory.MonitoringSystem")
+	compile project(":Factory.Assemblylines")
+	compile project(":Factory.Agv")
+	compile project(":Factory.WarehouseSystem")
+}
 
 allprojects {
-	
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
+	apply plugin: 'org.javamodularity.moduleplugin'
 
 	sourceCompatibility=11
 	targetCompatibility=11
 	
+	eclipse {
+	    classpath {
+	        file {
+	            whenMerged {
+	                entries.findAll { 
+	                	it.kind == 'src' || it.kind == 'lib' 
+	                }.each { it.entryAttributes['module'] = 'true' }
+	            }
+	        }
+	    }
+	}
+	
 	repositories {
-		jcenter()
+		mavenCentral()
 	}
 
 	dependencies {
-		
-		
 		testCompile 'junit:junit:4.12'
 	}
 	
 }
-
