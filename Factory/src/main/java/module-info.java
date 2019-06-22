@@ -6,4 +6,5 @@ module factory {
 	requires transitive factory.subsystem.warehouse;
 	
 	requires java.xml;
+	requires io.reactivex.rxjava2;
 }

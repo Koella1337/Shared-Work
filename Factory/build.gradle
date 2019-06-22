@@ -46,6 +46,7 @@ allprojects {
 	}
 
 	dependencies {
+		compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.10'
 		testCompile 'junit:junit:4.12'
 	}
 	
