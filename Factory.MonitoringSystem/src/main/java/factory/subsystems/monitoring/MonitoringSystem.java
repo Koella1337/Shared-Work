@@ -1,13 +1,7 @@
 package factory.subsystems.monitoring;
 
-import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -23,18 +17,13 @@ import factory.subsystems.agv.AgvCoordinator;
 import factory.subsystems.assemblyline.AssemblyLineSystem;
 import factory.subsystems.monitoring.interfaces.EventHandlerInterface;
 import factory.subsystems.monitoring.interfaces.MonitoringInterface;
-import factory.subsystems.monitoring.onlineshop.OnlineShop;
-import factory.subsystems.monitoring.onlineshop.OnlineShopUser;
-import factory.subsystems.monitoring.onlineshop.Order;
 import factory.subsystems.warehouse.WarehouseSystem;
 
 public class MonitoringSystem implements MonitoringInterface {
 	
 	private static final Logger LOGGER = Logger.getLogger(MonitoringSystem.class.getName());
 
-	private final Map<OnlineShopUser, List<Order>> orderMap;
 	
-	private final UserHandler userHandler;
 	private GUIHandler guiHandler;
 	
 	private EventHandlerInterface eventHandler;
@@ -43,16 +32,10 @@ public class MonitoringSystem implements MonitoringInterface {
 	private AgvCoordinator agvSystem;
 	private WarehouseSystem warehouseSystem;
 	private AssemblyLineSystem alsubsys;
-	private OnlineShop onlineShop;
 
 	private ResourceBox shippingBox;
 	private Position staffQuarterPosition;
 	
-	public MonitoringSystem() {
-		this.orderMap = new HashMap<>();
-		this.onlineShop = new OnlineShop(this);
-		this.userHandler = new UserHandler();
-	}
 
 	@Override
 	public synchronized void handleEvent(FactoryEvent event) {
@@ -82,9 +65,6 @@ public class MonitoringSystem implements MonitoringInterface {
 		this.guiHandler.start();
 		this.setStatus(SubsystemStatus.RUNNING);
 
-		new Thread(() -> {
-			this.onlineShop.start();
-		}).start();
 	}
 
 	@Override
@@ -102,21 +82,7 @@ public class MonitoringSystem implements MonitoringInterface {
 		this.setStatus(SubsystemStatus.STOPPED);
 	}
 
-	@Override
-	public void addOrder(Order order) throws InvalidOrderException {
-		LOGGER.log(INFO, "order placed: " + order);
-		OnlineShopUser user = order.getUser();
-		
-		if(!userHandler.loginCorrect(user)) {
-			throw new InvalidOrderException("The password is incorrect or the values are invalid!");
-		}
 
-		if (this.orderMap.get(user) == null) {
-			this.orderMap.put(user, new ArrayList<Order>(Arrays.asList(order)));
-		} else {
-			this.orderMap.get(user).add(order);
-		}
-	}
 
 	@Override
 	public SubsystemStatus getStatus() {
@@ -195,10 +161,7 @@ public class MonitoringSystem implements MonitoringInterface {
 		this.alsubsys = assemblyLine;
 	}
 
-	@Override
-	public Map<OnlineShopUser, List<Order>> getOrderMap() {
-		return orderMap;
-	}
+
 
 	@Override
 	public Position getStaffQuarterPosition() {

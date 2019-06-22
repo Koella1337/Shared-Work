@@ -1,7 +1,6 @@
 module factory.subsystem.monitoring {
 	exports factory.subsystems.monitoring;
 	exports factory.subsystems.monitoring.interfaces;
-	exports factory.subsystems.monitoring.onlineshop;
 
 	requires transitive factory.shared;
 	requires transitive factory.subsystem.assemblylines;

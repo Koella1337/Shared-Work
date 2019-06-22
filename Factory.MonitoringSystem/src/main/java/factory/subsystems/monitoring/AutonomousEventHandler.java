@@ -1,7 +1,18 @@
 package factory.subsystems.monitoring;
 
-import static factory.shared.enums.EventKind.*;
-import static factory.shared.enums.EventKind.EventSeverity.*;
+import static factory.shared.enums.EventKind.AGV_CONTAINER_DELIVERED;
+import static factory.shared.enums.EventKind.AGV_PATHING_IMPOSSIBLE;
+import static factory.shared.enums.EventKind.CAR_FINISHED;
+import static factory.shared.enums.EventKind.LACK_OF_MATERIAL;
+import static factory.shared.enums.EventKind.RESOURCEBOX_ALMOST_FULL;
+import static factory.shared.enums.EventKind.TASK_NOT_COMPLETED_BEFORE_DEADLINE;
+import static factory.shared.enums.EventKind.WAREHOUSE_NEW_TRANSACTION;
+import static factory.shared.enums.EventKind.WAREHOUSE_TASK_COMPLETED;
+import static factory.shared.enums.EventKind.EventSeverity.ERROR;
+import static factory.shared.enums.EventKind.EventSeverity.GLOBAL_EROR;
+import static factory.shared.enums.EventKind.EventSeverity.IMPORTANT;
+import static factory.shared.enums.EventKind.EventSeverity.INFO;
+import static factory.shared.enums.EventKind.EventSeverity.NORMAL;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,10 +27,10 @@ import factory.shared.Constants;
 import factory.shared.FactoryEvent;
 import factory.shared.ResourceBox;
 import factory.shared.enums.EventKind;
+import factory.shared.enums.EventKind.EventSeverity;
 import factory.shared.enums.Material;
 import factory.shared.interfaces.ContainerDemander;
 import factory.shared.interfaces.ContainerSupplier;
-import factory.shared.enums.EventKind.EventSeverity;
 import factory.subsystems.agv.AgvTask;
 import factory.subsystems.monitoring.interfaces.ErrorHandlerInterface;
 import factory.subsystems.monitoring.interfaces.EventHandlerInterface;

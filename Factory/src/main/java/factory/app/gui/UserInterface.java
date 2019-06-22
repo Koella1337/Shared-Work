@@ -81,11 +81,6 @@ class UserInterface implements Stoppable {
 		legend.setBounds(20, 180, 360, 100);
 		this.menuPanel.add(legend);
 
-		OrderListView orderListView = new OrderListView(this.fps, this.monitor);
-		orderListView.setBackground(Color.white);
-		orderListView.setBounds(20, 320, 360, 300);
-		this.menuPanel.add(orderListView);
-
 		startButton = new MonitorButton("START", m -> m.getStatus() == SubsystemStatus.STOPPED);
 		startButton.setBounds(20,20,80,20);
 		startButton.setFocusable(false);

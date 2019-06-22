@@ -1,12 +1,11 @@
 package factory.shared.enums;
 
-import factory.shared.Task;
 import factory.shared.ResourceBox;
+import factory.shared.Task;
 import factory.shared.Transaction;
-
-import factory.shared.interfaces.Placeable;
-import factory.shared.interfaces.ContainerSupplier;
 import factory.shared.interfaces.ContainerDemander;
+import factory.shared.interfaces.ContainerSupplier;
+import factory.shared.interfaces.Placeable;
 
 /**
  * The kind of a FactoryEvent.<br>
