@@ -99,8 +99,6 @@ public class Car implements Updateable {
 			transform.setXPos(Math.min(transform.getXPos() + currentSpeed, GOAL_X_POS));
 			currentSpeed = Math.min(currentSpeed + acceleration.getValue(), maxSpeed.getValue());
 			
-			System.out.println("Max: "+maxSpeed.getValue() + " | Cur: " + currentSpeed);
-			
 			if (GOAL_X_POS == transform.getXPos()) {
 				isFinished = true;
 			}

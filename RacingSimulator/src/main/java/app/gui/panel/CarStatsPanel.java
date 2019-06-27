@@ -46,7 +46,7 @@ public class CarStatsPanel extends JPanel {
 		g.drawString(label, x, y);
 		for (int i = 0; i < maxPoints; i++) {
 			g.setColor(Color.BLACK);
-			if (points >= i) {
+			if (points > i) {
 				g.fillOval(x + i * 12, y + 4, 12, 12);
 			} else {
 				g.drawOval(x + i * 12, y + 4, 12, 12);
