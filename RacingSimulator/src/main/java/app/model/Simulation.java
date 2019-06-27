@@ -1,5 +1,6 @@
 package app.model;
 
+import java.util.Arrays;
 import java.util.List;
 
 import app.model.car.Car;
@@ -36,8 +37,7 @@ public class Simulation implements SimulationController {
 
 	@Override
 	public List<? extends Car> getCars() {
-		// TODO Auto-generated method stub
-		return null;
+		return Arrays.asList(new Car(),new Car(),new Car(),new Car(),new Car(),new Car(),new Car(),new Car(),new Car(),new Car(),new Car(),new Car(),new Car(),new Car(),new Car(),new Car());
 	}
 
 

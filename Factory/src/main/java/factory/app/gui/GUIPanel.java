@@ -12,6 +12,7 @@ public class GUIPanel extends JPanel {
 	protected GUIPanel(int fps) {
 		Timer timer = new UpdateTimer(this, fps);
 		timer.setInitialDelay(0);
+		
 		timer.start();
 	}
 
