@@ -10,7 +10,7 @@ import app.timer.UpdateTimer;
 import app.timer.Updateable;
 
 public class GuiHandler implements Updateable {
-	private static final int REFRESH_RATE = 1;
+	private static final int REFRESH_RATE = 100;
 
 	private AppWindow appWindow;
 	
@@ -30,13 +30,6 @@ public class GuiHandler implements Updateable {
 		System.out.println("GuiHandler.startSimulation");
 		this.simulation.startSimulation();
 		this.updateTimer.start();
-	}
-	
-
-	public void pauseSimulation() {
-		System.out.println("GuiHandler.pauseSimulation");
-		this.simulation.pauseSimulation();
-		this.updateTimer.stop();
 	}
 	
 	public void resetSimulation() {

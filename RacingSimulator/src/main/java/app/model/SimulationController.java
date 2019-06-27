@@ -8,8 +8,6 @@ public interface SimulationController {
 
 	void startSimulation();
 	
-	void pauseSimulation();
-	
 	void resetSimulation();
 	
 	SimulationStatus getStatus();
