@@ -18,7 +18,8 @@ public class SimulationPanel extends JPanel {
 	public SimulationPanel(GuiHandler guiHandler) {
 		super();
 		this.setBackground(Color.WHITE);
-		this.addMouseListener(new CustomMouseAdapter(guiHandler));
+		CustomMouseAdapter customMouseAdapter = new CustomMouseAdapter(guiHandler);
+		this.addMouseMotionListener(customMouseAdapter);
 	}
 
 	@Override
