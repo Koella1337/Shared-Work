@@ -23,6 +23,11 @@ public class Transform implements Cloneable{
 	protected Transform clone() {
 		return new Transform(xPos, yPos, xSize, ySize);
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("[Transform: xPos=%.2f | yPos=%.2f | xSize=%.2f | ySize=%.2f]", xPos, yPos, xSize, ySize);
+	}
 
 	public double getXPos() {
 		return xPos;

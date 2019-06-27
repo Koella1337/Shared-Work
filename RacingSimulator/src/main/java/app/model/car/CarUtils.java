@@ -31,7 +31,7 @@ public class CarUtils {
 		@Override
 		public double getValue() {
 			// TODO 
-			return 0;
+			return 100;
 		}
 		
 	}

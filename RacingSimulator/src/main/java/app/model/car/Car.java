@@ -77,25 +77,38 @@ public class Car implements Updateable {
 		this.stability = new Stability(stabilityPoints);
 		
 		this.transform = transform;
-		this.currentSpeed = 0;
+		this.currentSpeed = 3;
 	}
 	
-	public void collideWithOil() {
-		//TODO: crash depending on Stability
-		
-		isCrashed = false;
+	@Override
+	public String toString() {
+		return "[Car [color=" + color + ", maxSpeed=" + maxSpeed + ", acceleration=" + acceleration + ", stability="
+				+ stability + ", transform=" + transform + ", isFinished=" + isFinished + ", isCrashed=" + isCrashed
+				+ ", currentSpeed=" + currentSpeed + "]]";
 	}
 
 	@Override
 	public void update() {
 		if (!(isCrashed || isFinished)) {
-			transform.setXPos(Math.max(transform.getXPos() + currentSpeed, GOAL_X_POS));
+			transform.setXPos(Math.min(transform.getXPos() + currentSpeed, GOAL_X_POS));
 			currentSpeed = Math.min(currentSpeed + acceleration.getValue(), maxSpeed.getValue());
 			
 			if (GOAL_X_POS == transform.getXPos()) {
 				isFinished = true;
 			}
 		}
+	}
+	
+	public void reset() {
+		isCrashed = false;
+		isFinished = false;
+		currentSpeed = 3.0;
+	}
+	
+	public void collideWithOil() {
+		//TODO: crash depending on Stability
+		
+		isCrashed = false;
 	}
 	
 	//------------------------------------------- Only Getters & Setters below this point -------------------------------------------

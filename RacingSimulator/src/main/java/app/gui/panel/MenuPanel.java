@@ -33,9 +33,6 @@ public class MenuPanel extends JPanel {
 		var startButton = new JButton("start Simulation");
 		startButton.addActionListener(a -> guiHandler.startSimulation());
 
-		var pauseSimulation = new JButton("pause Simulation");// TODO
-		pauseSimulation.addActionListener(a -> guiHandler.pauseSimulation());
-
 		var resetSimulation = new JButton("reset Simulation");// TODO
 		resetSimulation.addActionListener(a -> guiHandler.resetSimulation());
 
@@ -47,9 +44,6 @@ public class MenuPanel extends JPanel {
 		gbc.ipady = 20;
 
 		buttonPanel.add(startButton, gbc);
-		gbc.gridy++;
-
-		buttonPanel.add(pauseSimulation, gbc);
 		gbc.gridy++;
 
 		buttonPanel.add(resetSimulation, gbc);

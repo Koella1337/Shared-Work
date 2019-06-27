@@ -3,6 +3,8 @@ package app.model;
 import static app.model.SimulationConstants.CAR_AMOUNT;
 import static app.model.SimulationConstants.START_X_POS;
 import static app.model.SimulationConstants.TRACK_HEIGHT;
+import static app.model.car.CarUtils.CAR_X_SIZE;
+import static app.model.car.CarUtils.CAR_Y_SIZE;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +25,9 @@ public class SimulationRound implements Updateable {
 	
 	public SimulationRound(List<? extends Car> carsFromPreviousRound) {
 		this.cars = prepareCarsForNextRound(carsFromPreviousRound);
+		System.out.println("[=======================]");
+		System.out.println("[     ROUND STARTED     ]");
+		System.out.println("[=======================]");
 	}
 	
 	@Override
@@ -63,7 +68,7 @@ public class SimulationRound implements Updateable {
 	
 	private Stream<? extends Car> generateCars(int amountToGenerate) {
 		return Stream.generate(() -> {
-			return Car.createRandomCar(new Transform());
+			return Car.createRandomCar(new Transform(0, 0, CAR_X_SIZE, CAR_Y_SIZE));
 		}).limit(amountToGenerate);
 	}
 	
@@ -73,18 +78,20 @@ public class SimulationRound implements Updateable {
 		if (carsFromPreviousRound == null) {
 			cars = generateCars(CAR_AMOUNT);
 		} else {
-			cars = Stream.concat(carsFromPreviousRound.stream(), generateCars(CAR_AMOUNT - carsFromPreviousRound.size()));
+			cars = Stream.concat(
+				carsFromPreviousRound.stream().peek(car -> car.reset()), 
+				generateCars(CAR_AMOUNT - carsFromPreviousRound.size())
+			);
 		}
 		
 		double[] previousCarYPos = {0};		//need reference for lambda
-		
 		return cars.peek(car -> {
 			car.getTransform().setXPos(START_X_POS);
 			
-			double yPos = previousCarYPos[0] + (double) TRACK_HEIGHT / CAR_AMOUNT;
+			double yPos = previousCarYPos[0] + (double) TRACK_HEIGHT * 0.95 / CAR_AMOUNT;
 			car.getTransform().setYPos(yPos);
 			
-			previousCarYPos[0] += yPos;
+			previousCarYPos[0] = yPos;
 		}).collect(Collectors.toList());
 	}
 
