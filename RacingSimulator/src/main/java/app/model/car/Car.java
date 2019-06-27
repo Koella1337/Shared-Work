@@ -1,4 +1,6 @@
-package app.model;
+package app.model.car;
+
+import app.model.Transform;
 
 public class Car {
 
