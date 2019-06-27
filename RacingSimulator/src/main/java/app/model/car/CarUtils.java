@@ -8,7 +8,7 @@ import app.model.OilSpill;
 public class CarUtils {
 
 	/** The amount of stats that can be invested into a single stat at maximum. */
-	public static final short CAR_STAT_MAX_POINTS = 10;
+	public static final int CAR_STAT_MAX_POINTS = 10;
 	
 	/** The total amount of points a car must put into its stats. */
 	public static final int CAR_STAT_POINTS = 15;

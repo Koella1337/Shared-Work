@@ -43,9 +43,8 @@ public class CustomMouseAdapter extends MouseAdapter {
 			double carWidth = transform.getXSize();
 			double carHeight = transform.getYSize();
 
-			boolean isCollidingX = pointX >= carX && pointX <= carX + carWidth;
 			boolean isCollidingY = pointY >= carY && pointY <= carY + carHeight;
-			return isCollidingX && isCollidingY;
+			return  isCollidingY;
 		};
 	}
 

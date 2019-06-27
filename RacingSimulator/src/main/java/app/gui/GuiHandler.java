@@ -36,11 +36,11 @@ public class GuiHandler implements Updateable {
 		System.out.println("GuiHandler.resetSimulation");
 		this.simulation.resetSimulation();
 		this.updateTimer.stop();
+		update();
 	}
 
 	@Override
 	public void update() {
-		System.out.println("update");
 		List<? extends Car> carList = simulation.getCars();
 		this.appWindow.setCars(carList);
 		this.appWindow.repaint();

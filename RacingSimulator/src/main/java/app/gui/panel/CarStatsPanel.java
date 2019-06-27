@@ -6,7 +6,9 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import app.model.SimulationConstants;
 import app.model.car.Car;
+import app.model.car.CarUtils;
 
 @SuppressWarnings("serial")
 public class CarStatsPanel extends JPanel {
@@ -26,23 +28,21 @@ public class CarStatsPanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		System.out.println("paintComponent");
 
 		if (currentCar != null) {
-			String posString = String.format("Position: (%.0f, %.0f)", currentCar.getTransform().getXPos(),
+			String posString = String.format("Position: (%4.0f, %4.0f)", currentCar.getTransform().getXPos(),
 					currentCar.getTransform().getYPos());
 			g.drawString(posString, 0, 20);
 
-			drawSpeed(currentCar, g, 6, 40);
-			drawSpeed(currentCar, g, 6, 80);
-			drawSpeed(currentCar, g, 6, 120);
+			String speedString = String.format("Speed: %6.2f", currentCar.getCurrentSpeed());
+			g.drawString(speedString,0,40);
+			
+			drawPoints(g, 6, 80, "maxSpeed",  currentCar.getMaxSpeed().getPoints(), CarUtils.CAR_STAT_MAX_POINTS);
+			drawPoints(g, 6, 120, "acceleration", currentCar.getAcceleration().getPoints(), CarUtils.CAR_STAT_MAX_POINTS);
+			drawPoints(g, 6, 160, "stability",  currentCar.getStability().getPoints(), CarUtils.CAR_STAT_MAX_POINTS);
 		}
 	}
-
-	private void drawSpeed(Car car, Graphics g, int x, int y) {
-		drawPoints(g, x, y, "speed", 4, 10);
-	}
-	
-	
 
 	private void drawPoints(Graphics g, int x, int y, String label, int points, int maxPoints) {
 		g.drawString(label, x, y);
