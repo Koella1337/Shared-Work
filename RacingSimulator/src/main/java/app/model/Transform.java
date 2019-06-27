@@ -1,6 +1,6 @@
 package app.model;
 
-public class Transform {
+public class Transform implements Cloneable{
 	
 	private double xPos;
 	private double yPos;
@@ -11,12 +11,17 @@ public class Transform {
 	public Transform() {
 		this(0, 0, 0, 0);
 	}
-
+	
 	public Transform(double xPos, double yPos, double xSize, double ySize) {
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.xSize = xSize;
 		this.ySize = ySize;
+	}
+	
+	@Override
+	protected Transform clone() {
+		return new Transform(xPos, yPos, xSize, ySize);
 	}
 
 	public double getXPos() {

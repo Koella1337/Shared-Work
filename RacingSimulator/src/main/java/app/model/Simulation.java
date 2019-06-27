@@ -1,49 +1,60 @@
 package app.model;
 
+import static app.model.SimulationConstants.SIMULATION_UPDATES_PER_SECOND;
+import static app.model.SimulationStatus.NOT_READY;
+import static app.model.SimulationStatus.READY;
+import static app.model.SimulationStatus.RUNNING;
+
 import java.util.List;
 
 import app.model.car.Car;
+import app.timer.UpdateTimer;
+import app.timer.Updateable;
 
-public class Simulation implements SimulationController {
+public class Simulation implements SimulationController, Updateable {
 
+	private final UpdateTimer timer;
+	
+	private SimulationRound round;
+	private SimulationStatus status;
+	
 	public Simulation() {
-		
+		status = NOT_READY;
+		timer = new UpdateTimer(this, SIMULATION_UPDATES_PER_SECOND);
+		round = new SimulationRound(null);
+		status = READY;
 	}
 	
 	@Override
 	public void startSimulation() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void pauseSimulation() {
-		// TODO Auto-generated method stub
-		
+		timer.start();
+		status = RUNNING;
 	}
 
 	@Override
 	public void resetSimulation() {
-		// TODO Auto-generated method stub
-		
+		status = NOT_READY;
+		timer.stop();
+		round = new SimulationRound(null);
+		status = READY;
 	}
 	
 	@Override
 	public SimulationStatus getStatus() {
-		// TODO Auto-generated method stub
-		return null;
+		return status;
 	}
 
 	@Override
 	public List<? extends Car> getCars() {
-		// TODO Auto-generated method stub
-		return null;
+		return round.getCars();
 	}
 
-
-
-
-	
-	
+	@Override
+	public void update() {
+		round.update();
+		if (round.isFinished()) {
+			round = new SimulationRound(round.getPlacements());
+		}
+	}	
 	
 }

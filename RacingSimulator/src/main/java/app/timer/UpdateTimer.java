@@ -8,12 +8,12 @@ import javax.swing.Timer;
 @SuppressWarnings("serial")
 public class UpdateTimer extends Timer {
 
-	public UpdateTimer(Updateable updateable, int fps) {
-		super(getDelayInMillisForFps(fps), new UpdateListener(updateable));
+	public UpdateTimer(Updateable updateable, int updatesPerSecond) {
+		super(getDelayInMillisForFps(updatesPerSecond), new UpdateListener(updateable));
 	}
 
-	private static final int getDelayInMillisForFps(int fps) {
-		return (int) (1000.0 / (double) fps);
+	private static final int getDelayInMillisForFps(int updatesPerSecond) {
+		return (int) (1000.0 / (double) updatesPerSecond);
 	}
 }
 
