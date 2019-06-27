@@ -10,7 +10,7 @@ import app.timer.UpdateTimer;
 import app.timer.Updateable;
 
 public class GuiHandler implements Updateable {
-	private static final int REFRESH_RATE = 100;
+	private static final int REFRESH_RATE = 30;
 
 	private AppWindow appWindow;
 	

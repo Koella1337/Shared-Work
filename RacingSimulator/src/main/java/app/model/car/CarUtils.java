@@ -24,7 +24,7 @@ public class CarUtils {
 		
 		public MaxSpeed(int points) {
 			super(points);
-			this.value = 1.8 + (points / CAR_STAT_MAX_POINTS) * 1.2;
+			this.value = 1.8 + ((double) points / CAR_STAT_MAX_POINTS) * 1.2;
 		}
 
 		/**
@@ -44,7 +44,7 @@ public class CarUtils {
 		
 		public Acceleration(int points) {
 			super(points);
-			this.value = 0.01 * (points / CAR_STAT_MAX_POINTS) * 0.008;	
+			this.value = 0.01 + ((double) points / CAR_STAT_MAX_POINTS) * 0.008;
 		}
 
 		/**

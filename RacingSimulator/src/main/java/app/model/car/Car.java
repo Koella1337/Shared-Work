@@ -6,6 +6,7 @@ import static app.model.car.CarUtils.CAR_STAT_POINTS;
 
 import java.awt.Color;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import app.model.Transform;
 import app.model.car.CarUtils.Acceleration;
@@ -50,6 +51,9 @@ public class Car implements Updateable {
 		return new Car(carTransform, carColor, maxSpeedPoints, accelerationPoints, stabilityPoints);
 	}
 	
+	private static final AtomicInteger NEXT_CAR_ID = new AtomicInteger();
+	
+	private final int id;
 	private final Color color;
 	
 	private final MaxSpeed maxSpeed;
@@ -71,7 +75,9 @@ public class Car implements Updateable {
 			);
 		}
 		
+		this.id = NEXT_CAR_ID.getAndIncrement();
 		this.color = color;
+		
 		this.maxSpeed = new MaxSpeed(maxSpeedPoints);
 		this.acceleration = new Acceleration(accelerationPoints);
 		this.stability = new Stability(stabilityPoints);
@@ -93,6 +99,8 @@ public class Car implements Updateable {
 			transform.setXPos(Math.min(transform.getXPos() + currentSpeed, GOAL_X_POS));
 			currentSpeed = Math.min(currentSpeed + acceleration.getValue(), maxSpeed.getValue());
 			
+			System.out.println("Max: "+maxSpeed.getValue() + " | Cur: " + currentSpeed);
+			
 			if (GOAL_X_POS == transform.getXPos()) {
 				isFinished = true;
 			}
@@ -113,10 +121,14 @@ public class Car implements Updateable {
 	
 	//------------------------------------------- Only Getters & Setters below this point -------------------------------------------
 	
+	public int getId() {
+		return id;
+	}
+	
 	public Color getColor() {
 		return color;
 	}
-	
+
 	public MaxSpeed getMaxSpeed() {
 		return maxSpeed;
 	}

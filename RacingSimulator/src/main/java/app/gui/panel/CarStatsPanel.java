@@ -28,7 +28,6 @@ public class CarStatsPanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		System.out.println("paintComponent");
 
 		if (currentCar != null) {
 			String posString = String.format("Position: (%4.0f, %4.0f)", currentCar.getTransform().getXPos(),
