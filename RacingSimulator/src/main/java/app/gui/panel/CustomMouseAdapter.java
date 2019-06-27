@@ -17,22 +17,24 @@ public class CustomMouseAdapter extends MouseAdapter {
 		super();
 		this.guiHandler = guiHandler;
 	}
-
+	
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mouseMoved(MouseEvent e) {
 		double x = e.getX();
 		double y = e.getY();
 
-		Optional<? extends Car> clickedCar = findCarForMouseClick(x, y);
+		Optional<? extends Car> clickedCar = findCarForMousePosition(x, y);
 
 		if (clickedCar.isPresent()) {
+			guiHandler.highlightCar(clickedCar.get());
 			guiHandler.getMenuPanel().showCarStats(clickedCar.get());
 		}
-
 	}
 
-	public Optional<? extends Car> findCarForMouseClick(double xPos, double yPos) {
-		return guiHandler.getCars().parallelStream().filter(isCollidingWithPoint(xPos, yPos)).findAny();
+	
+
+	public Optional<? extends Car> findCarForMousePosition(double xPos, double yPos) {
+		return guiHandler.getCars().stream().filter(isCollidingWithPoint(xPos, yPos)).findAny();
 	}
 
 	public Predicate<Car> isCollidingWithPoint(double pointX, double pointY) {
