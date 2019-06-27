@@ -1,5 +1,6 @@
 package app.gui.panel;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
 
@@ -12,9 +13,11 @@ import app.model.car.Car;
 @SuppressWarnings("serial")
 public class SimulationPanel extends JPanel {
 	private List<? extends Car> carList;
+	private Car selectedCar;
 
 	public SimulationPanel(GuiHandler guiHandler) {
 		super();
+		this.setBackground(Color.WHITE);
 		this.addMouseListener(new CustomMouseAdapter(guiHandler));
 	}
 
@@ -23,8 +26,18 @@ public class SimulationPanel extends JPanel {
 		super.paintComponent(g);
 
 		if (getCarList() != null && !getCarList().isEmpty()) {
-			this.getCarList().stream().map(car -> new CarGui(car)).forEach(carGui -> carGui.draw(g));
+			this.getCarList().stream().filter(car -> !isSelected(car)).map(car -> new CarGui(car))
+					.forEach(carGui -> carGui.draw(g));
+			
+			if(this.selectedCar != null) {
+				CarGui selectedGui = new CarGui(selectedCar);
+				selectedGui.drawSelected(g);
+			}
 		}
+	}
+
+	private boolean isSelected(Car car) {
+		return selectedCar != null && car.equals(selectedCar);
 	}
 
 	public List<? extends Car> getCarList() {
@@ -33,5 +46,9 @@ public class SimulationPanel extends JPanel {
 
 	public void setCarList(List<? extends Car> carList) {
 		this.carList = carList;
+	}
+
+	public void setSelectedCar(Car car) {
+		this.selectedCar = car;
 	}
 }

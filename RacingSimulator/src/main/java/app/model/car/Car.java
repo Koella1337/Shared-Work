@@ -140,5 +140,11 @@ public class Car implements Updateable {
 	public boolean isCrashed() {
 		return isCrashed;
 	}
+
+	public double getCurrentSpeed() {
+		return currentSpeed;
+	}
+	
+	
 	
 }
