@@ -20,8 +20,11 @@ public class CarUtils {
 	
 	public static class MaxSpeed extends CarStat {
 
+		private final double value;
+		
 		public MaxSpeed(int points) {
 			super(points);
+			this.value = 1.8 + (points / CAR_STAT_MAX_POINTS) * 1.2;
 		}
 
 		/**
@@ -30,16 +33,18 @@ public class CarUtils {
 		 */
 		@Override
 		public double getValue() {
-			// TODO 
-			return 100;
+			return value;
 		}
 		
 	}
 	
 	public static class Acceleration extends CarStat {
 
-		public Acceleration(int points, MaxSpeed maxSpeed) {
+		private final double value;
+		
+		public Acceleration(int points) {
 			super(points);
+			this.value = 0.01 * (points / CAR_STAT_MAX_POINTS) * 0.008;	
 		}
 
 		/**
@@ -48,16 +53,18 @@ public class CarUtils {
 		 */
 		@Override
 		public double getValue() {
-			// TODO 
-			return 0;
+			return value;
 		}
 		
 	}
 	
 	public static class Stability extends CarStat {
 
+		private final double value;
+		
 		public Stability(int points) {
 			super(points);
+			this.value = 0;
 		}
 		
 		/**
@@ -65,8 +72,7 @@ public class CarUtils {
 		 */
 		@Override
 		public double getValue() {
-			// TODO 
-			return 0;
+			return value;
 		}
 		
 	}

@@ -7,7 +7,7 @@ public class SimulationConstants {
 	/** Changing this value changes the speed of the simulation: how quickly cars drive, ... */
 	public static final int SIMULATION_UPDATES_PER_SECOND = 60;
 	
-	public static final int CAR_AMOUNT = 70;
+	public static final int CAR_AMOUNT = 3;
 	public static final int WINNER_AMOUNT = 10;
 	
 	public static final int TRACK_HEIGHT = 1000;

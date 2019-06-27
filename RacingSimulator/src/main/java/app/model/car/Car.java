@@ -73,11 +73,11 @@ public class Car implements Updateable {
 		
 		this.color = color;
 		this.maxSpeed = new MaxSpeed(maxSpeedPoints);
-		this.acceleration = new Acceleration(accelerationPoints, maxSpeed);
+		this.acceleration = new Acceleration(accelerationPoints);
 		this.stability = new Stability(stabilityPoints);
 		
 		this.transform = transform;
-		this.currentSpeed = 3;
+		this.currentSpeed = 0;
 	}
 	
 	@Override
@@ -102,7 +102,7 @@ public class Car implements Updateable {
 	public void reset() {
 		isCrashed = false;
 		isFinished = false;
-		currentSpeed = 3.0;
+		currentSpeed = 0;
 	}
 	
 	public void collideWithOil() {
