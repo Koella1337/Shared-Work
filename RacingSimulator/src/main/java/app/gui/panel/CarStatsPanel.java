@@ -20,7 +20,6 @@ public class CarStatsPanel extends JPanel {
 	}
 
 	public void showCarStats(Car car) {
-		System.out.println("showCarStats");
 		this.currentCar = car;
 		this.repaint();
 	}
