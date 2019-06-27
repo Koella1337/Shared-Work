@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import app.gui.GuiHandler;
 import app.model.car.Car;
 
+@SuppressWarnings("serial")
 public class MenuPanel extends JPanel {
 	private GuiHandler guiHandler;
 	private CarStatsPanel carStatsPanel;
@@ -60,7 +61,6 @@ public class MenuPanel extends JPanel {
 	}
 	
 	public void showCarStats(Car car) {
-		System.out.println("showCarStats");
-//		this.carStatsPanel.showCarStats(car);
+		this.carStatsPanel.showCarStats(car);
 	}
 }
