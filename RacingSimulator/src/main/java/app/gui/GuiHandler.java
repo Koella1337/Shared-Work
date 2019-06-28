@@ -1,6 +1,6 @@
 package app.gui;
 
-import java.util.List;
+import java.util.Set;
 
 import app.gui.panel.MenuPanel;
 import app.model.SimulationConstants;
@@ -38,7 +38,7 @@ public class GuiHandler implements Updateable {
 
 	@Override
 	public void update() {
-		List<? extends Car> carList = simulation.getCars();
+		Set<? extends Car> carList = simulation.getCars();
 		this.appWindow.setCars(carList);
 		this.appWindow.repaint();
 		this.appWindow.getMenuPanel().repaint();
@@ -48,7 +48,7 @@ public class GuiHandler implements Updateable {
 		return simulation;
 	}
 	
-	public List<? extends Car> getCars(){
+	public Set<? extends Car> getCars(){
 		return this.appWindow.getSimulationPanel().getCarList();
 	}
 

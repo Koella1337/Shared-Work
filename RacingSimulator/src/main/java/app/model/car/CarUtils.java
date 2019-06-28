@@ -1,7 +1,5 @@
 package app.model.car;
 
-import app.model.OilSpill;
-
 /**
  * Holds constants and other utilities (e.g. {@link CarStat}s) for {@link Car}s.
  */
@@ -64,11 +62,11 @@ public class CarUtils {
 		
 		public Stability(int points) {
 			super(points);
-			this.value = 0;
+			this.value = 0.1 - ((double) points / CAR_STAT_MAX_POINTS) * 0.099999;
 		}
 		
 		/**
-		 * The value of this stat defines how likely (in percent: 0 to 100) a car is to skid on an {@link OilSpill}.
+		 * The value of this stat defines how likely (in percent/update) a car is to stop working.
 		 */
 		@Override
 		public double getValue() {

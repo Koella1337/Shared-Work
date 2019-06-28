@@ -1,6 +1,6 @@
 package app.model;
 
-import java.util.List;
+import java.util.Set;
 
 import app.model.car.Car;
 
@@ -12,6 +12,6 @@ public interface SimulationController {
 	
 	SimulationStatus getStatus();
 	
-	List<? extends Car> getCars();
+	Set<? extends Car> getCars();
 	
 }

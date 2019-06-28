@@ -6,7 +6,7 @@ import static app.model.SimulationConstants.TRACK_HEIGHT;
 import static app.model.car.CarUtils.CAR_X_SIZE;
 import static app.model.car.CarUtils.CAR_Y_SIZE;
 
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,12 +18,12 @@ import app.timer.Updateable;
 
 public class SimulationRound implements Updateable {
 	
-	private final List<? extends Car> cars;
+	private final Set<? extends Car> cars;
 	
 	private AtomicInteger nextPlace = new AtomicInteger(1);
 	private final ConcurrentMap<Integer, Car> placements = new ConcurrentHashMap<>();
 	
-	public SimulationRound(List<? extends Car> carsFromPreviousRound) {
+	public SimulationRound(Set<? extends Car> carsFromPreviousRound) {
 		this.cars = prepareCarsForNextRound(carsFromPreviousRound);
 		System.out.println("[=======================]");
 		System.out.println("[     ROUND STARTED     ]");
@@ -36,13 +36,13 @@ public class SimulationRound implements Updateable {
 			//TODO: collision detection with OilSpill
 			
 			car.update();
-			if (car.isFinished() && nextPlace.get() < SimulationConstants.WINNER_AMOUNT) {
+			if (car.isFinished() && !placements.values().contains(car) && nextPlace.get() < SimulationConstants.WINNER_AMOUNT) {
 				placements.put(nextPlace.getAndIncrement(), car);
 			}
 		});
 	}
 	
-	public List<? extends Car> getCars() {
+	public Set<? extends Car> getCars() {
 		return cars;
 	}
 	
@@ -50,14 +50,14 @@ public class SimulationRound implements Updateable {
 	 * @return A list of cars sorted by their placement.<br>
 	 * The maximum amount of cars able to score a placement is defined in {@link SimulationConstants#WINNER_AMOUNT}
 	 */
-	public List<? extends Car> getPlacements() {
+	public Set<? extends Car> getPlacements() {
 		return placements.entrySet()
 			.stream()
 			.sorted((entry1, entry2) -> {
 				return entry1.getKey().compareTo(entry2.getKey());
 			})
 			.map(entry -> entry.getValue())
-			.collect(Collectors.toList());
+			.collect(Collectors.toSet());
 	}
 	
 	public boolean isFinished() {
@@ -72,7 +72,7 @@ public class SimulationRound implements Updateable {
 		}).limit(amountToGenerate);
 	}
 	
-	private List<? extends Car> prepareCarsForNextRound(List<? extends Car> carsFromPreviousRound) {
+	private Set<? extends Car> prepareCarsForNextRound(Set<? extends Car> carsFromPreviousRound) {
 		Stream<? extends Car> cars;
 		
 		if (carsFromPreviousRound == null) {
@@ -92,7 +92,7 @@ public class SimulationRound implements Updateable {
 			car.getTransform().setYPos(yPos);
 			
 			previousCarYPos[0] = yPos;
-		}).collect(Collectors.toList());
+		}).collect(Collectors.toSet());
 	}
 
 }

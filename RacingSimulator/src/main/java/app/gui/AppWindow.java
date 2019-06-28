@@ -2,7 +2,7 @@ package app.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.List;
+import java.util.Set;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -47,7 +47,7 @@ public class AppWindow extends JFrame {
 		this.contentPane.add(simulationPanel, BorderLayout.CENTER);
 	}
 
-	public void setCars(List<? extends Car> carList) {
+	public void setCars(Set<? extends Car> carList) {
 		this.simulationPanel.setCarList(carList);
 	}
 

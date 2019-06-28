@@ -5,7 +5,7 @@ import static app.model.SimulationStatus.NOT_READY;
 import static app.model.SimulationStatus.READY;
 import static app.model.SimulationStatus.RUNNING;
 
-import java.util.List;
+import java.util.Set;
 
 import app.model.car.Car;
 import app.timer.UpdateTimer;
@@ -45,7 +45,7 @@ public class Simulation implements SimulationController, Updateable {
 	}
 
 	@Override
-	public List<? extends Car> getCars() {
+	public Set<? extends Car> getCars() {
 		return round.getCars();
 	}
 

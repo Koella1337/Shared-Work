@@ -16,15 +16,17 @@ import app.timer.Updateable;
 
 public class Car implements Updateable {
 
+	private static final Random RNG = new Random();
+	private static final AtomicInteger NEXT_CAR_ID = new AtomicInteger();
+	
 	public static Car createRandomCar(Transform carTransform) {
-		Random rng = new Random();
-		Color carColor = new Color(rng.nextInt(256), rng.nextInt(256), rng.nextInt(256));
+		Color carColor = new Color(RNG.nextInt(256), RNG.nextInt(256), RNG.nextInt(256));
 		
 		int pointsLeft = CAR_STAT_POINTS;
-		int maxSpeedPoints = rng.nextInt(1 + CAR_STAT_MAX_POINTS);
+		int maxSpeedPoints = RNG.nextInt(1 + CAR_STAT_MAX_POINTS);
 		
 		pointsLeft -= maxSpeedPoints;
-		int accelerationPoints = rng.nextInt(1 + (pointsLeft < CAR_STAT_MAX_POINTS ? pointsLeft : CAR_STAT_MAX_POINTS));
+		int accelerationPoints = RNG.nextInt(1 + (pointsLeft < CAR_STAT_MAX_POINTS ? pointsLeft : CAR_STAT_MAX_POINTS));
 		
 		pointsLeft -= accelerationPoints;
 		int stabilityPoints;
@@ -38,7 +40,7 @@ public class Car implements Updateable {
 			accelerationPoints += pointsLeftHalved;
 			
 			if (pointsLeft % 2 == 1) { //pointsLeft was odd
-				if (rng.nextBoolean()) {
+				if (RNG.nextBoolean()) {
 					maxSpeedPoints++;
 				} else {
 					accelerationPoints++;
@@ -50,8 +52,6 @@ public class Car implements Updateable {
 		
 		return new Car(carTransform, carColor, maxSpeedPoints, accelerationPoints, stabilityPoints);
 	}
-	
-	private static final AtomicInteger NEXT_CAR_ID = new AtomicInteger();
 	
 	private final int id;
 	private final Color color;
@@ -96,8 +96,15 @@ public class Car implements Updateable {
 	@Override
 	public void update() {
 		if (!(isCrashed || isFinished)) {
+			if ((RNG.nextDouble() * 100) < stability.getValue()) {
+				isCrashed = true;
+				return;
+			}
+			
 			transform.setXPos(Math.min(transform.getXPos() + currentSpeed, GOAL_X_POS));
 			currentSpeed = Math.min(currentSpeed + acceleration.getValue(), maxSpeed.getValue());
+			
+			currentSpeed *= (0.95 + RNG.nextDouble() * 0.1);
 			
 			if (GOAL_X_POS == transform.getXPos()) {
 				isFinished = true;
@@ -109,12 +116,6 @@ public class Car implements Updateable {
 		isCrashed = false;
 		isFinished = false;
 		currentSpeed = 0;
-	}
-	
-	public void collideWithOil() {
-		//TODO: crash depending on Stability
-		
-		isCrashed = false;
 	}
 	
 	//------------------------------------------- Only Getters & Setters below this point -------------------------------------------
@@ -154,7 +155,5 @@ public class Car implements Updateable {
 	public double getCurrentSpeed() {
 		return currentSpeed;
 	}
-	
-	
 	
 }
