@@ -14,16 +14,13 @@ import app.model.car.Car;
 
 @SuppressWarnings("serial")
 public class MenuPanel extends JPanel {
-	private GuiHandler guiHandler;
 	private CarStatsPanel carStatsPanel;
 
 	public MenuPanel(GuiHandler guiHandler) {
-		this.guiHandler = guiHandler;
-
 		this.setBackground(Color.WHITE);
 
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		this.setPreferredSize(new Dimension(300, this.getHeight()));
+		this.setPreferredSize(new Dimension(200, this.getHeight()));
 
 		JPanel buttonPanel = new JPanel();
 		this.add(buttonPanel);
@@ -37,12 +34,7 @@ public class MenuPanel extends JPanel {
 		var resetSimulation = new JButton("reset Simulation");// TODO
 		resetSimulation.addActionListener(a -> guiHandler.resetSimulation());
 
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.ipadx = 20;
-		gbc.ipady = 20;
+		GridBagConstraints gbc = getDefaultGridBagConstraints();
 
 		buttonPanel.add(startButton, gbc);
 		gbc.gridy++;
@@ -52,6 +44,16 @@ public class MenuPanel extends JPanel {
 
 		this.carStatsPanel= new CarStatsPanel();
 		this.add(carStatsPanel);
+	}
+
+	private GridBagConstraints getDefaultGridBagConstraints() {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.ipadx = 20;
+		gbc.ipady = 20;
+		return gbc;
 	}
 	
 	public void showCarStats(Car car) {

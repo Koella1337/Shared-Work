@@ -3,8 +3,8 @@ package app.gui;
 import java.util.Set;
 
 import app.gui.panel.MenuPanel;
-import app.model.Simulation;
 import app.model.SimulationConstants;
+import app.model.SimulationController;
 import app.model.car.Car;
 import app.timer.UpdateTimer;
 import app.timer.Updateable;
@@ -13,12 +13,11 @@ public class GuiHandler implements Updateable {
 	private static final int REFRESH_RATE = 30;
 
 	private AppWindow appWindow;
-	
-	private Simulation simulation;
+	private SimulationController simulation;
 	private UpdateTimer updateTimer;
 	
 
-	public GuiHandler(Simulation simulation) {
+	public GuiHandler(SimulationController simulation) {
 		super();
 		this.simulation = simulation;
 		this.updateTimer = new UpdateTimer(this, REFRESH_RATE);
@@ -27,13 +26,11 @@ public class GuiHandler implements Updateable {
 	}
 	
 	public void startSimulation() {
-		System.out.println("GuiHandler.startSimulation");
 		this.simulation.startSimulation();
 		this.updateTimer.start();
 	}
 	
 	public void resetSimulation() {
-		System.out.println("GuiHandler.resetSimulation");
 		this.simulation.resetSimulation();
 		this.updateTimer.stop();
 		update();
@@ -47,7 +44,7 @@ public class GuiHandler implements Updateable {
 		this.appWindow.getMenuPanel().repaint();
 	}
 
-	public Simulation getSimulation() {
+	public SimulationController getSimulation() {
 		return simulation;
 	}
 	
