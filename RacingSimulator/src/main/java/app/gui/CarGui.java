@@ -18,7 +18,7 @@ public class CarGui {
 	public void drawSelectedCar(Graphics g) {
 		g.setColor(Color.LIGHT_GRAY);
 		int yPos = (int) car.getTransform().getYPos();
-		g.fillRect(0, yPos-4, SimulationConstants.TRACK_WIDTH, (int) (car.getTransform().getYSize()+8));
+		g.fillRect(0, yPos, SimulationConstants.TRACK_WIDTH, (int) (car.getTransform().getYSize()+1));
 		drawUnselectedCar(g) ;
 	}
 
