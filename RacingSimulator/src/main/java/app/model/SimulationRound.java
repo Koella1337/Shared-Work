@@ -6,6 +6,7 @@ import static app.model.SimulationConstants.TRACK_HEIGHT;
 import static app.model.car.CarUtils.CAR_X_SIZE;
 import static app.model.car.CarUtils.CAR_Y_SIZE;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -33,8 +34,6 @@ public class SimulationRound implements Updateable {
 	@Override
 	public void update() {
 		cars.parallelStream().forEach(car -> {
-			//TODO: collision detection with OilSpill
-			
 			car.update();
 			if (car.isFinished() && !placements.values().contains(car) && nextPlace.get() < SimulationConstants.WINNER_AMOUNT) {
 				placements.put(nextPlace.getAndIncrement(), car);
@@ -50,14 +49,14 @@ public class SimulationRound implements Updateable {
 	 * @return A list of cars sorted by their placement.<br>
 	 * The maximum amount of cars able to score a placement is defined in {@link SimulationConstants#WINNER_AMOUNT}
 	 */
-	public Set<? extends Car> getPlacements() {
+	public List<? extends Car> getPlacements() {
 		return placements.entrySet()
 			.stream()
 			.sorted((entry1, entry2) -> {
 				return entry1.getKey().compareTo(entry2.getKey());
 			})
 			.map(entry -> entry.getValue())
-			.collect(Collectors.toSet());
+			.collect(Collectors.toList());
 	}
 	
 	public boolean isFinished() {
