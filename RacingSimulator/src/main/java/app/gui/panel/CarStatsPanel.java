@@ -53,8 +53,6 @@ public class CarStatsPanel extends JPanel {
 		}
 	}
 	
-	
-
 	private void drawPoints(Graphics g, int x, int y, String label, int points, int maxPoints) {
 		g.drawString(label, x, y);
 		for (int i = 0; i < maxPoints; i++) {

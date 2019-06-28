@@ -31,11 +31,11 @@ public class CustomMouseAdapter extends MouseAdapter {
 		}
 	}
 
-	public Optional<? extends Car> findCarForMousePosition(double xPos, double yPos) {
+	private Optional<? extends Car> findCarForMousePosition(double xPos, double yPos) {
 		return guiHandler.getCars().parallelStream().filter(isCollidingWithPoint(xPos, yPos)).findAny();
 	}
 
-	public Predicate<Car> isCollidingWithPoint(double pointX, double pointY) {
+	private Predicate<Car> isCollidingWithPoint(double pointX, double pointY) {
 		return car -> {
 			Transform transform = car.getTransform();
 			double carY = transform.getYPos();

@@ -51,11 +51,6 @@ public class GuiHandler implements Updateable {
 	public Set<? extends Car> getCars(){
 		return this.appWindow.getSimulationPanel().getCarList();
 	}
-
-	public void showStatsForCar(Car car) {
-		this.appWindow.getMenuPanel().showCarStats(car);
-	
-	}
 	
 	public void highlightCar(Car car) {
 		this.appWindow.getSimulationPanel().setSelectedCar(car);
