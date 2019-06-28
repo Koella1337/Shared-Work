@@ -31,25 +31,39 @@ public class CarStatsPanel extends JPanel {
 		if (currentCar != null) {
 			String posString = String.format("Position: (%4.0f, %4.0f)", currentCar.getTransform().getXPos(),
 					currentCar.getTransform().getYPos());
-			g.drawString(posString, 6, 20);
+			int xPosOfStatValues = 6;
+			int yPosOfStatValues  = 20;
+			int spaceBetweenStatValue = 40;
+			
+			g.drawString(posString, xPosOfStatValues, yPosOfStatValues);
+			yPosOfStatValues+=spaceBetweenStatValue;
 
 			String speedString = String.format("Speed: %6.2f", currentCar.getCurrentSpeed());
-			g.drawString(speedString,6,40);
+			g.drawString(speedString,xPosOfStatValues,yPosOfStatValues);
+			yPosOfStatValues+=spaceBetweenStatValue;
 			
-			drawPoints(g, 6, 80, "maxSpeed",  currentCar.getMaxSpeed().getPoints(), CarUtils.CAR_STAT_MAX_POINTS);
-			drawPoints(g, 6, 120, "acceleration", currentCar.getAcceleration().getPoints(), CarUtils.CAR_STAT_MAX_POINTS);
-			drawPoints(g, 6, 160, "stability",  currentCar.getStability().getPoints(), CarUtils.CAR_STAT_MAX_POINTS);
+			drawPoints(g, xPosOfStatValues, yPosOfStatValues, "maxSpeed",  currentCar.getMaxSpeed().getPoints(), CarUtils.CAR_STAT_MAX_POINTS);
+			yPosOfStatValues+=spaceBetweenStatValue;
+			
+			drawPoints(g, xPosOfStatValues, yPosOfStatValues, "acceleration", currentCar.getAcceleration().getPoints(), CarUtils.CAR_STAT_MAX_POINTS);
+			yPosOfStatValues+=spaceBetweenStatValue;
+			
+			drawPoints(g, xPosOfStatValues, yPosOfStatValues, "stability",  currentCar.getStability().getPoints(), CarUtils.CAR_STAT_MAX_POINTS);
+			yPosOfStatValues+=spaceBetweenStatValue;
 		}
 	}
+	
+	
 
 	private void drawPoints(Graphics g, int x, int y, String label, int points, int maxPoints) {
 		g.drawString(label, x, y);
 		for (int i = 0; i < maxPoints; i++) {
 			g.setColor(Color.BLACK);
+			int pointSize = 12;
 			if (points > i) {
-				g.fillOval(x + i * 12, y + 4, 12, 12);
+				g.fillOval(x + i * pointSize, y + 4, pointSize, pointSize);
 			} else {
-				g.drawOval(x + i * 12, y + 4, 12, 12);
+				g.drawOval(x + i * pointSize, y + 4, pointSize, pointSize);
 			}
 		}
 	}

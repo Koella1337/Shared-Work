@@ -18,8 +18,7 @@ public class SimulationPanel extends JPanel {
 	public SimulationPanel(GuiHandler guiHandler) {
 		super();
 		this.setBackground(Color.WHITE);
-		CustomMouseAdapter customMouseAdapter = new CustomMouseAdapter(guiHandler);
-		this.addMouseMotionListener(customMouseAdapter);
+		this.addMouseMotionListener(new CustomMouseAdapter(guiHandler));
 	}
 
 	@Override
@@ -27,12 +26,14 @@ public class SimulationPanel extends JPanel {
 		super.paintComponent(g);
 
 		if (getCarList() != null && !getCarList().isEmpty()) {
-			this.getCarList().stream().filter(car -> !isSelectedCarAndStillValid(car)).map(car -> new CarGui(car))
-					.forEach(carGui -> carGui.draw(g));
+			this.getCarList().stream()
+				.filter(car -> !isSelectedCarAndStillValid(car))
+				.map(car -> new CarGui(car))
+				.forEach(carGui -> carGui.drawUnselectedCar(g));
 			
 			if(this.selectedCar != null && isSelectedCarAndStillValid(selectedCar)) {
 				CarGui selectedGui = new CarGui(selectedCar);
-				selectedGui.drawSelected(g);
+				selectedGui.drawSelectedCar(g);
 			}
 		}
 	}
