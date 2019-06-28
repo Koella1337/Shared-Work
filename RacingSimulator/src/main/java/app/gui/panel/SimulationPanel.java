@@ -2,7 +2,7 @@ package app.gui.panel;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.List;
+import java.util.Set;
 
 import javax.swing.JPanel;
 
@@ -12,7 +12,7 @@ import app.model.car.Car;
 
 @SuppressWarnings("serial")
 public class SimulationPanel extends JPanel {
-	private List<? extends Car> carList;
+	private Set<? extends Car> carList;
 	private Car selectedCar;
 
 	public SimulationPanel(GuiHandler guiHandler) {
@@ -41,11 +41,11 @@ public class SimulationPanel extends JPanel {
 		return selectedCar != null && car.equals(selectedCar);
 	}
 
-	public List<? extends Car> getCarList() {
+	public Set<? extends Car> getCarList() {
 		return carList;
 	}
 
-	public void setCarList(List<? extends Car> carList) {
+	public void setCarList(Set<? extends Car> carList) {
 		this.carList = carList;
 	}
 
