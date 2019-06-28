@@ -5,6 +5,7 @@ import static app.model.SimulationStatus.NOT_READY;
 import static app.model.SimulationStatus.READY;
 import static app.model.SimulationStatus.RUNNING;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import app.model.car.Car;
@@ -53,7 +54,13 @@ public class Simulation implements SimulationController, Updateable {
 	public void update() {
 		round.update();
 		if (round.isFinished()) {
-			round = new SimulationRound(round.getPlacements());
+			var placements = round.getPlacements();
+			System.out.println("[        WINNERS        ]");
+			placements.stream().forEach(car -> System.out.printf("[Car ID: %-15d]%n", car.getId()));
+			System.out.println("[=======================]");
+			System.out.println();
+			
+			round = new SimulationRound(new HashSet<Car>(placements));
 		}
 	}	
 	
