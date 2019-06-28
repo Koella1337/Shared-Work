@@ -26,7 +26,7 @@ public class CarGui {
 	public void drawSelected(Graphics g) {
 		g.setColor(Color.LIGHT_GRAY);
 		int yPos = (int) car.getTransform().getYPos();
-		g.fillRect(0, yPos, 1000, (int) (car.getTransform().getYSize()+1));
+		g.fillRect(0, yPos-4, 1000, (int) (car.getTransform().getYSize()+8));
 		draw(g, car.getColor());
 	}
 
@@ -35,6 +35,9 @@ public class CarGui {
 		int yPos = (int) this.car.getTransform().getYPos();
 		int xSize = (int) this.car.getTransform().getXSize();
 		int ySize = (int) this.car.getTransform().getYSize();
+		
+		g.setColor(Color.BLACK);
+		g.drawString(""+this.car.getId(), 5, (int) (yPos+this.car.getTransform().getYSize()));
 
 		g.setColor(color);
 		g.fillRect(xPos, yPos, xSize, ySize);

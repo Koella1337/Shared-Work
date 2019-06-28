@@ -27,18 +27,18 @@ public class SimulationPanel extends JPanel {
 		super.paintComponent(g);
 
 		if (getCarList() != null && !getCarList().isEmpty()) {
-			this.getCarList().stream().filter(car -> !isSelected(car)).map(car -> new CarGui(car))
+			this.getCarList().stream().filter(car -> !isSelectedCarAndStillValid(car)).map(car -> new CarGui(car))
 					.forEach(carGui -> carGui.draw(g));
 			
-			if(this.selectedCar != null) {
+			if(this.selectedCar != null && isSelectedCarAndStillValid(selectedCar)) {
 				CarGui selectedGui = new CarGui(selectedCar);
 				selectedGui.drawSelected(g);
 			}
 		}
 	}
 
-	private boolean isSelected(Car car) {
-		return selectedCar != null && car.equals(selectedCar);
+	private boolean isSelectedCarAndStillValid(Car car) {
+		return   selectedCar != null && car.equals(selectedCar) &&  getCarList().contains(selectedCar) ;
 	}
 
 	public Set<? extends Car> getCarList() {
